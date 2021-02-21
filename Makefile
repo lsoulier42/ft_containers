@@ -1,6 +1,6 @@
 NAME= ft_containers
-SRCS= main.cpp
-OBJS= $(addprefix srcs, $(SRCS:.cpp=.o))
+SRCS= main.cpp list.cpp
+OBJS= $(addprefix srcs/, $(SRCS:.cpp=.o))
 CC= clang++
 CFLAGS= -Wall -Wextra -Werror -std=c++98
 HEADER= -I includes

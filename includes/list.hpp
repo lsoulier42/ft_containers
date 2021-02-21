@@ -13,30 +13,102 @@
 #ifndef LIST_HPP
 # define LIST_HPP
 # include <memory>
+# include <iterator>
 
 namespace ft {
 	template < class T, class Alloc = std::allocator<T> >
 	class list {
 	public:
-		list();
-		list(const list & src);
-		list& operator=( const list& other );
-		virtual ~list();
+		list() : _begin(NULL), _end(NULL), _count(0) {
+		}
+
+		list(const list & src) : _count(src._count) {
+			if (this->_begin)
+				this->clear();
+			t_list* track = src._begin;
+			this->_begin = NULL;
+			while(track)
+			{
+				this->push_back(track->content);
+				track = track->next;
+			}
+		}
+
+		list& operator=( const list& other ) {
+			if (this != &other)
+			{
+				this->_count = other._count;
+				if (this->_begin)
+					this->clear();
+				t_list* track = other._begin;
+				this->_begin = NULL;
+				while(track)
+				{
+					this->push_back(track->content);
+					track = track->next;
+				}
+			}
+			return *this;
+		}
+
+		virtual ~list() {
+			this->clear();
+		}
+
+		//member types
+		typedef T value_type;
+		typedef std::allocator<value_type> allocator_type;
+		typedef typename allocator_type::reference reference;
+		typedef typename allocator_type::const_reference const_reference;
+		typedef typename allocator_type::pointer pointer;
+		typedef typename allocator_type::const_pointer const_pointer;
+		typedef std::size_t size_type;
+		typedef std::ptrdiff_t difference_type;
+		/*
+		typedef std::iterator<std::bidirectional_iterator_tag, value_type> iterator;
+		typedef const std::iterator<std::bidirectional_iterator_tag, value_type> const_iterator;
+		typedef std::reverse_iterator<iterator> reverse_iterator;
+		typedef const std::reverse_iterator<const_iterator> const_reverse_iterator;
+		*/
+
+		class iterator : public std::iterator<std::bidirectional_iterator_tag,
+				value_type, difference_type, pointer, reference> {
+			public:
+				iterator();
+				iterator(const iterator & src);
+				iterator & operator=(const iterator & rhs);
+				virtual ~iterator();
+
+			private:
+				pointer _
+		};
 
 		//member functions
-		void assign( size_type count, const T& value );
+		void assign( size_type count, const T& value ) {
+			this->clear();
+			for(size_type i = 0; i < count; i++)
+				this->push_back(value);
+		}
 		template< class InputIt >
-		void assign( InputIt first, InputIt last );
+		void assign( InputIt first, InputIt last ) {
+			this->clear();
+			for(InputIt it = first; it != last; it++)
+				this->push_back(*it);
+		}
 
-		reference front();
-		const_reference front() const;
-		reference back();
-		const_reference back() const;
+		reference front() {	return *(this->_begin);	}
+		const_reference front() const {	return const_cast<const_reference>(*(this->_begin)); }
+		reference back() { return *(this->_end); }
+		const_reference back() const { return const_cast<const_reference>(*(this->_end)); }
 
-		iterator begin();
-		const_iterator begin() const;
-		iterator end();
-		const_iterator end() const;
+		iterator begin() {
+			iterator ret;
+
+
+		}
+		const_iterator begin() const { return this->_begin; }
+		iterator end() { return this->_end; }
+		const_iterator end() const { return this->_end; }
 		reverse_iterator rbegin();
 		const_reverse_iterator rbegin() const;
 		reverse_iterator rend();
@@ -80,28 +152,15 @@ namespace ft {
 		void sort( Compare comp );
 
 
-		//member types
-		typedef T value_type;
-		typedef std::allocator<value_type> allocator_type;
-		typedef allocator_type::reference reference;
-		typedef allocator_type::const_reference const_reference;
-		typedef allocator_type::pointer pointer;
-		typedef allocator_type::const_pointer const_pointer;
-
-		BirectionalIterator<value_type> iterator;
-		const BirectionalIterator<value_type> const_iterator;
-		std::reverse_iterator<iterator> reverse_iterator;
-		const std::reverse_iterator<const_iterator> const_reverse_iterator;
-
-
 	private:
 		typedef struct	s_list {
-			value_type 		content;
+			const T &		content;
 			struct s_list	*next;
 			struct s_list	*previous;
 		}				t_list;
 		t_list*			_begin;
-		size_t			_count;
+		t_list*			_end;
+		size_type 		_count;
 	};
 }
 
