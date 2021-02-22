@@ -10,9 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "list.hpp"
+#include "newbie_list.hpp"
+#include <list>
+
 
 int main()
 {
-	
+	std::list<int>::iterator it;
+
+	it->
 }

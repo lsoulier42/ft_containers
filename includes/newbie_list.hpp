@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   list.hpp                                           :+:      :+:    :+:   */
+/*   newbie_list.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lsoulier <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/02/19 13:14:46 by lsoulier          #+#    #+#             */
-/*   Updated: 2021/02/19 13:15:06 by lsoulier         ###   ########.fr       */
+/*   Created: 2021/02/22 15:29:12 by lsoulier          #+#    #+#             */
+/*   Updated: 2021/02/22 15:29:15 by lsoulier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include <iterator>
 
 namespace ft {
-	template < class T, class Alloc = std::allocator<T> >
+	template < class T>
 	class list {
 	public:
 		typedef struct	s_list {
@@ -63,19 +63,50 @@ namespace ft {
 
 		//member types
 		typedef T value_type;
-		typedef std::allocator<value_type> allocator_type;
-		typedef typename allocator_type::reference reference;
-		typedef typename allocator_type::const_reference const_reference;
-		typedef typename allocator_type::pointer pointer;
-		typedef typename allocator_type::const_pointer const_pointer;
 		typedef std::size_t size_type;
 		typedef std::ptrdiff_t difference_type;
-		/*
-		typedef std::iterator<std::bidirectional_iterator_tag, value_type> iterator;
-		typedef const std::iterator<std::bidirectional_iterator_tag, value_type> const_iterator;
-		typedef std::reverse_iterator<iterator> reverse_iterator;
-		typedef const std::reverse_iterator<const_iterator> const_reverse_iterator;
-		*/
+
+		class iterator : public std::iterator<std::bidirectional_iterator_tag, value_type> {
+		public:
+			iterator(t_list* current) : _current(current) {}
+			iterator(const iterator & src) { this->_deep_copy(src); }
+			iterator & operator=(const iterator & rhs) {
+				if (this != &rhs)
+					this->_deep_copy(rhs);
+				return *this;
+			}
+			virtual ~iterator() { delete [] this->_current; }
+			value_type operator*(void) { return this->_current->content; }
+			value_type* operator->(void) { return this; }
+			value_type& operator&(void) { return *this; }
+			iterator & operator++(void) {
+				this = iterator(this->_current.next);
+				return *this;
+			}
+			iterator operator++(int) {
+				iterator temp = this;
+				this = iterator(this->_current.next);
+				return temp;
+			}
+			iterator & operator--(void) {
+				this = iterator(this->_current.previous);
+				return *this;
+			}
+			iterator operator--(int) {
+				iterator temp = this;
+				this = iterator(this->_current.previous);
+				return temp;
+			}
+		private:
+			iterator() : _current(NULL) {}
+			void _deep_copy(const iterator & src) {
+				if (this->_current)
+					delete [] current;
+				this->_current = new iterator(src._current);
+			}
+			t_list* _current;
+		};
+
 
 		//member functions
 		void assign( size_type count, const T& value ) {
@@ -95,10 +126,10 @@ namespace ft {
 		reference back() { return *(this->_end); }
 		const_reference back() const { return const_cast<const_reference>(*(this->_end)); }
 
-		iterator begin();
-		const_iterator begin() const;
-		iterator end();
-		const_iterator end() const;
+		iterator begin() { return iterator(this->_begin); }
+		//const_iterator begin() const { return iterator(this->_begin); }
+		iterator end() { return iterator(this->_end); }
+		//const_iterator end() const { return iterator(this->_end); }
 		reverse_iterator rbegin();
 		const_reverse_iterator rbegin() const;
 		reverse_iterator rend();
@@ -109,17 +140,18 @@ namespace ft {
 		size_type	max_size() const { return std::numeric_limits<difference_type>::max(); }
 
 		void clear() {
-			t_list* track;
+			t_list* track = _begin;
 			t_list* next;
-
-			track = _begin;
-			while(track)
-			{
+			while(track) {
 				next = track->next;
-
+				delete track;
+				track = next;
 			}
 		}
-		iterator insert( iterator pos, const T& value );
+
+		iterator insert( iterator pos, const T& value ) {
+			
+		}
 		void insert( iterator pos, size_type count, const T& value );
 		template< class InputIt >
 		void insert( iterator pos, InputIt first, InputIt last);
@@ -138,7 +170,7 @@ namespace ft {
 		void splice( const_iterator pos, list& other );
 		void splice( const_iterator pos, list& other, const_iterator it );
 		void splice( const_iterator pos, list& other,
-			const_iterator first, const_iterator last);
+					 const_iterator first, const_iterator last);
 		void remove( const T& value );
 		template< class UnaryPredicate >
 		void remove_if( UnaryPredicate p );
@@ -153,9 +185,9 @@ namespace ft {
 
 
 	private:
-		t_list<value_type>*			_begin;
-		t_list<value_type>*			_end;
-		size_type					_count;
+		t_list*			_begin;
+		t_list*			_end;
+		size_type		_count;
 	};
 }
 
