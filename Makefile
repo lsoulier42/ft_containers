@@ -1,5 +1,5 @@
 NAME= ft_containers
-SRCS= main.cpp list.cpp
+SRCS= main.cpp
 OBJS= $(addprefix srcs/, $(SRCS:.cpp=.o))
 CC= clang++
 CFLAGS= -Wall -Wextra -Werror -std=c++98
