@@ -19,23 +19,24 @@ namespace ft {
 	class list {
 	public:
 		typedef struct	s_list {
-			s_list(const T& value) : content(value),
+			explicit s_list(const T& value) : content(value),
 				next(NULL), prev(NULL) {}
 			T				content;
 			struct s_list	*next;
 			struct s_list	*prev;
 		}				t_list;
-		list() : _begin(NULL), _end(NULL), _count(0) {}
+		list() : _begin(NULL), _end(NULL), _count(0),
+			_default_ptr(new T()), _default_ref(*_default_ptr) {}
 
 		list(const list &src) { this->_deep_copy(src); }
 
-		list operator=(const list &rhs) {
+		list& operator=(const list &rhs) {
 			if (this != &rhs)
 				this->_deep_copy(rhs);
 			return *this;
 		}
 
-		//doesn't exist in stl
+		//TODO : suppress
 		const T& operator[](int idx) {
 			t_list* track = _begin;
 			for(int i = 0; i < idx; i++) {
@@ -52,6 +53,7 @@ namespace ft {
 
 		virtual ~list() {
 			this->clear();
+			delete _default_ptr;
 		}
 
 		void clear() {
@@ -60,7 +62,7 @@ namespace ft {
 			while(track)
 			{
 				tmp = track->next;
-				delete [] track;
+				delete track;
 				track = tmp;
 			}
 			_begin = NULL;
@@ -75,8 +77,8 @@ namespace ft {
 				this->push_back(value);
 		}
 
-		T& front() { return _begin->content; }
-		T& back() { return _end->content; }
+		T& front() { return _begin ? _begin->content : _default_ref; }
+		T& back() { return _end ? _end->content : _default_ref; }
 		//TODO: const front & back
 
 		size_t size() { return this->_count; }
@@ -102,7 +104,7 @@ namespace ft {
 			if (_end) {
 				tmp = _end->prev;
 				tmp->next = NULL;
-				delete [] _end;
+				delete _end;
 				_end = tmp;
 				_count -= 1;
 			}
@@ -127,7 +129,7 @@ namespace ft {
 			if (_begin) {
 				tmp = _begin->next;
 				tmp->prev = NULL;
-				delete [] _begin;
+				delete _begin;
 				_begin = tmp;
 				_count -= 1;
 			}
@@ -145,45 +147,101 @@ namespace ft {
 		}
 
 		void swap( list& other ) {
-			//TODO understant why ref and iterators keep their values
+			t_list* tmp;
+			size_t tmp_count;
+			tmp = _begin;
+			_begin = other._begin;
+			other._begin = tmp;
+			tmp = _end;
+			_end = other._end;
+			other._end = tmp;
+			tmp_count = _count;
+			_count = other._count;
+			other._count = tmp_count;
 		}
 
-		//TODO: merge()
+		void merge( list& other ) {
+			if (*this != other) {
+				t_list* track_other = other._begin;
+				t_list* track_this = _begin;
+				while(track_other) {
 
-		void remove( const T& value ) {
+					track_other = track_other->next;
+				}
+			}
+		}
+
+		template< class UnaryPredicate >
+		void remove_if( UnaryPredicate p ) {
 			t_list* track = _begin;
 			t_list* tmp;
 
 			while(track) {
-				if (track->content == value) {
+				if (p(track->content)) {
 					tmp = track->next;
-					//TODO : reset _begin/ _end if necessary
+					if (_begin == track)
+						_begin = track->next;
+					if (_end == track)
+						_end = track->prev;
 					if (track->prev)
 						track->prev->next = track->next;
 					if (track->next)
 						track->next->prev = track->prev;
-					delete [] track;
+					delete track;
 					track = tmp;
 					_count -= 1;
 				}
 				else
 					track = track->next;
 			}
-
 		}
-
-
-	class ElementNotFoundException : public std::exception {
-		virtual const char* what() const throw() {
-			return "element not found";
+		void remove( const T& value ) {
+			cmp cmp_obj(value);
+			remove_if(cmp_obj);
 		}
-	};
 
 	private:
-		void _deep_copy(const list & src);
+		void _deep_copy(const list & src) {
+			t_list* track = src._begin;
+			_count = src._count;
+			if (_begin)
+				this->clear();
+			if (_default_ptr)
+				delete _default_ptr;
+			while(track) {
+				this->push_back(track->content);
+				track = track->next;
+			}
+			_default_ptr = new T();
+			_default_ref = *_default_ptr;
+		}
+
+		class cmp {
+		public:
+			explicit cmp(const T& ref) : _ref(ref) {}
+			cmp(const cmp & src) : _ref(src._ref) { *this = src; }
+			cmp& operator=(const cmp & rhs) {
+				(void)rhs;
+				return *this;
+			}
+			virtual ~cmp() {}
+			bool operator()(const T& other) const { return other == _ref; }
+		private:
+			cmp() {}
+			const T& _ref;
+		};
+
+		class ElementNotFoundException : public std::exception {
+			virtual const char* what() const throw() {
+				return "element not found";
+			}
+		};
+
 		t_list* _begin;
 		t_list* _end;
 		size_t _count;
+		T* _default_ptr;
+		T& _default_ref;
 	};
 }
 

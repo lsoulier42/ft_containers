@@ -14,15 +14,20 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-#include <limits>
 #define ARRAY_SIZE 5
+#ifdef __linux__
+# include <climits>
+#endif
+#ifdef __apple__
+# include <limits>
+#endif
 
 const char* verbose_bool(bool b) {
 	return b ? "true" : "false";
 }
 
 void print_list(ft::list<int> & current_list) {
-	std::cout << "Let's print list using size() in for() : ";
+	std::cout << "This list contains the following ints : ";
 	for (size_t i = 0; i < current_list.size(); i++)
 		std::cout << current_list[i] << ", ";
 	std::cout << std::endl;
@@ -157,6 +162,52 @@ void test_list_int_resize(void) {
 	print_list(test_resize);
 }
 
+void test_list_int_remove(void) {
+	ft::list<int> test_remove;
+
+	std::cout << std::endl << "Function \033[31;4mremove()\033[0m: " << std::endl;
+	create_int_container(&test_remove);
+	std::cout << "Let's remove the element 42 :" << std::endl;
+	test_remove.remove(42);
+	print_list(test_remove);
+	std::cout << "Let's remove the last element:" << std::endl;
+	test_remove.remove(INT_MIN);
+	print_list(test_remove);
+	std::cout << "The last element using back(): " << test_remove.back() << std::endl;
+
+	ft::list<int> test_one_el;
+	int rand_nb = std::rand();
+	test_one_el.push_back(rand_nb);
+	std::cout << "Let's test with a list with a unique int" << std::endl;
+	print_list(test_one_el);
+	std::cout << "Let's remove the element and test size() and empty(): " << std::endl;
+	test_one_el.remove(rand_nb);
+	std::cout << "Size(): " << test_one_el.size() << std::endl;
+	std::cout << "Empty(): " << verbose_bool(test_one_el.empty()) << std::endl;
+}
+
+void test_list_int_swap(void) {
+	ft::list<int> test_swap;
+	ft::list<int> test_swap2;
+
+	std::cout << std::endl << "Function \033[31;4mswap()\033[0m: " << std::endl;
+	create_int_container(&test_swap);
+	std::cout << "Let's create a second list with 45, 55, 65" << std::endl;
+	test_swap2.push_back(45);
+	test_swap2.push_back(55);
+	test_swap2.push_back(65);
+	std::cout << "First list : " << std::endl;
+	print_list(test_swap);
+	std::cout << "Second list : " << std::endl;
+	print_list(test_swap2);
+	std::cout << "Let's use swap() :" << std::endl;
+	test_swap.swap(test_swap2);
+	std::cout << "First list : " << std::endl;
+	print_list(test_swap);
+	std::cout << "Second list : " << std::endl;
+	print_list(test_swap2);
+}
+
 void test_list_int(void) {
 	std::cout << "\033[31;1;4mInt container\033[0m: ";
 	test_list_int_push_back();
@@ -169,6 +220,8 @@ void test_list_int(void) {
 	test_list_int_front();
 	test_list_int_back();
 	test_list_int_resize();
+	test_list_int_remove();
+	test_list_int_swap();
 	test_list_int_exceptions();
 }
 
@@ -176,7 +229,7 @@ void test_list(void) {
 	std::cout << "Tests with \033[31;1;4mft::list<>\033[0m container: " << std::endl;
 	test_list_int();
 }
-
+#include <list>
 int main() {
 	std::srand(time(NULL));
 	test_list();
