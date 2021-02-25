@@ -208,6 +208,61 @@ void test_list_int_swap(void) {
 	print_list(test_swap2);
 }
 
+void test_list_int_merge(void) {
+	ft::list<int> merge1, merge2;
+	ft::list<int> merge3, merge4;
+	ft::list<int> merge5, merge6;
+
+	std::cout << std::endl << "Function \033[31;4mmerge()\033[0m: " << std::endl;
+	std::cout << "List 2 won't affect list 1 _begin and _end :" << std::endl;
+	merge1.push_back(1);
+	merge1.push_back(3);
+	merge1.push_back(5);
+	merge1.push_back(7);
+	merge1.push_back(9);
+	print_list(merge1);
+	merge2.push_back(2);
+	merge2.push_back(4);
+	merge2.push_back(6);
+	merge2.push_back(8);
+	print_list(merge2);
+	merge1.merge(merge2);
+	std::cout << "Now list 1 is :" << std::endl;
+	print_list(merge1);
+	std::cout << "Let's see if list 2 is clear :" << std::endl;
+	print_list(merge2);
+
+	std::cout << "List 2 affects list 1 _begin:" << std::endl;
+	merge3.push_back(1);
+	merge3.push_back(3);
+	merge3.push_back(5);
+	merge3.push_back(7);
+	merge3.push_back(9);
+	print_list(merge3);
+	merge4.push_back(0);
+	merge4.push_back(2);
+	print_list(merge4);
+	merge3.merge(merge4);
+	std::cout << "Now list 1 is :" << std::endl;
+	print_list(merge3);
+	std::cout << "The return of front() is : " << merge3.front() << std::endl;
+
+	std::cout << "List 2 affects list 1 _end:" << std::endl;
+	merge5.push_back(1);
+	merge5.push_back(3);
+	merge5.push_back(5);
+	merge5.push_back(7);
+	merge5.push_back(9);
+	print_list(merge5);
+	merge6.push_back(2);
+	merge6.push_back(10);
+	print_list(merge6);
+	merge5.merge(merge6);
+	std::cout << "Now list 1 is :" << std::endl;
+	print_list(merge5);
+	std::cout << "The return of back() is : " << merge5.back() << std::endl;
+}
+
 void test_list_int(void) {
 	std::cout << "\033[31;1;4mInt container\033[0m: ";
 	test_list_int_push_back();
@@ -222,6 +277,7 @@ void test_list_int(void) {
 	test_list_int_resize();
 	test_list_int_remove();
 	test_list_int_swap();
+	test_list_int_merge();
 	test_list_int_exceptions();
 }
 

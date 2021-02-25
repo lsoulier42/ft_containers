@@ -13,6 +13,8 @@
 #ifndef LIST_HPP
 # define LIST_HPP
 # include <stdexcept>
+# include <iostream>
+//TODO: suppress iostream
 
 namespace ft {
 	template<typename T>
@@ -160,15 +162,48 @@ namespace ft {
 			other._count = tmp_count;
 		}
 
-		void merge( list& other ) {
-			if (*this != other) {
+		template <class Compare>
+		void merge( list& other, Compare comp ) {
+			if (this != &other && other._begin) {
 				t_list* track_other = other._begin;
 				t_list* track_this = _begin;
-				while(track_other) {
-
-					track_other = track_other->next;
+				t_list* tmp;
+				if (_begin) {
+					while (track_other && track_this) {
+						if (comp(track_other->content, track_this->content)) {
+							if (track_this == _begin)
+								_begin = other._begin;
+							tmp = track_other->next;
+							track_other->next = track_this;
+							track_other->prev = track_this->prev;
+							if (track_this->prev)
+								track_this->prev->next = track_other;
+							track_this->prev = track_other;
+							track_other = tmp;
+						}
+						else
+							track_this = track_this->next;
+					}
+					if(!track_this && track_other) {
+						_end->next = track_other;
+						track_other->prev = _end;
+						_end = other._end;
+					}
+					_count += other._count;
+				} else {
+					_begin = other._begin;
+					_end = other._end;
+					_count = other._count;
 				}
+				other._begin = NULL;
+				other._end = NULL;
+				other._count = 0;
 			}
+		}
+
+		void merge( list& other ) {
+			cmp_merge cmp;
+			merge(other, cmp);
 		}
 
 		template< class UnaryPredicate >
@@ -196,8 +231,22 @@ namespace ft {
 			}
 		}
 		void remove( const T& value ) {
-			cmp cmp_obj(value);
-			remove_if(cmp_obj);
+			cmp_unary cmp(value);
+			remove_if(cmp);
+		}
+
+		void reverse() {
+			t_list* track = _begin;
+			t_list* tmp;
+			while(track) {
+				tmp = track->next;
+				track->next = track->prev;
+				track->prev = tmp;
+				track = tmp;
+			}
+			tmp = _begin;
+			_begin = _end;
+			_end = tmp;
 		}
 
 	private:
@@ -216,19 +265,32 @@ namespace ft {
 			_default_ref = *_default_ptr;
 		}
 
-		class cmp {
+		class cmp_unary {
 		public:
-			explicit cmp(const T& ref) : _ref(ref) {}
-			cmp(const cmp & src) : _ref(src._ref) { *this = src; }
-			cmp& operator=(const cmp & rhs) {
+			explicit cmp_unary(const T& ref) : _ref(ref) {}
+			cmp_unary(const cmp_unary & src) : _ref(src._ref) { *this = src; }
+			cmp_unary& operator=(const cmp_unary & rhs) {
 				(void)rhs;
 				return *this;
 			}
-			virtual ~cmp() {}
+			virtual ~cmp_unary() {}
 			bool operator()(const T& other) const { return other == _ref; }
 		private:
-			cmp() {}
+			cmp_unary() {}
 			const T& _ref;
+		};
+
+		class cmp_merge {
+		public:
+			cmp_merge() {}
+			cmp_merge(const cmp_merge & src) { *this = src; }
+			cmp_merge& operator=(const cmp_merge & rhs) {
+				(void)rhs;
+				return *this;
+			}
+			bool operator() (const T& content1,
+					const T& content2) const { return content1 < content2; }
+			virtual ~cmp_merge() {}
 		};
 
 		class ElementNotFoundException : public std::exception {
