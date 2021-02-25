@@ -249,6 +249,122 @@ namespace ft {
 			_end = tmp;
 		}
 
+		template< class BinaryPredicate >
+		void unique( BinaryPredicate p ) {
+			t_list* track = _begin;
+			t_list* tmp;
+			while(track) {
+				tmp = track->next;
+				if (track->prev && p(track->prev->content, track->content)) {
+					if (!track->next)
+						_end = track->prev;
+					track->prev->next = track->next;
+					if (track->next)
+						track->next->prev = track->prev;
+					delete track;
+					_count -= 1;
+				}
+				track = tmp;
+			}
+		}
+
+		void unique() {
+			cmp_unique cmp;
+			unique(cmp);
+		}
+
+		/*void sort() {
+			t_list* track = _begin;
+			t_list* next;
+			t_list* tmp;
+			while(track && track->next) {
+				next = track->next;
+				while(next) {
+					if (track->content > next->content) {
+						if (track == _begin)
+							_begin = next;
+						if (next == _end)
+							_end = track;
+						tmp = next->next;
+						next->next = track;
+						next->prev = track->prev;
+						track->next = tmp;
+						track->prev = next;
+					}
+					next = next->next;
+				}
+				track = track->next;
+			}
+		}*/
+
+		bool operator==(const list& rhs) {
+			t_list* track_this = _begin;
+			t_list* track_rhs = rhs._begin;
+			while (track_this && track_rhs) {
+				if (track_this->content != track_rhs->content)
+					return false;
+				track_this = track_this->next;
+				track_rhs = track_rhs->next;
+			}
+			return !track_this && !track_rhs;
+		}
+		bool operator!=(const list& rhs) {
+			t_list* track_this = _begin;
+			t_list* track_rhs = rhs._begin;
+			while (track_this && track_rhs) {
+				if (track_this->content != track_rhs->content)
+					return true;
+				track_this = track_this->next;
+				track_rhs = track_rhs->next;
+			}
+			return track_this || track_rhs;
+		}
+		bool operator<(const list& rhs) {
+			t_list* track_this = _begin;
+			t_list* track_rhs = rhs._begin;
+			while (track_this && track_rhs) {
+				if (track_this->content < track_rhs->content)
+					return true;
+				track_this = track_this->next;
+				track_rhs = track_rhs->next;
+			}
+			return track_rhs != NULL;
+		}
+		bool operator<=(const list& rhs) {
+			t_list* track_this = _begin;
+			t_list* track_rhs = rhs._begin;
+			while (track_this && track_rhs) {
+				if (track_this->content <= track_rhs->content)
+					return true;
+				track_this = track_this->next;
+				track_rhs = track_rhs->next;
+			}
+			return track_rhs != NULL;
+		}
+		bool operator>(const list& rhs) {
+			t_list* track_this = _begin;
+			t_list* track_rhs = rhs._begin;
+			while (track_this && track_rhs) {
+				if (track_this->content > track_rhs->content)
+					return true;
+				track_this = track_this->next;
+				track_rhs = track_rhs->next;
+			}
+			return track_this != NULL;
+		}
+		bool operator>=(const list& rhs) {
+			t_list* track_this = _begin;
+			t_list* track_rhs = rhs._begin;
+			while (track_this && track_rhs) {
+				if (track_this->content >= track_rhs->content)
+					return true;
+				track_this = track_this->next;
+				track_rhs = track_rhs->next;
+			}
+			return track_this != NULL;
+		}
+
+   
 	private:
 		void _deep_copy(const list & src) {
 			t_list* track = src._begin;
@@ -289,8 +405,21 @@ namespace ft {
 				return *this;
 			}
 			bool operator() (const T& content1,
-					const T& content2) const { return content1 < content2; }
+				const T& content2) const { return content1 < content2; }
 			virtual ~cmp_merge() {}
+		};
+
+		class cmp_unique {
+		public:
+			cmp_unique() {}
+			cmp_unique(const cmp_unique & src) { *this = src; }
+			cmp_unique& operator=(const cmp_unique & src) {
+				(void)src;
+				return *this;
+			}
+			bool operator() (const T& content1,
+				const T& content2) const { return content1 == content2; }
+			virtual ~cmp_unique() {}
 		};
 
 		class ElementNotFoundException : public std::exception {

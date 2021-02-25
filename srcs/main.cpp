@@ -263,6 +263,64 @@ void test_list_int_merge(void) {
 	std::cout << "The return of back() is : " << merge5.back() << std::endl;
 }
 
+void test_list_int_reverse() {
+	ft::list<int> reverse_test;
+
+	std::cout << std::endl << "Function \033[31;4mreverse()\033[0m: " << std::endl;
+	create_int_container(&reverse_test);
+	print_list(reverse_test);
+	std::cout << "Let's use reverse() on this list." << std::endl;
+	reverse_test.reverse();
+	print_list(reverse_test);
+	std::cout << "The return of front() is now: " << reverse_test.front() << std::endl;
+	std::cout << "The return of back() is now: " << reverse_test.back() << std::endl;
+}
+
+void test_list_int_unique(void) {
+	ft::list<int> unique_test;
+
+	std::cout << std::endl << "Function \033[31;4munique()\033[0m: " << std::endl;
+	unique_test.push_back(1);
+	unique_test.push_back(1);
+	unique_test.push_back(2);
+	unique_test.push_back(2);
+	unique_test.push_back(3);
+	unique_test.push_back(3);
+	unique_test.push_back(3);
+	unique_test.push_back(2);
+	unique_test.push_back(1);
+	unique_test.push_back(1);
+	unique_test.push_back(2);
+	unique_test.push_back(2);
+	print_list(unique_test);
+	std::cout << "The size is: " << unique_test.size() << std::endl;
+	std::cout << "Let's use the unique() function." << std::endl;
+	unique_test.unique();
+	print_list(unique_test);
+	std::cout << "The return of back() is: " << unique_test.back() << std::endl;
+	std::cout << "The size is now: " << unique_test.size() << std::endl;
+}
+
+/*void test_list_int_sort(void) {
+	ft::list<int> sort_test;
+
+	std::cout << std::endl << "Function \033[31;4msort()\033[0m: " << std::endl;
+	sort_test.push_back(8);
+	sort_test.push_back(7);
+	sort_test.push_back(5);
+	sort_test.push_back(9);
+	sort_test.push_back(0);
+	sort_test.push_back(1);
+	sort_test.push_back(3);
+	sort_test.push_back(2);
+	sort_test.push_back(6);
+	sort_test.push_back(4);
+	print_list(sort_test);
+	std::cout << "Let's use sort() fct:" << std::endl;
+	sort_test.sort();
+	print_list(sort_test);
+}*/
+
 void test_list_int(void) {
 	std::cout << "\033[31;1;4mInt container\033[0m: ";
 	test_list_int_push_back();
@@ -278,6 +336,9 @@ void test_list_int(void) {
 	test_list_int_remove();
 	test_list_int_swap();
 	test_list_int_merge();
+	test_list_int_reverse();
+	test_list_int_unique();
+	//test_list_int_sort();
 	test_list_int_exceptions();
 }
 
