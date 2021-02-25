@@ -321,6 +321,48 @@ void test_list_int_unique(void) {
 	print_list(sort_test);
 }*/
 
+void test_list_int_operator(void) {
+	ft::list<int> operator1, operator2;
+	ft::list<int> operator3, operator4;
+
+	std::cout << std::endl << "Non member overload \033[31;4moperators\033[0m: " << std::endl;
+	std::cout << "Case same lists:" << std::endl;
+	operator1.push_back(1);
+	operator1.push_back(2);
+	operator1.push_back(3);
+	operator1.push_back(5);
+	operator2.push_back(1);
+	operator2.push_back(2);
+	operator2.push_back(3);
+	operator2.push_back(5);
+	print_list(operator1);
+	print_list(operator2);
+	std::cout << "Return of operator==: " << verbose_bool(operator1 == operator2) << std::endl;
+	std::cout << "Return of operator!=: " << verbose_bool(operator1 != operator2) << std::endl;
+	std::cout << "Return of operator<: " << verbose_bool(operator1 < operator2) << std::endl;
+	std::cout << "Return of operator<=: " << verbose_bool(operator1 <= operator2) << std::endl;
+	std::cout << "Return of operator>: " << verbose_bool(operator1 > operator2) << std::endl;
+	std::cout << "Return of operator>=: " << verbose_bool(operator1 >= operator2) << std::endl;
+
+	std::cout << "Case differents lists / same size:" << std::endl;
+	operator3.push_back(1);
+	operator3.push_back(2);
+	operator3.push_back(3);
+	operator3.push_back(5);
+	operator4.push_back(8);
+	operator4.push_back(9);
+	operator4.push_back(3);
+	operator4.push_back(0);
+	print_list(operator3);
+	print_list(operator4);
+	std::cout << "Return of operator==: " << verbose_bool(operator3 == operator4) << std::endl;
+	std::cout << "Return of operator!=: " << verbose_bool(operator3 != operator4) << std::endl;
+	std::cout << "Return of operator<: " << verbose_bool(operator3 < operator4) << std::endl;
+	std::cout << "Return of operator<=: " << verbose_bool(operator3 <= operator4) << std::endl;
+	std::cout << "Return of operator>: " << verbose_bool(operator3 > operator4) << std::endl;
+	std::cout << "Return of operator>=: " << verbose_bool(operator3 >= operator4) << std::endl;
+}
+
 void test_list_int(void) {
 	std::cout << "\033[31;1;4mInt container\033[0m: ";
 	test_list_int_push_back();
@@ -339,6 +381,7 @@ void test_list_int(void) {
 	test_list_int_reverse();
 	test_list_int_unique();
 	//test_list_int_sort();
+	test_list_int_operator();
 	test_list_int_exceptions();
 }
 

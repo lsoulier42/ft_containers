@@ -27,6 +27,7 @@ namespace ft {
 			struct s_list	*next;
 			struct s_list	*prev;
 		}				t_list;
+
 		list() : _begin(NULL), _end(NULL), _count(0),
 			_default_ptr(new T()), _default_ref(*_default_ptr) {}
 
@@ -297,74 +298,9 @@ namespace ft {
 			}
 		}*/
 
-		bool operator==(const list& rhs) {
-			t_list* track_this = _begin;
-			t_list* track_rhs = rhs._begin;
-			while (track_this && track_rhs) {
-				if (track_this->content != track_rhs->content)
-					return false;
-				track_this = track_this->next;
-				track_rhs = track_rhs->next;
-			}
-			return !track_this && !track_rhs;
-		}
-		bool operator!=(const list& rhs) {
-			t_list* track_this = _begin;
-			t_list* track_rhs = rhs._begin;
-			while (track_this && track_rhs) {
-				if (track_this->content != track_rhs->content)
-					return true;
-				track_this = track_this->next;
-				track_rhs = track_rhs->next;
-			}
-			return track_this || track_rhs;
-		}
-		bool operator<(const list& rhs) {
-			t_list* track_this = _begin;
-			t_list* track_rhs = rhs._begin;
-			while (track_this && track_rhs) {
-				if (track_this->content < track_rhs->content)
-					return true;
-				track_this = track_this->next;
-				track_rhs = track_rhs->next;
-			}
-			return track_rhs != NULL;
-		}
-		bool operator<=(const list& rhs) {
-			t_list* track_this = _begin;
-			t_list* track_rhs = rhs._begin;
-			while (track_this && track_rhs) {
-				if (track_this->content <= track_rhs->content)
-					return true;
-				track_this = track_this->next;
-				track_rhs = track_rhs->next;
-			}
-			return track_rhs != NULL;
-		}
-		bool operator>(const list& rhs) {
-			t_list* track_this = _begin;
-			t_list* track_rhs = rhs._begin;
-			while (track_this && track_rhs) {
-				if (track_this->content > track_rhs->content)
-					return true;
-				track_this = track_this->next;
-				track_rhs = track_rhs->next;
-			}
-			return track_this != NULL;
-		}
-		bool operator>=(const list& rhs) {
-			t_list* track_this = _begin;
-			t_list* track_rhs = rhs._begin;
-			while (track_this && track_rhs) {
-				if (track_this->content >= track_rhs->content)
-					return true;
-				track_this = track_this->next;
-				track_rhs = track_rhs->next;
-			}
-			return track_this != NULL;
-		}
 
-   
+
+
 	private:
 		void _deep_copy(const list & src) {
 			t_list* track = src._begin;
@@ -433,7 +369,86 @@ namespace ft {
 		size_t _count;
 		T* _default_ptr;
 		T& _default_ref;
+
+		friend bool operator==(const list<T>& lhs, const list<T>& rhs) {
+			t_list* track_lhs = lhs._begin;
+			t_list* track_rhs = rhs._begin;
+			while (track_lhs && track_rhs
+				&& track_lhs->content == track_rhs->content) {
+				track_lhs = track_lhs->next;
+				track_rhs = track_rhs->next;
+			}
+			return !track_lhs && !track_rhs;
+		}
+
+		friend bool operator!=(const list<T>& lhs, const list<T>& rhs) {
+			t_list* track_lhs = lhs._begin;
+			t_list* track_rhs = rhs._begin;
+			while (track_lhs && track_rhs
+				&& track_lhs->content == track_rhs->content) {
+				track_lhs = track_lhs->next;
+				track_rhs = track_rhs->next;
+			}
+			return track_lhs || track_rhs;
+		}
+
+		friend bool operator<(const list<T>& lhs, const list<T>& rhs) {
+			t_list* track_lhs = lhs._begin;
+			t_list* track_rhs = rhs._begin;
+			while (track_lhs && track_rhs
+				   && track_lhs->content == track_rhs->content) {
+				track_lhs = track_lhs->next;
+				track_rhs = track_rhs->next;
+			}
+			if (!track_lhs && !track_rhs)
+				return (false);
+			return track_lhs->content < track_rhs->content;
+		}
+
+		friend bool operator<=(const list<T>& lhs, const list<T>& rhs) {
+			t_list* track_lhs = lhs._begin;
+			t_list* track_rhs = rhs._begin;
+			while (track_lhs && track_rhs
+				   && track_lhs->content == track_rhs->content) {
+				track_lhs = track_lhs->next;
+				track_rhs = track_rhs->next;
+			}
+			if (!track_lhs && !track_rhs)
+				return (true);
+			return track_lhs->content < track_rhs->content;
+		}
+
+		friend bool operator>(const list<T>& lhs, const list<T>& rhs) {
+			t_list* track_lhs = lhs._begin;
+			t_list* track_rhs = rhs._begin;
+			while (track_lhs && track_rhs
+				   && track_lhs->content == track_rhs->content) {
+				track_lhs = track_lhs->next;
+				track_rhs = track_rhs->next;
+			}
+			if (!track_lhs && !track_rhs)
+				return (false);
+			return track_lhs->content > track_rhs->content;
+		}
+
+		friend bool operator>=(const list& lhs, const list& rhs) {
+			t_list* track_lhs = lhs._begin;
+			t_list* track_rhs = rhs._begin;
+			while (track_lhs && track_rhs
+				   && track_lhs->content == track_rhs->content) {
+				track_lhs = track_lhs->next;
+				track_rhs = track_rhs->next;
+			}
+			if (!track_lhs && !track_rhs)
+				return (true);
+			return track_lhs->content > track_rhs->content;
+		}
 	};
+
+	template<class T>
+	void swap(list<T>& lhs, list<T>& rhs) {
+		lhs.swap(rhs);
+	}
 }
 
 #endif
