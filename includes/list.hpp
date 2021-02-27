@@ -12,7 +12,6 @@
 
 #ifndef LIST_HPP
 # define LIST_HPP
-# include <stdexcept>
 # include <iostream>
 //TODO: suppress iostream
 
@@ -39,24 +38,122 @@ namespace ft {
 			return *this;
 		}
 
-		//TODO : suppress
-		const T& operator[](int idx) {
-			t_list* track = _begin;
-			for(int i = 0; i < idx; i++) {
-				if (!track)
-					break;
-				track = track->next;
+		class iterator {
+		public:
+			iterator() : _current(NULL), _is_end(true), _default_ptr(new T()),
+				_default_ref(*_default_ptr) {}
+			iterator(t_list* current, bool is_end) : _current(current), _is_end(is_end),
+				_default_ptr(new T()), _default_ref(*_default_ptr) {}
+			iterator(const iterator& src) : _default_ref(src._default_ref) { *this = src; }
+			iterator& operator=(const iterator& rhs) {
+				if (this != &rhs) {
+					_current = rhs._current;
+					_is_end = rhs._is_end;
+					_default_ptr = new T();
+					_default_ref = *_default_ptr;
+				}
+				return *this;
 			}
-			if (track)
-				return track->content;
-			else
-				throw ElementNotFoundException();
-		}
-		//TODO : suppress
+			virtual ~iterator() {
+				delete _default_ptr;
+			}
+
+			virtual T& operator*() const { return _current ? _current->content : _default_ref; }
+			virtual iterator& operator++() {
+				if (_current->next)
+					_current = _current->next;
+				else
+					_is_end = true;
+				return *this;
+			}
+			virtual iterator operator++(int) {
+				t_list* tmp = _current;
+				bool tmp_bool = _is_end;
+
+				if (_current->next)
+					_current = _current->next;
+				else
+					_is_end = true;
+				return iterator(tmp, tmp_bool);
+			}
+			virtual iterator& operator--() {
+				if (_current->prev && !_is_end)
+					_current = _current->prev;
+				_is_end = false;
+				return *this;
+			}
+			virtual iterator operator--(int) {
+				t_list* tmp = _current;
+				if (_current->prev && !_is_end)
+					_current = _current->prev;
+				_is_end = false;
+				return iterator(tmp, false);
+			}
+
+			virtual bool operator==(const iterator& rhs) const {
+				return (_current == rhs._current && _is_end == rhs._is_end);
+			}
+			virtual bool operator!=(const iterator& rhs) const {
+				return !(*this == rhs);
+			}
+
+		private:
+			t_list* _current;
+			bool	_is_end;
+			T* _default_ptr;
+			T& _default_ref;
+		};
+
+		class const_iterator : public iterator {
+		public:
+			const_iterator() : _current(NULL), _is_end(true), _default_ptr(new T()),
+				_default_ref(*_default_ptr) {}
+			const_iterator(t_list* current, bool is_end) : _current(current), _is_end(is_end),
+				_default_ptr(new T()), _default_ref(*_default_ptr) {}
+			const_iterator(const iterator& other) : iterator(other), _default_ptr(new T()),
+				_default_ref(*_default_ptr)  {}
+			const_iterator(const const_iterator& src) : _default_ref(src._default_ref) { *this = src; }
+			const_iterator& operator=(const const_iterator& rhs) {
+				if (this != &rhs) {
+					_current = rhs._current;
+					_is_end = rhs._is_end;
+					_default_ptr = new T();
+					_default_ref = *_default_ptr;
+				}
+				return *this;
+			}
+			virtual ~const_iterator() {
+				delete _default_ptr;
+			}
+
+			virtual iterator& operator++() { return *this; }
+			virtual iterator operator++(int) { return iterator(_current, _is_end); }
+			virtual iterator& operator--() { return *this; }
+			virtual iterator operator--(int) { return iterator(_current, _is_end); }
+
+		private:
+			t_list* _current;
+			bool	_is_end;
+			T* _default_ptr;
+			T& _default_ref;
+		};
 
 		virtual ~list() {
 			this->clear();
 			delete _default_ptr;
+		}
+
+		iterator begin() {
+			return iterator(_begin, _count == 0);
+		}
+		const_iterator begin() const {
+			return iterator(_begin, _count == 0);
+		}
+		iterator end() {
+			return iterator(_end, 1);
+		}
+		const_iterator end() const {
+			return iterator(_end, 1);
 		}
 
 		void clear() {
@@ -101,6 +198,7 @@ namespace ft {
 			}
 			_count += 1;
 		}
+
 		void pop_back() {
 			t_list* tmp;
 
@@ -152,6 +250,7 @@ namespace ft {
 		void swap( list& other ) {
 			t_list* tmp;
 			size_t tmp_count;
+
 			tmp = _begin;
 			_begin = other._begin;
 			other._begin = tmp;
@@ -299,9 +398,8 @@ namespace ft {
 		}*/
 
 
-
-
 	private:
+		//private function members
 		void _deep_copy(const list & src) {
 			t_list* track = src._begin;
 			_count = src._count;
@@ -358,12 +456,7 @@ namespace ft {
 			virtual ~cmp_unique() {}
 		};
 
-		class ElementNotFoundException : public std::exception {
-			virtual const char* what() const throw() {
-				return "element not found";
-			}
-		};
-
+		//private attributes
 		t_list* _begin;
 		t_list* _end;
 		size_t _count;

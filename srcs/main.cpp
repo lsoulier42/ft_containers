@@ -28,8 +28,9 @@ const char* verbose_bool(bool b) {
 
 void print_list(ft::list<int> & current_list) {
 	std::cout << "This list contains the following ints : ";
-	for (size_t i = 0; i < current_list.size(); i++)
-		std::cout << current_list[i] << ", ";
+	if (!current_list.empty())
+		for (ft::list<int>::iterator fit = current_list.begin(); fit != current_list.end(); fit++)
+			std::cout << *fit << ", ";
 	std::cout << std::endl;
 }
 
@@ -105,22 +106,6 @@ void test_list_int_pop_front(void) {
 	test_pop_front.pop_front();
 	test_pop_front.pop_front();
 	print_list(test_pop_front);
-}
-
-void test_list_int_exceptions(void) {
-	ft::list<int> test_exceptions;
-
-	std::cout << std::endl << "\033[31;4mException tests\033[0m: " << std::endl;
-	create_int_container(&test_exceptions);
-	try {
-		int element = std::rand();
-		std::cout << "Will try to access element: " << element << " -> ";
-		int exceptionInt = test_exceptions[element];
-		std::cout << exceptionInt << "(wrong should not have happened)" << std::endl;
-	}
-	catch (std::exception & e) {
-		std::cout << e.what() << std::endl;
-	}
 }
 
 void test_list_int_assign(void) {
@@ -363,6 +348,38 @@ void test_list_int_operator(void) {
 	std::cout << "Return of operator>=: " << verbose_bool(operator3 >= operator4) << std::endl;
 }
 
+void test_list_int_iterator(void) {
+	ft::list<int> iterator_test;
+	ft::list<int>::iterator it;
+	ft::list<int>::iterator ite;
+
+	std::cout << std::endl << "Test of \033[31;4mITERATORS\033[0m: " << std::endl;
+	create_int_container(&iterator_test);
+	print_list(iterator_test);
+
+	std::cout << "Let's test begin() iterator: " << std::endl;
+	it = iterator_test.begin();
+	std::cout << "The return of *it, with it =  list.begin() is : " << *it << std::endl;
+	std::cout << "The return of *(--it) is : " << *(--it) << std::endl;
+	std::cout << "The return of *(++it) is : " << *(++it) << std::endl;
+	std::cout << "The return of *(it++), is : " << *(it++) << " then *it is " << *it << std::endl;
+	std::cout << "The return of *(--it) is : " << *(--it) << std::endl;
+	std::cout << "The return of *(it--), is : " << *(it--) << " then *it is " << *it << std::endl;
+
+	std::cout << "Let's test end() iterator: " << std::endl;
+	ite = iterator_test.end();
+	std::cout << "The return of *ite, with ite = list.end() is: " << *ite << std::endl;
+	std::cout << "The return of *(++ite) is :" << *(++ite) << std::endl;
+	std::cout << "The return of *(ite++) is :" << *(ite++) << " then *ite is " << *ite << std::endl;
+	std::cout << "The return of *(--ite) is : " << *(--ite) << std::endl;
+	std::cout << "The return of *(ite--) is : " << *(ite--) << " then *ite is " << *ite << std::endl;
+
+	std::cout << "Let's test const_iterator " << std::endl;
+	ft::list<int>::const_iterator cit = iterator_test.begin();
+	std::cout << "The return of *cit, with cit =  list.begin() is : " << *cit << std::endl;
+	std::cout << "The return of *(++cit) : " << *(++cit) << std::endl;
+}
+
 void test_list_int(void) {
 	std::cout << "\033[31;1;4mInt container\033[0m: ";
 	test_list_int_push_back();
@@ -382,13 +399,14 @@ void test_list_int(void) {
 	test_list_int_unique();
 	//test_list_int_sort();
 	test_list_int_operator();
-	test_list_int_exceptions();
+	test_list_int_iterator();
 }
 
 void test_list(void) {
 	std::cout << "Tests with \033[31;1;4mft::list<>\033[0m container: " << std::endl;
 	test_list_int();
 }
+
 #include <list>
 int main() {
 	std::srand(time(NULL));
