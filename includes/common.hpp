@@ -1,19 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   common.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lsoulier <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: lsoulier <lsoulier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/02/19 13:15:20 by lsoulier          #+#    #+#             */
-/*   Updated: 2021/02/19 13:15:47 by lsoulier         ###   ########.fr       */
+/*   Created: 2021/03/01 11:08:13 by lsoulier          #+#    #+#             */
+/*   Updated: 2021/03/01 11:08:13 by lsoulier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "test_list.hpp"
+#ifndef COMMON_HPP
+# define COMMON_HPP
 
-#include <list>
-
-int main() {
-	test_list();
-}
+const char* verbose_bool(bool b);
+#endif

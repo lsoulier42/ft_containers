@@ -13,12 +13,19 @@
 #ifndef LIST_HPP
 # define LIST_HPP
 # include <iostream>
+# include <limits>
 //TODO: suppress iostream
 
 namespace ft {
 	template<typename T>
 	class list {
 	public:
+
+		/* Base double chained link list structure
+		 *
+		 *
+		 *
+		 */
 		typedef struct	s_list {
 			explicit s_list(const T& value) : content(value),
 				next(NULL), prev(NULL) {}
@@ -27,10 +34,172 @@ namespace ft {
 			struct s_list	*prev;
 		}				t_list;
 
-		list() : _begin(NULL), _end(NULL), _count(0),
-			_default_ptr(new T()), _default_ref(*_default_ptr) {}
 
-		list(const list &src) { this->_deep_copy(src); }
+		/* Member types
+		 *
+		 *
+		 *
+		 */
+		typedef T value_type;
+		typedef std::size_t size_type;
+		typedef std::ptrdiff_t difference_type;
+		typedef value_type& reference;
+		typedef const value_type& const_reference;
+		typedef value_type* pointer;
+		typedef const value_type* const_pointer;
+
+		/* Iterator classes
+		 *
+		 *
+		 *
+		 */
+
+		class const_iterator {
+		public:
+			const_iterator() : _current(NULL), _is_end(true) {}
+			const_iterator(t_list* current, bool is_end) : _current(current), _is_end(is_end) {}
+			const_iterator(const const_iterator& src) { *this = src; }
+			const_iterator& operator=(const const_iterator& rhs) {
+				if (this != &rhs) {
+					_current = rhs._current;
+					_is_end = rhs._is_end;
+				}
+				return *this;
+			}
+			virtual ~const_iterator() {}
+			T& operator*() const { return _current->content; }
+			t_list* dereference() const { return _current; }
+			bool operator==(const const_iterator& rhs) const {
+				return (_current == rhs._current && _is_end == rhs._is_end);
+			}
+			bool operator!=(const const_iterator& rhs) const {
+				return !(*this == rhs);
+			}
+			const_iterator& operator++() { return *this; }
+			const_iterator operator++(int) { return *this; }
+			const_iterator& operator--() { return *this; }
+			const_iterator operator--(int) { return *this; }
+
+		protected:
+			t_list* _current;
+			bool	_is_end;
+		};
+
+		class iterator : public const_iterator {
+		public:
+			iterator() : const_iterator() {}
+			iterator(t_list* current, bool is_end) : const_iterator(current, is_end) {}
+			iterator(const iterator& src) { *this = src; }
+			explicit iterator(const const_iterator& src) { *this = src; }
+			iterator& operator=(const iterator& rhs) {
+				if (this != &rhs) {
+					this->_current = rhs._current;
+					this->_is_end = rhs._is_end;
+				}
+				return *this;
+			}
+			~iterator() {}
+
+			iterator& operator++() {
+				if (this->_current->next)
+					this->_current = this->_current->next;
+				else
+					this->_is_end = true;
+				return *this;
+			}
+			iterator operator++(int) {
+				t_list* tmp = this->_current;
+				bool tmp_bool = this->_is_end;
+
+				if (this->_current->next)
+					this->_current = this->_current->next;
+				else
+					this->_is_end = true;
+				return iterator(tmp, tmp_bool);
+			}
+			iterator& operator--() {
+				if (this->_current->prev && !this->_is_end)
+					this->_current = this->_current->prev;
+				this->_is_end = false;
+				return *this;
+			}
+			iterator operator--(int) {
+				t_list* tmp = this->_current;
+				if (this->_current->prev && !this->_is_end)
+					this->_current = this->_current->prev;
+				this->_is_end = false;
+				return iterator(tmp, false);
+			}
+		};
+
+		class const_reverse_iterator : public const_iterator {
+			const_reverse_iterator() : const_iterator() {}
+			const_reverse_iterator(const const_reverse_iterator& src) { *this = src; }
+			const_reverse_iterator& operator=(const const_reverse_iterator& rhs) {
+				if (this != &rhs) {
+					this->_current = rhs._current;
+					this->_is_end = rhs._is_end;
+				}
+				return *this;
+			}
+			virtual ~const_reverse_iterator() {}
+		};
+
+		class reverse_iterator : public const_iterator {
+			reverse_iterator() : const_iterator() {}
+			reverse_iterator(const reverse_iterator& src) { *this = src; }
+			reverse_iterator& operator=(const reverse_iterator& rhs) {
+				if (this != &rhs) {
+					this->_current = rhs._current;
+					this->_is_end = rhs._is_end;
+				}
+				return *this;
+			}
+			virtual ~reverse_iterator() {}
+
+			reverse_iterator& operator++() {
+				if (this->_current->prev)
+					this->_current = this->_current->prev;
+				else
+					this->_is_end = true;
+				return *this;
+			}
+			reverse_iterator operator++(int) {
+				t_list* tmp = this->_current;
+				bool tmp_bool = this->_is_end;
+
+				if (this->_current->prev)
+					this->_current = this->_current->prev;
+				else
+					this->_is_end = true;
+				return reverse_iterator(tmp, tmp_bool);
+			}
+			reverse_iterator& operator--() {
+				if (this->_current->next && !this->_is_end)
+					this->_current = this->_current->next;
+				this->_is_end = false;
+				return *this;
+			}
+			reverse_iterator operator--(int) {
+				t_list* tmp = this->_current;
+				if (this->_current->next && !this->_is_end)
+					this->_current = this->_current->next;
+				this->_is_end = false;
+				return reverse_iterator(tmp, false);
+			}
+		};
+
+		/* Member functions
+		 *
+		 *
+		 */
+		list() : _begin(NULL), _end(NULL), _count(0),
+				 _default_ptr(new T()), _default_ref(*_default_ptr) {
+		}
+
+		list(const list &src) {
+			this->_deep_copy(src);
+		}
 
 		list& operator=(const list &rhs) {
 			if (this != &rhs)
@@ -38,123 +207,85 @@ namespace ft {
 			return *this;
 		}
 
-		class iterator {
-		public:
-			iterator() : _current(NULL), _is_end(true), _default_ptr(new T()),
-				_default_ref(*_default_ptr) {}
-			iterator(t_list* current, bool is_end) : _current(current), _is_end(is_end),
-				_default_ptr(new T()), _default_ref(*_default_ptr) {}
-			iterator(const iterator& src) : _default_ref(src._default_ref) { *this = src; }
-			iterator& operator=(const iterator& rhs) {
-				if (this != &rhs) {
-					_current = rhs._current;
-					_is_end = rhs._is_end;
-					_default_ptr = new T();
-					_default_ref = *_default_ptr;
-				}
-				return *this;
-			}
-			virtual ~iterator() {
-				delete _default_ptr;
-			}
-
-			virtual T& operator*() const { return _current ? _current->content : _default_ref; }
-			virtual iterator& operator++() {
-				if (_current->next)
-					_current = _current->next;
-				else
-					_is_end = true;
-				return *this;
-			}
-			virtual iterator operator++(int) {
-				t_list* tmp = _current;
-				bool tmp_bool = _is_end;
-
-				if (_current->next)
-					_current = _current->next;
-				else
-					_is_end = true;
-				return iterator(tmp, tmp_bool);
-			}
-			virtual iterator& operator--() {
-				if (_current->prev && !_is_end)
-					_current = _current->prev;
-				_is_end = false;
-				return *this;
-			}
-			virtual iterator operator--(int) {
-				t_list* tmp = _current;
-				if (_current->prev && !_is_end)
-					_current = _current->prev;
-				_is_end = false;
-				return iterator(tmp, false);
-			}
-
-			virtual bool operator==(const iterator& rhs) const {
-				return (_current == rhs._current && _is_end == rhs._is_end);
-			}
-			virtual bool operator!=(const iterator& rhs) const {
-				return !(*this == rhs);
-			}
-
-		private:
-			t_list* _current;
-			bool	_is_end;
-			T* _default_ptr;
-			T& _default_ref;
-		};
-
-		class const_iterator : public iterator {
-		public:
-			const_iterator() : _current(NULL), _is_end(true), _default_ptr(new T()),
-				_default_ref(*_default_ptr) {}
-			const_iterator(t_list* current, bool is_end) : _current(current), _is_end(is_end),
-				_default_ptr(new T()), _default_ref(*_default_ptr) {}
-			const_iterator(const iterator& other) : iterator(other), _default_ptr(new T()),
-				_default_ref(*_default_ptr)  {}
-			const_iterator(const const_iterator& src) : _default_ref(src._default_ref) { *this = src; }
-			const_iterator& operator=(const const_iterator& rhs) {
-				if (this != &rhs) {
-					_current = rhs._current;
-					_is_end = rhs._is_end;
-					_default_ptr = new T();
-					_default_ref = *_default_ptr;
-				}
-				return *this;
-			}
-			virtual ~const_iterator() {
-				delete _default_ptr;
-			}
-
-			virtual iterator& operator++() { return *this; }
-			virtual iterator operator++(int) { return iterator(_current, _is_end); }
-			virtual iterator& operator--() { return *this; }
-			virtual iterator operator--(int) { return iterator(_current, _is_end); }
-
-		private:
-			t_list* _current;
-			bool	_is_end;
-			T* _default_ptr;
-			T& _default_ref;
-		};
-
 		virtual ~list() {
 			this->clear();
 			delete _default_ptr;
 		}
 
+		void assign( size_t count, const T& value ) {
+			if (_begin)
+				this->clear();
+			for (size_t i = 0; i < count; i++)
+				this->push_back(value);
+		}
+
+		/* Member functions : Element access
+		 *
+		 *
+		 *
+		 */
+
+		T& front() {
+			return _begin ? _begin->content : _default_ref;
+		}
+
+		T& back() {
+			return _end ? _end->content : _default_ref;
+		}
+		//TODO: const front & back
+
+
+		/* Member functions : iterators
+		 *
+		 *
+		 */
 		iterator begin() {
 			return iterator(_begin, _count == 0);
 		}
 		const_iterator begin() const {
-			return iterator(_begin, _count == 0);
+			return const_iterator(_begin, _count == 0);
 		}
 		iterator end() {
-			return iterator(_end, 1);
+			return iterator(_end, true);
 		}
 		const_iterator end() const {
-			return iterator(_end, 1);
+			return const_iterator(_end, true);
 		}
+
+		reverse_iterator rbegin() {
+			return reverse_iterator(_end, _count == 0);
+		}
+		const_reverse_iterator rbegin() const {
+			return const_reverse_iterator(_end, _count == 0);
+		}
+		reverse_iterator rend() {
+			return reverse_iterator(_begin, true);
+		}
+		const_reverse_iterator rend() const {
+			return const_reverse_iterator(_begin, true);
+		}
+
+		/* Member functions : capacity
+		 *
+		 *
+		 *
+		 */
+		size_t size() {
+			return this->_count;
+		}
+		bool empty() {
+			return _count == 0;
+		}
+		size_type max_size() const {
+			return std::numeric_limits<difference_type>::max();
+		}
+
+
+		/* Member functions : modifiers
+		 *
+		 *
+		 *
+		 */
 
 		void clear() {
 			t_list* track = _begin;
@@ -170,23 +301,73 @@ namespace ft {
 			_count = 0;
 		}
 
-		void assign( size_t count, const T& value ) {
-			if (_begin)
-				this->clear();
-			for (size_t i = 0; i < count; i++)
-				this->push_back(value);
+		iterator insert( iterator pos, const T& value ) {
+			if (pos == begin()) {
+				push_front(value);
+				return begin();
+			}
+			else if (pos == end()) {
+				push_back(value);
+				return (iterator(_end, 0));
+			}
+			else {
+				t_list* new_el = new t_list(value);
+				t_list *el_pos = pos.dereference();
+
+				if (el_pos) {
+					t_list *prev = el_pos->prev;
+					if (prev)
+						prev->next = new_el;
+					el_pos->prev = new_el;
+					new_el->prev = prev;
+				} else
+					new_el->prev = NULL;
+				new_el->next = el_pos;
+				_count += 1;
+				return iterator(new_el, 0);
+			}
 		}
 
-		T& front() { return _begin ? _begin->content : _default_ref; }
-		T& back() { return _end ? _end->content : _default_ref; }
-		//TODO: const front & back
+		void insert( iterator pos, size_t count, const T& value ) {
+			for (size_t i = 0; i < count; i++)
+				insert(pos + i, value);
+		}
 
-		size_t size() { return this->_count; }
-		bool empty() { return _count == 0; }
-		//TODO: max_size
+		template< class InputIt >
+		void insert( iterator pos, InputIt first, InputIt last) {
+			for (InputIt it = first; it != last; it++)
+				insert(pos, *it);
+		}
+
+		iterator erase( iterator pos ) {
+			if (pos == begin()) {
+				pop_front();
+				return begin();
+			}
+			else if (pos == end()) {
+				pop_back();
+				return end();
+			}
+			else {
+				t_list *el_pos = pos.dereference();
+				t_list *prev = el_pos->prev;
+				t_list *next = el_pos->next;
+				prev->next = next;
+				next->prev = prev;
+				delete el_pos;
+				_count -= 1;
+				return iterator(next, 0);
+			}
+		}
+
+		iterator erase( iterator first, iterator last ) {
+			for (iterator it = first; it != last; it++)
+				erase(it);
+		}
 
 		void push_back( const T& value ) {
 			t_list* new_el = new t_list(value);
+
 			if (!_begin) {
 				_begin = new_el;
 				_end = _begin;
@@ -213,6 +394,7 @@ namespace ft {
 
 		void push_front( const T& value ) {
 			t_list *new_el = new t_list(value);
+
 			if (!_begin) {
 				_begin = new_el;
 				_end = new_el;
@@ -262,6 +444,11 @@ namespace ft {
 			other._count = tmp_count;
 		}
 
+		/* Member functions : operations
+		 *
+		 *
+		 */
+
 		template <class Compare>
 		void merge( list& other, Compare comp ) {
 			if (this != &other && other._begin) {
@@ -295,15 +482,68 @@ namespace ft {
 					_end = other._end;
 					_count = other._count;
 				}
-				other._begin = NULL;
-				other._end = NULL;
-				other._count = 0;
+				_empty_container(other);
 			}
 		}
 
 		void merge( list& other ) {
 			cmp_merge cmp;
 			merge(other, cmp);
+		}
+
+		void splice( const_iterator pos, list& other ) {
+			if (*this != other) {
+				if (pos == end()) {
+					_end->next = other._begin;
+					other._begin->prev = _end;
+					_end = other._end;
+				} else if (pos == begin()) {
+					_begin->prev = other._end;
+					other._end->next = _begin;
+					_begin = other._begin;
+				} else {
+					t_list* el_pos = pos.dereference();
+					t_list* tmp = el_pos->prev;
+					el_pos->prev = other._end;
+					tmp->next = other._begin;
+					other._begin->prev = tmp;
+					other._end->next = el_pos;
+				}
+				_count += other.size();
+				_empty_container(other);
+			}
+		}
+
+		void splice( const_iterator pos, list& other, const_iterator it ) {
+			if (*this != other) {
+				t_list* to_insert = _detach_element(other, it);
+				if (pos == end()) {
+					_end->next = to_insert;
+					to_insert->prev = _end;
+					_end = to_insert;
+				} else if (pos == begin()) {
+					_begin->prev = to_insert;
+					to_insert->next = _begin;
+					_begin = to_insert;
+				} else {
+					t_list* el_pos = pos.dereference();
+					t_list* tmp = el_pos->prev;
+					el_pos->prev = to_insert;
+					to_insert->next = el_pos;
+					to_insert->prev = tmp;
+					tmp->next = to_insert;
+				}
+				_count += 1;
+			}
+		}
+
+		void splice( const_iterator pos, list& other,
+					 const_iterator first, const_iterator last) {
+			(void)pos;
+			(void)other;
+			(void)first;
+			(void)last;
+			//TODO; implement
 		}
 
 		template< class UnaryPredicate >
@@ -372,7 +612,9 @@ namespace ft {
 			cmp_unique cmp;
 			unique(cmp);
 		}
-
+		void sort() {
+			//TODO:implement
+		}
 		/*void sort() {
 			t_list* track = _begin;
 			t_list* next;
@@ -413,6 +655,28 @@ namespace ft {
 			}
 			_default_ptr = new T();
 			_default_ref = *_default_ptr;
+		}
+
+		void _empty_container(list& c) {
+			c._begin = NULL;
+			c._end = NULL;
+			c._count = 0;
+		}
+
+		t_list* _detach_element(list& other, const_iterator it) {
+			t_list* el_ret = it.dereference();
+			t_list* tmp_next = el_ret->next;
+			t_list* tmp_prev = el_ret->prev;
+			if (el_ret == other._begin)
+				other._begin = tmp_next;
+			else if (el_ret == other._end)
+				other._end = tmp_prev;
+			if (tmp_next)
+				tmp_next->prev = tmp_prev;
+			if (tmp_prev)
+				tmp_prev->next = tmp_next;
+			other._count -= 1;
+			return el_ret;
 		}
 
 		class cmp_unary {
@@ -456,13 +720,24 @@ namespace ft {
 			virtual ~cmp_unique() {}
 		};
 
-		//private attributes
+		/* private attributes
+		 *
+		 *
+		 *
+		 */
 		t_list* _begin;
 		t_list* _end;
 		size_t _count;
 		T* _default_ptr;
 		T& _default_ref;
 
+
+
+		/* non-member functions
+		 *
+		 *
+		 *
+		 */
 		friend bool operator==(const list<T>& lhs, const list<T>& rhs) {
 			t_list* track_lhs = lhs._begin;
 			t_list* track_rhs = rhs._begin;
