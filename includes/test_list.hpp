@@ -6,13 +6,13 @@
 /*   By: lsoulier <lsoulier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/01 11:07:11 by lsoulier          #+#    #+#             */
-/*   Updated: 2021/03/01 11:07:14 by lsoulier         ###   ########.fr       */
+/*   Updated: 2021/03/01 18:34:17 by lsoulier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TEST_LIST_HPP
 # define TEST_LIST_HPP
-# include "list.hpp"
+# include "List.hpp"
 # include "common.hpp"
 # include <iostream>
 # include <cstdlib>
@@ -27,8 +27,8 @@
 
 void test_list(void);
 void test_list_int(void);
-void print_list(ft::list<int> & current_list);
-void create_int_container(ft::list<int> *container_ptr);
+void print_list(ft::List<int> & current_list);
+void create_int_container(ft::List<int> *container_ptr);
 void test_list_int_push_back(void);
 void test_list_int_size(void);
 void test_list_int_pop_back(void);

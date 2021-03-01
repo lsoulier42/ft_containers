@@ -1,19 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   test_stack.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lsoulier <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: lsoulier <lsoulier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/02/19 13:15:20 by lsoulier          #+#    #+#             */
-/*   Updated: 2021/02/19 13:15:47 by lsoulier         ###   ########.fr       */
+/*   Created: 2021/03/01 23:45:27 by lsoulier          #+#    #+#             */
+/*   Updated: 2021/03/01 23:45:28 by lsoulier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "test_list.hpp"
 #include "test_stack.hpp"
 
-int main() {
-	test_list();
-	test_stack();
+void test_stack(void) {
+
 }

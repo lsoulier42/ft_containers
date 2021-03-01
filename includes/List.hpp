@@ -17,8 +17,8 @@
 //TODO: suppress iostream
 
 namespace ft {
-	template<typename T>
-	class list {
+	template< class T, class Allocator = std::allocator<T> >
+	class List {
 	public:
 
 		/* Base double chained link list structure
@@ -193,21 +193,21 @@ namespace ft {
 		 *
 		 *
 		 */
-		list() : _begin(NULL), _end(NULL), _count(0),
-				 _default_ptr(new T()), _default_ref(*_default_ptr) {
+		List() : _begin(NULL), _end(NULL), _count(0),
+			_default_ptr(new T()), _default_ref(*_default_ptr) {
 		}
 
-		list(const list &src) {
+		List(const List &src) {
 			this->_deep_copy(src);
 		}
 
-		list& operator=(const list &rhs) {
+		List& operator=(const List &rhs) {
 			if (this != &rhs)
 				this->_deep_copy(rhs);
 			return *this;
 		}
 
-		virtual ~list() {
+		virtual ~List() {
 			this->clear();
 			delete _default_ptr;
 		}
@@ -225,15 +225,18 @@ namespace ft {
 		 *
 		 */
 
-		T& front() {
+		reference front() {
 			return _begin ? _begin->content : _default_ref;
 		}
-
-		T& back() {
+		const_reference front() const {
+			return _begin ? _begin->content : _default_ref;
+		}
+		reference back() {
 			return _end ? _end->content : _default_ref;
 		}
-		//TODO: const front & back
-
+		const_reference back() const {
+			return _end ? _end->content : _default_ref;
+		}
 
 		/* Member functions : iterators
 		 *
@@ -429,7 +432,7 @@ namespace ft {
 			}
 		}
 
-		void swap( list& other ) {
+		void swap( List& other ) {
 			t_list* tmp;
 			size_t tmp_count;
 
@@ -450,7 +453,7 @@ namespace ft {
 		 */
 
 		template <class Compare>
-		void merge( list& other, Compare comp ) {
+		void merge( List& other, Compare comp ) {
 			if (this != &other && other._begin) {
 				t_list* track_other = other._begin;
 				t_list* track_this = _begin;
@@ -486,12 +489,12 @@ namespace ft {
 			}
 		}
 
-		void merge( list& other ) {
+		void merge( List& other ) {
 			cmp_merge cmp;
 			merge(other, cmp);
 		}
 
-		void splice( const_iterator pos, list& other ) {
+		void splice( const_iterator pos, List& other ) {
 			if (*this != other) {
 				if (pos == end()) {
 					_end->next = other._begin;
@@ -514,7 +517,7 @@ namespace ft {
 			}
 		}
 
-		void splice( const_iterator pos, list& other, const_iterator it ) {
+		void splice( const_iterator pos, List& other, const_iterator it ) {
 			if (*this != other) {
 				t_list* to_insert = _detach_element(other, it);
 				if (pos == end()) {
@@ -537,7 +540,7 @@ namespace ft {
 			}
 		}
 
-		void splice( const_iterator pos, list& other,
+		void splice( const_iterator pos, List& other,
 					 const_iterator first, const_iterator last) {
 			(void)pos;
 			(void)other;
@@ -642,7 +645,7 @@ namespace ft {
 
 	private:
 		//private function members
-		void _deep_copy(const list & src) {
+		void _deep_copy(const List& src) {
 			t_list* track = src._begin;
 			_count = src._count;
 			if (_begin)
@@ -657,13 +660,13 @@ namespace ft {
 			_default_ref = *_default_ptr;
 		}
 
-		void _empty_container(list& c) {
+		void _empty_container(List& c) {
 			c._begin = NULL;
 			c._end = NULL;
 			c._count = 0;
 		}
 
-		t_list* _detach_element(list& other, const_iterator it) {
+		t_list* _detach_element(List& other, const_iterator it) {
 			t_list* el_ret = it.dereference();
 			t_list* tmp_next = el_ret->next;
 			t_list* tmp_prev = el_ret->prev;
@@ -738,7 +741,7 @@ namespace ft {
 		 *
 		 *
 		 */
-		friend bool operator==(const list<T>& lhs, const list<T>& rhs) {
+		friend bool operator==(const List<T>& lhs, const List<T>& rhs) {
 			t_list* track_lhs = lhs._begin;
 			t_list* track_rhs = rhs._begin;
 			while (track_lhs && track_rhs
@@ -749,7 +752,7 @@ namespace ft {
 			return !track_lhs && !track_rhs;
 		}
 
-		friend bool operator!=(const list<T>& lhs, const list<T>& rhs) {
+		friend bool operator!=(const List<T>& lhs, const List<T>& rhs) {
 			t_list* track_lhs = lhs._begin;
 			t_list* track_rhs = rhs._begin;
 			while (track_lhs && track_rhs
@@ -760,7 +763,7 @@ namespace ft {
 			return track_lhs || track_rhs;
 		}
 
-		friend bool operator<(const list<T>& lhs, const list<T>& rhs) {
+		friend bool operator<(const List<T>& lhs, const List<T>& rhs) {
 			t_list* track_lhs = lhs._begin;
 			t_list* track_rhs = rhs._begin;
 			while (track_lhs && track_rhs
@@ -773,7 +776,7 @@ namespace ft {
 			return track_lhs->content < track_rhs->content;
 		}
 
-		friend bool operator<=(const list<T>& lhs, const list<T>& rhs) {
+		friend bool operator<=(const List<T>& lhs, const List<T>& rhs) {
 			t_list* track_lhs = lhs._begin;
 			t_list* track_rhs = rhs._begin;
 			while (track_lhs && track_rhs
@@ -786,7 +789,7 @@ namespace ft {
 			return track_lhs->content < track_rhs->content;
 		}
 
-		friend bool operator>(const list<T>& lhs, const list<T>& rhs) {
+		friend bool operator>(const List<T>& lhs, const List<T>& rhs) {
 			t_list* track_lhs = lhs._begin;
 			t_list* track_rhs = rhs._begin;
 			while (track_lhs && track_rhs
@@ -799,7 +802,7 @@ namespace ft {
 			return track_lhs->content > track_rhs->content;
 		}
 
-		friend bool operator>=(const list& lhs, const list& rhs) {
+		friend bool operator>=(const List& lhs, const List& rhs) {
 			t_list* track_lhs = lhs._begin;
 			t_list* track_rhs = rhs._begin;
 			while (track_lhs && track_rhs
@@ -814,7 +817,7 @@ namespace ft {
 	};
 
 	template<class T>
-	void swap(list<T>& lhs, list<T>& rhs) {
+	void swap(List<T>& lhs, List<T>& rhs) {
 		lhs.swap(rhs);
 	}
 }
