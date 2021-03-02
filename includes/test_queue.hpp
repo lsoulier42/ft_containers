@@ -1,21 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   test_queue.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lsoulier <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: louise <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/02/19 13:15:20 by lsoulier          #+#    #+#             */
-/*   Updated: 2021/02/19 13:15:47 by lsoulier         ###   ########.fr       */
+/*   Created: 2021/03/02 10:57:59 by louise            #+#    #+#             */
+/*   Updated: 2021/03/02 10:58:00 by louise           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "test_list.hpp"
-#include "test_stack.hpp"
-#include "test_queue.hpp"
+#ifndef TEST_QUEUE_HPP
+# define TEST_QUEUE_HPP
+# include "Queue.hpp"
 
-int main() {
-	test_list();
-	test_stack();
-	test_queue();
-}
+void test_queue(void);
+#endif
