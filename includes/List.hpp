@@ -12,10 +12,9 @@
 
 #ifndef LIST_HPP
 # define LIST_HPP
-# include <iostream>
 # include <limits>
 # include <memory>
-//TODO: suppress iostream
+# define NULL (void*)0
 
 namespace ft {
 	template< class T, class Allocator = std::allocator<T> >
@@ -35,10 +34,173 @@ namespace ft {
 		typedef typename Allocator::pointer pointer;
 		typedef typename Allocator::const_pointer const_pointer;
 
-		class const_iterator;
-		class iterator;
-		class reverse_iterator;
-		class const_reverse_iterator;
+		/* Base double chained link list structure
+		 *
+		 *
+		 *
+		 */
+		typedef struct	s_list {
+			pointer			content;
+			struct s_list	*next;
+			struct s_list	*prev;
+		}				t_list;
+
+		/* Iterator classes definition
+		 *
+		 *
+		 *
+		 */
+
+		class const_iterator {
+		public:
+			const_iterator() : _node(NULL) {}
+			explicit const_iterator(const t_list* node): _node(node) {}
+			const_iterator(const const_iterator& src) { *this = src; }
+			const_iterator& operator=(const const_iterator& rhs) {
+				if (this != &rhs)
+					_node = rhs._node;
+				return *this;
+			}
+			virtual ~const_iterator() {}
+
+			reference operator*() {
+				if (_node->next && _node->prev)
+					return _node->content;
+				if (!_node->next)
+					return _node->prev->content;
+				if (!_node->prev)
+					return _node->next->content;
+				return _node->content;
+			}
+			bool operator==(const const_iterator& rhs) const {
+				return (_node == rhs._node);
+			}
+			bool operator!=(const const_iterator& rhs) const {
+				return !(*this == rhs);
+			}
+			const_iterator& operator++() { return *this; }
+			const_iterator operator++(int) { return *this; }
+			const_iterator& operator--() { return *this; }
+			const_iterator operator--(int) { return *this;}
+
+			//public attribute
+			t_list* _node;
+		};
+
+		class iterator : public const_iterator {
+			iterator() : const_iterator() {}
+			explicit iterator(const t_list* node) : const_iterator(node) {}
+			iterator(const iterator& src) { *this = src; }
+			explicit iterator(const const_iterator& src) {
+				this->_node = src._node;
+			}
+			iterator& operator=(const iterator& rhs) {
+				if (this != &rhs)
+					this->_node = rhs._node;
+				return *this;
+			}
+			~iterator() {}
+
+			iterator& operator++() {
+				if (this->_node->next)
+					this->_node = this->_node->next;
+				return *this;
+			}
+			iterator operator++(int) {
+				iterator tmp = *this;
+				if (this->_node->next)
+					this->_node = this->_node->next;
+				return tmp;
+			}
+			iterator& operator--() {
+				if(this->_node->prev
+					&& this->_node->prev->prev)
+					this->_node = this->_node->prev;
+				return *this;
+			}
+			iterator operator--(int) {
+				iterator tmp = *this;
+				if (this->_node->prev
+					&& this->_node->prev->prev)
+					this->_node = this->_node->prev;
+				return tmp;
+			}
+		};
+
+		class const_reverse_iterator {
+		public:
+			const_reverse_iterator() : _node(NULL) {}
+			const_reverse_iterator(const t_list* node) : _node(node) {}
+			const_reverse_iterator(const const_reverse_iterator& src) { *this = src; }
+			const_reverse_iterator& operator=(const const_reverse_iterator& rhs) {
+				if (this != &rhs)
+					_node = rhs._node;
+				return *this;
+			}
+			virtual ~const_reverse_iterator() {}
+
+			reference operator*() {
+				if (_node->next && _node->prev)
+					return _node->content;
+				if (!_node->next)
+					return _node->prev->content;
+				if (!_node->prev)
+					return _node->next->content;
+				return _node->content;
+			}
+			bool operator==(const const_reverse_iterator& rhs) const {
+				return this->_node == rhs._node;
+			}
+			bool operator!=(const const_reverse_iterator& rhs) const {
+				return !(*this == rhs);
+			}
+			const_reverse_iterator& operator++() { return *this; }
+			const_reverse_iterator operator++(int) { return *this; }
+			const_reverse_iterator& operator--() { return *this; }
+			const_reverse_iterator operator--(int) { return *this;}
+
+			//public attribute
+			t_list* _node;
+		};
+
+		class reverse_iterator : public const_reverse_iterator {
+		public:
+			reverse_iterator() : const_reverse_iterator() {}
+			explicit reverse_iterator(const t_list* node) : const_reverse_iterator(node) {}
+			reverse_iterator(const reverse_iterator& src) { *this = src; }
+			explicit reverse_iterator(const const_reverse_iterator& src) {
+				this->_node = src._node;
+			}
+			reverse_iterator& operator=(const reverse_iterator& rhs) {
+				if (this != &rhs)
+					this->_node = rhs._node;
+				return *this;
+			}
+			~reverse_iterator() {}
+
+			reverse_iterator& operator++() {
+				if (this->_node->prev)
+					this->_node = this->_node->prev;
+				return *this;
+			}
+			reverse_iterator operator++(int) {
+				reverse_iterator tmp = *this;
+				if (this->_node->prev)
+					this->_node = this->_node->prev;
+				return tmp;
+			}
+			reverse_iterator& operator--() {
+				if (this->_node->next && this->_node->next->next)
+					this->_node = this->_node->next;
+				return *this;
+			}
+			reverse_iterator operator--(int) {
+				reverse_iterator tmp = *this;
+				if (this->_node->next && this->_node->next->next)
+					this->_node = this->_node->next;
+				return tmp;
+			}
+		};
 
 		/* Member functions : constructors
 		 *
@@ -138,13 +300,39 @@ namespace ft {
 		 *
 		 *
 		 */
-		iterator begin();
-		const_iterator begin() const;
-		iterator end();
-		const_iterator end() const;
-		reverse_iterator rbegin();
-		const_reverse_iterator rbegin() const;
-		//TODO: implement
+		iterator begin() {
+			if (_count > 0)
+				return iterator(this->_begin->next);
+			return end();
+		}
+		const_iterator begin() const {
+			if (_count > 0)
+				return const_iterator(this->_begin->next);
+			return end();
+		}
+		iterator end() {
+			return iterator(this->_end);
+		}
+		const_iterator end() const {
+			return const_iterator(this->_end);
+		}
+
+		reverse_iterator rbegin() {
+			if (_count > 0)
+				return reverse_iterator(this->_end->prev);
+			return rend();
+		}
+		const_reverse_iterator rbegin() const {
+			if (_count > 0)
+				return const_reverse_iterator(this->_end->prev);
+			return rend();
+		}
+		reverse_iterator rend() {
+			return reverse_iterator(this->_begin);
+		}
+		const_reverse_iterator rend() const {
+			return const_reverse_iterator(this->_begin);
+		}
 
 		/* Member functions : empty()
 		 * Checks if the container has no elements.
@@ -184,7 +372,25 @@ namespace ft {
 		 * 3/inserts elements from range [first, last) before pos.
 		 */
 		iterator insert( iterator pos, const T& value ) {
-			//TODO: implement
+			this->_count += 1;
+			if (pos == begin()) {
+				_lstadd_front(_lstnew(value));
+				return begin();
+			}
+			if (pos == end()) {
+				_lstadd_back(_lstnew(value));
+				return --end();
+			}
+
+			t_list* node = pos._node;
+			t_list* tmp = node->prev;
+			t_list* new_el = this->_lstnew(value);
+
+			node->prev = new_el;
+			new_el->next = node;
+			new_el->prev = tmp;
+			tmp->next = new_el;
+			return iterator(new_el);
 		}
 		void insert( iterator pos, size_type count, const T& value ) {
 			for(size_type i = 0; i < count; i++)
@@ -202,7 +408,32 @@ namespace ft {
 		 *
 		 */
 		iterator erase( iterator pos ) {
-			//TODO: implement, not forgetting to update the _count
+			if (_count > 0) {
+				_count -= 1;
+				t_list* tmp;
+				t_list* to_erase = pos._node;
+
+				if (pos == begin()) {
+					tmp = to_erase->next;
+					_begin->next = tmp;
+					tmp->prev = _begin;
+					this->_lstdelone(to_erase);
+					return begin();
+				}
+				if (pos == end()) {
+					to_erase = pos._node->prev;
+					tmp = to_erase->prev;
+					_end->prev = tmp;
+					tmp->next = _end;
+					this->_lstdelone(to_erase);
+					return end();
+				}
+				tmp = to_erase->next;
+				tmp->prev = to_erase->prev;
+				to_erase->prev->next = tmp;
+				this->_lstdelone(to_erase);
+				return iterator(tmp);
+			}
 		}
 		iterator erase( iterator first, iterator last ) {
 			for(iterator it = first; it != last; it++)
@@ -254,8 +485,12 @@ namespace ft {
 		 *
 		 */
 		void resize( size_type count, T value = T() ) {
-			if (count < this->_count)
-				this->erase(begin() + count, end());
+			if (count < this->_count) {
+				iterator it = begin();
+				for(size_type i = 0; i < count; i++)
+					it++;
+				this->erase(it, end());
+			}
 			else if (count > this->_count)
 				this->push_back(value);
 		}
@@ -270,6 +505,9 @@ namespace ft {
 		 *
 		 */
 		void swap( List& other ) {
+			size_type tmp_count = _count;
+			_count = other._count;
+			other._count = tmp_count;
 			this->_swap_el(_begin, other._begin);
 			this->_swap_el(_end, other._end);
 		}
@@ -282,7 +520,27 @@ namespace ft {
 		 */
 		template <class Compare>
 		void merge( List& other, Compare comp ) {
-			//TODO: implement
+			if (this == &other || other.empty())
+				return ;
+			if (this->empty())
+				return this->swap(other);
+			t_list* track_other = other._begin->next;
+			t_list* track_this = _begin->next;
+			t_list* tmp;
+			while (track_other != other._end && track_this != _end) {
+				if (comp(track_other->content, track_this->content)) {
+					tmp = track_other->next;
+					track_other->next = track_this;
+					track_other->prev = track_this->prev;
+					track_this->prev->next = track_other;
+					track_this->prev = track_other;
+					track_other = tmp;
+				}
+				else
+					track_this = track_this->next;
+			}
+			_count += other._count;
+			other._count = 0;
 		}
 		void merge( List& other ) {
 			cmp_merge comp;
@@ -323,7 +581,7 @@ namespace ft {
 
 		/* Member functions : reverse()
 		 * Reverses the order of the elements in the container.
-		 * //TODO: no modification from previous version, should be weird...
+		 *
 		 *
 		 */
 		void reverse() {
@@ -336,9 +594,7 @@ namespace ft {
 				track->prev = tmp;
 				track = tmp;
 			}
-			tmp = _begin;
-			_begin = _end;
-			_end = tmp;
+			_swap_el(_begin, _end);
 		}
 
 		/* Member functions : unique()
@@ -357,17 +613,6 @@ namespace ft {
 		}
 
 	private:
-		/* Base double chained link list structure
-		 *
-		 *
-		 *
-		 */
-		typedef struct	s_list {
-			pointer			content;
-			struct s_list	*next;
-			struct s_list	*prev;
-		}				t_list;
-
 		/* private attributes
 		 *
 		 *
@@ -421,6 +666,26 @@ namespace ft {
 			_a.construct(new_el->content, val);
 			new_el->next = NULL;
 			new_el->prev = NULL;
+		}
+
+		void _lstadd_front( t_list* el ) {
+			t_list* tmp;
+
+			tmp = _begin->next;
+			_begin->next = el;
+			el->prev = _begin;
+			el->next = tmp;
+			tmp->prev = el;
+		}
+
+		void _lstadd_back( t_list* el ) {
+			t_list* tmp;
+
+			tmp = _end->prev;
+			_end->prev = el;
+			el->next = _end;
+			el->prev = tmp;
+			tmp->next = el;
 		}
 
 		void _lstdelone( t_list* element ) {
