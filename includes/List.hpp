@@ -234,8 +234,7 @@ namespace ft {
 		 *
 		 */
 		virtual ~List() {
-			if (_count > 0)
-				this->clear();
+			this->clear();
 			_lstdelone(_begin);
 			_lstdelone(_end);
 		}
@@ -257,8 +256,7 @@ namespace ft {
 		 *
 		 */
 		void assign( size_type count, const T& value ) {
-			if (_count > 0)
-				this->clear();
+			this->clear();
 			for (size_type i = 0; i < count; i++) {
 				this->push_back(value);
 			}
@@ -363,7 +361,17 @@ namespace ft {
 		 *
 		 */
 		void clear() {
-			this->erase(this->begin(), this->end());
+			if (this->empty())
+				return ;
+			t_list* track, tmp;
+			track = _begin->next;
+			while(track != _end) {
+				tmp  = track->next;
+				this->_lstdelone(track);
+				track = tmp;
+			}
+			this->_link_el(_begin, _end);
+			_count = 0;
 		}
 
 		/* Member functions : insert()
@@ -372,24 +380,19 @@ namespace ft {
 		 * 3/inserts elements from range [first, last) before pos.
 		 */
 		iterator insert( iterator pos, const T& value ) {
-			this->_count += 1;
 			if (pos == begin()) {
-				_lstadd_front(_lstnew(value));
+				this->push_front(value);
 				return begin();
 			}
 			if (pos == end()) {
-				_lstadd_back(_lstnew(value));
-				return --end();
+				this->push_back(value);
+				iterator it = end();
+				it--;
+				return it;
 			}
-
-			t_list* node = pos._node;
-			t_list* tmp = node->prev;
 			t_list* new_el = this->_lstnew(value);
-
-			node->prev = new_el;
-			new_el->next = node;
-			new_el->prev = tmp;
-			tmp->next = new_el;
+			this->_lstinsert_el(pos._node, new_el);
+			this->_count += 1;
 			return iterator(new_el);
 		}
 		void insert( iterator pos, size_type count, const T& value ) {
@@ -408,32 +411,23 @@ namespace ft {
 		 *
 		 */
 		iterator erase( iterator pos ) {
-			if (_count > 0) {
-				_count -= 1;
-				t_list* tmp;
-				t_list* to_erase = pos._node;
-
-				if (pos == begin()) {
-					tmp = to_erase->next;
-					_begin->next = tmp;
-					tmp->prev = _begin;
-					this->_lstdelone(to_erase);
-					return begin();
-				}
-				if (pos == end()) {
-					to_erase = pos._node->prev;
-					tmp = to_erase->prev;
-					_end->prev = tmp;
-					tmp->next = _end;
-					this->_lstdelone(to_erase);
-					return end();
-				}
-				tmp = to_erase->next;
-				tmp->prev = to_erase->prev;
-				to_erase->prev->next = tmp;
-				this->_lstdelone(to_erase);
-				return iterator(tmp);
+			if (pos == begin()) {
+				this->pop_front();
+				return begin();
 			}
+			if (pos == end()) {
+				this->pop_back();
+				return end();
+			}
+			if (this->empty())
+				return ;
+			t_list* to_erase, to_return;
+			to_erase = pos._node;
+			to_return = to_erase->next;
+			this->_lstdetach_el(to_erase);
+			this->_lstdelone(to_erase);
+			_count -= 1;
+			return iterator(to_return);
 		}
 		iterator erase( iterator first, iterator last ) {
 			for(iterator it = first; it != last; it++)
@@ -446,7 +440,9 @@ namespace ft {
 		 *
 		 */
 		void push_back( const T& value ) {
-			this->insert(this->end(), value);
+			t_list* new_el;
+			new_el = this->_lstnew(value);
+			this->_lstinsert_el(_end, new_el);
 		}
 
 		/* Member functions : pop_back()
@@ -455,7 +451,13 @@ namespace ft {
 		 *
 		 */
 		void pop_back() {
-			this->erase(this->end());
+			if (this->empty())
+				return ;
+			t_list* to_pop;
+			to_pop = _end->prev;
+			this->_lstdetach_el(to_pop);
+			this->_lstdelone(to_pop);
+			_count -= 1;
 		}
 
 		/* Member functions : push_front()
@@ -464,7 +466,9 @@ namespace ft {
 		 *
 		 */
 		void push_front( const T& value ) {
-			this->insert(this->begin(), value);
+			t_list* new_el;
+			new_el = this->_lstnew(value);
+			this->_lstinsert_el(_begin->next, new_el);
 		}
 
 		/* Member functions : pop_front()
@@ -473,7 +477,13 @@ namespace ft {
 		 *
 		 */
 		void pop_front() {
-			this->erase(this->begin());
+			if (this->empty())
+				return ;
+			t_list* to_pop;
+			to_pop = _begin->next;
+			this->_lstdetach_el(to_pop);
+			this->_lstdelone(to_pop);
+			_count -= 1;
 		}
 
 		/* Member functions : resize()
@@ -530,10 +540,7 @@ namespace ft {
 			while (track_other != other._end && track_this != _end) {
 				if (comp(track_other->content, track_this->content)) {
 					tmp = track_other->next;
-					track_other->next = track_this;
-					track_other->prev = track_this->prev;
-					track_this->prev->next = track_other;
-					track_this->prev = track_other;
+					this->_lstinsert_el(track_this, track_other);
 					track_other = tmp;
 				}
 				else
@@ -553,7 +560,12 @@ namespace ft {
 		 *
 		 */
 		void splice( const_iterator pos, List& other, const_iterator it ) {
-			//TODO: implement
+			t_list* to_move;
+			to_move = it._node;
+			this->_lstdetach_el(to_move);
+			this->_lstinsert_el(pos._node, to_move);
+			other._count -= 1;
+			_count += 1;
 		}
 		void splice( const_iterator pos, List& other,
 			const_iterator first, const_iterator last) {
@@ -572,7 +584,20 @@ namespace ft {
 		 */
 		template< class UnaryPredicate >
 		void remove_if( UnaryPredicate p ) {
-			//TODO: implement
+			if (this->empty())
+				return ;
+			t_list* track, tmp;
+			track = _begin->next;
+			while (track != _end) {
+				if (p(track->content)) {
+					tmp = track->next;
+					this->_lstdetach_el(track);
+					this->_lstdelone(track);
+					track = tmp;
+					_count -= 1;
+				} else
+					track = track->next;
+			}
 		}
 		void remove( const T& value ) {
 			cmp_unary comp(value);
@@ -604,13 +629,52 @@ namespace ft {
 		 *
 		 */
 		template< class BinaryPredicate >
-		size_type unique( BinaryPredicate p ) {
-			//TODO: implement
+		void unique( BinaryPredicate p ) {
+			if (_count < 2)
+				return ;
+			t_list* track = _begin->next->next;
+			t_list* tmp;
+
+			while(track != _end) {
+				tmp = track->next;
+				if (p(track->prev->content, track->content)) {
+					this->_lstdetach_el(track);
+					this->_lstdelone(track);
+					_count -= 1;
+				}
+				track = tmp;
+			}
 		}
 		void unique() {
 			cmp_unique comp;
 			unique(comp);
 		}
+
+		template< class Compare >
+		void sort( Compare comp ) {
+			if (_count < 2)
+				return ;
+			t_list* track, next;
+			track = _begin->next;
+			while(track != _end) {
+				next = track->next;
+				while(next != _end) {
+					if (comp(next, track)) {
+						this->_swap_el(track, next);
+						track = _begin;
+						break ;
+					}
+					else
+						next = next->next;
+				}
+				track = track->next;
+			}
+		}
+		void sort() {
+			cmp_merge comp;
+			this->sort(comp);
+		}
+
 
 	private:
 		/* private attributes
@@ -637,16 +701,6 @@ namespace ft {
 			second->prev = first;
 		}
 
-		void _invert_el( t_list* first, t_list *second ) {
-			t_list* tmp;
-
-			first->next = second->next;
-			second->next = first;
-			tmp = first->prev;
-			first->prev = second;
-			second->prev = tmp;
-		}
-
 		void _swap_el( t_list* first, t_list *second ) {
 			t_list* tmp;
 
@@ -668,24 +722,14 @@ namespace ft {
 			new_el->prev = NULL;
 		}
 
-		void _lstadd_front( t_list* el ) {
+		void _lstinsert_el(t_list* el_before, t_list* el_toadd) {
 			t_list* tmp;
 
-			tmp = _begin->next;
-			_begin->next = el;
-			el->prev = _begin;
-			el->next = tmp;
-			tmp->prev = el;
-		}
-
-		void _lstadd_back( t_list* el ) {
-			t_list* tmp;
-
-			tmp = _end->prev;
-			_end->prev = el;
-			el->next = _end;
-			el->prev = tmp;
-			tmp->next = el;
+			tmp = el_before->prev;
+			el_before->prev = el_toadd;
+			el_toadd->next = el_before;
+			el_toadd->prev = tmp;
+			tmp->next = el_toadd;
 		}
 
 		void _lstdelone( t_list* element ) {
@@ -694,9 +738,17 @@ namespace ft {
 			delete element;
 		}
 
+		void _lstdetach_el(t_list* el_todetach) {
+			t_list* prev, next;
+
+			prev = el_todetach->prev;
+			next = el_todetach->next;
+			prev->next = next;
+			next->prev = prev;
+		}
+
 		void _deep_copy( const List& other ) {
-			if (_count > 0)
-				this->clear();
+			this->clear();
 			for (iterator it = other.begin(); it != other.end(); it++)
 				this->push_back(*it);
 		}
@@ -747,12 +799,42 @@ namespace ft {
 		 *
 		 *
 		 */
-		friend bool operator==(const List<T>& lhs, const List<T>& rhs);
-		friend bool operator!=(const List<T>& lhs, const List<T>& rhs);
-		friend bool operator<(const List<T>& lhs, const List<T>& rhs);
-		friend bool operator<=(const List<T>& lhs, const List<T>& rhs);
-		friend bool operator>(const List<T>& lhs, const List<T>& rhs);
-		friend bool operator>=(const List& lhs, const List& rhs);
+		friend bool operator==(const List<T>& lhs, const List<T>& rhs) {
+			if (lhs._count != rhs._count)
+				return false;
+			t_list* track_lhs = lhs._begin->next;
+			t_list* track_rhs = rhs._begin->next;
+			while (track_lhs != lhs._end && track_rhs != rhs._end
+				   && track_lhs->content == track_rhs->content) {
+				track_lhs = track_lhs->next;
+				track_rhs = track_rhs->next;
+			}
+			return track_lhs == lhs._end && track_rhs == rhs._end;
+		}
+		friend bool operator!=(const List<T>& lhs, const List<T>& rhs) {
+			return !(lhs == rhs);
+		}
+		friend bool operator<(const List<T>& lhs, const List<T>& rhs) {
+			t_list* track_lhs = lhs._begin->next;
+			t_list* track_rhs = rhs._begin->next;
+			while (track_lhs != lhs._end && track_rhs != rhs._end
+				   && track_lhs->content == track_rhs->content) {
+				track_lhs = track_lhs->next;
+				track_rhs = track_rhs->next;
+			}
+			if (track_lhs == lhs._end && track_rhs == rhs._end)
+				return (false);
+			return track_lhs->content < track_rhs->content;
+		}
+		friend bool operator<=(const List<T>& lhs, const List<T>& rhs) {
+			return lhs < rhs || lhs == rhs;
+		}
+		friend bool operator>(const List<T>& lhs, const List<T>& rhs) {
+			return !(lhs < rhs);
+		}
+		friend bool operator>=(const List& lhs, const List& rhs) {
+			return lhs > rhs || lhs == rhs;
+		}
 	};
 
 	template<class T>
