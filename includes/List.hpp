@@ -14,7 +14,7 @@
 # define LIST_HPP
 # include <limits>
 # include <memory>
-# define NULL (void*)0
+# include <iostream>
 
 namespace ft {
 	template< class T, class Allocator = std::allocator<T> >
@@ -40,7 +40,7 @@ namespace ft {
 		 *
 		 */
 		typedef struct	s_list {
-			pointer			content;
+			T*				content;
 			struct s_list	*next;
 			struct s_list	*prev;
 		}				t_list;
@@ -54,7 +54,7 @@ namespace ft {
 		class const_iterator {
 		public:
 			const_iterator() : _node(NULL) {}
-			explicit const_iterator(const t_list* node): _node(node) {}
+			const_iterator(t_list* node): _node(node) {}
 			const_iterator(const const_iterator& src) { *this = src; }
 			const_iterator& operator=(const const_iterator& rhs) {
 				if (this != &rhs)
@@ -65,12 +65,12 @@ namespace ft {
 
 			reference operator*() {
 				if (_node->next && _node->prev)
-					return _node->content;
+					return *(_node->content);
 				if (!_node->next)
-					return _node->prev->content;
+					return *(_node->prev->content);
 				if (!_node->prev)
-					return _node->next->content;
-				return _node->content;
+					return *(_node->next->content);
+				return *(_node->content);
 			}
 			bool operator==(const const_iterator& rhs) const {
 				return (_node == rhs._node);
@@ -88,10 +88,11 @@ namespace ft {
 		};
 
 		class iterator : public const_iterator {
+		public:
 			iterator() : const_iterator() {}
-			explicit iterator(const t_list* node) : const_iterator(node) {}
+			iterator(t_list* node) : const_iterator(node) {}
 			iterator(const iterator& src) { *this = src; }
-			explicit iterator(const const_iterator& src) {
+			iterator(const const_iterator& src) {
 				this->_node = src._node;
 			}
 			iterator& operator=(const iterator& rhs) {
@@ -130,7 +131,7 @@ namespace ft {
 		class const_reverse_iterator {
 		public:
 			const_reverse_iterator() : _node(NULL) {}
-			const_reverse_iterator(const t_list* node) : _node(node) {}
+			const_reverse_iterator(t_list* node) : _node(node) {}
 			const_reverse_iterator(const const_reverse_iterator& src) { *this = src; }
 			const_reverse_iterator& operator=(const const_reverse_iterator& rhs) {
 				if (this != &rhs)
@@ -141,12 +142,12 @@ namespace ft {
 
 			reference operator*() {
 				if (_node->next && _node->prev)
-					return _node->content;
+					return *(_node->content);
 				if (!_node->next)
-					return _node->prev->content;
+					return *(_node->prev->content);
 				if (!_node->prev)
-					return _node->next->content;
-				return _node->content;
+					return *(_node->next->content);
+				return *(_node->content);
 			}
 			bool operator==(const const_reverse_iterator& rhs) const {
 				return this->_node == rhs._node;
@@ -166,9 +167,9 @@ namespace ft {
 		class reverse_iterator : public const_reverse_iterator {
 		public:
 			reverse_iterator() : const_reverse_iterator() {}
-			explicit reverse_iterator(const t_list* node) : const_reverse_iterator(node) {}
+			reverse_iterator(t_list* node) : const_reverse_iterator(node) {}
 			reverse_iterator(const reverse_iterator& src) { *this = src; }
-			explicit reverse_iterator(const const_reverse_iterator& src) {
+			reverse_iterator(const const_reverse_iterator& src) {
 				this->_node = src._node;
 			}
 			reverse_iterator& operator=(const reverse_iterator& rhs) {
@@ -261,13 +262,13 @@ namespace ft {
 				this->push_back(value);
 			}
 		}
-		template< class InputIt >
+		/*template< class InputIt >
 		void assign( InputIt first, InputIt last ) {
 			if (_count > 0)
 				this->clear();
-			for (InputIt it = first; it != last; it++)
+			for (iterator it = first; it != last; it++)
 				this->push_back(*it);
-		}
+		}*/
 
 		/* Member functions : front()
 		 * Returns a reference to the first element in the container.
@@ -363,8 +364,8 @@ namespace ft {
 		void clear() {
 			if (this->empty())
 				return ;
-			t_list* track, tmp;
-			track = _begin->next;
+			t_list* track = _begin->next;
+			t_list* tmp;
 			while(track != _end) {
 				tmp  = track->next;
 				this->_lstdelone(track);
@@ -420,18 +421,19 @@ namespace ft {
 				return end();
 			}
 			if (this->empty())
-				return ;
-			t_list* to_erase, to_return;
-			to_erase = pos._node;
-			to_return = to_erase->next;
+				return pos;
+			t_list* to_erase = pos._node;
+			t_list* to_return = to_erase->next;
 			this->_lstdetach_el(to_erase);
 			this->_lstdelone(to_erase);
 			_count -= 1;
 			return iterator(to_return);
 		}
 		iterator erase( iterator first, iterator last ) {
+			iterator ret;
 			for(iterator it = first; it != last; it++)
-				erase(it);
+				ret = erase(it);
+			return ret;
 		}
 
 		/* Member functions : push_back()
@@ -443,6 +445,7 @@ namespace ft {
 			t_list* new_el;
 			new_el = this->_lstnew(value);
 			this->_lstinsert_el(_end, new_el);
+			_count += 1;
 		}
 
 		/* Member functions : pop_back()
@@ -469,6 +472,7 @@ namespace ft {
 			t_list* new_el;
 			new_el = this->_lstnew(value);
 			this->_lstinsert_el(_begin->next, new_el);
+			_count += 1;
 		}
 
 		/* Member functions : pop_front()
@@ -494,12 +498,10 @@ namespace ft {
 		 *  1/ additional copies of value are appended.
 		 *
 		 */
-		void resize( size_type count, T value = T() ) {
+		void resize( size_type count, T value ) {
 			if (count < this->_count) {
-				iterator it = begin();
-				for(size_type i = 0; i < count; i++)
-					it++;
-				this->erase(it, end());
+				for (size_type i = 0; i < this->_count - count; i++)
+					this->pop_back();
 			}
 			else if (count > this->_count)
 				this->push_back(value);
@@ -516,10 +518,16 @@ namespace ft {
 		 */
 		void swap( List& other ) {
 			size_type tmp_count = _count;
+			t_list* tmp;
+
 			_count = other._count;
 			other._count = tmp_count;
-			this->_swap_el(_begin, other._begin);
-			this->_swap_el(_end, other._end);
+			tmp = _begin;
+			_begin = other._begin;
+			other._begin = tmp;
+			tmp = _end;
+			_end = other._end;
+			other._end = tmp;
 		}
 
 		/* Member functions : merge()
@@ -538,14 +546,22 @@ namespace ft {
 			t_list* track_this = _begin->next;
 			t_list* tmp;
 			while (track_other != other._end && track_this != _end) {
-				if (comp(track_other->content, track_this->content)) {
+				if (comp(*(track_other->content), *(track_this->content))) {
 					tmp = track_other->next;
+					this->_lstdetach_el(track_other);
 					this->_lstinsert_el(track_this, track_other);
 					track_other = tmp;
 				}
 				else
 					track_this = track_this->next;
 			}
+			if (track_other != other._end)
+				while(track_other != other._end) {
+					tmp = track_other->next;
+					this->_lstdetach_el(track_other);
+					this->_lstinsert_el(track_this, track_other);
+					track_other = tmp;
+				}
 			_count += other._count;
 			other._count = 0;
 		}
@@ -569,8 +585,12 @@ namespace ft {
 		}
 		void splice( const_iterator pos, List& other,
 			const_iterator first, const_iterator last) {
-			for (iterator it = first; it != last; it++)
+			iterator it = first, tmp;
+			while (it != last) {
+				tmp = iterator(it._node->next);
 				splice(pos, other, it);
+				it = tmp;
+			}
 		}
 		void splice( const_iterator pos, List& other ) {
 			splice(pos, other, other.begin(), other.end());
@@ -586,10 +606,10 @@ namespace ft {
 		void remove_if( UnaryPredicate p ) {
 			if (this->empty())
 				return ;
-			t_list* track, tmp;
-			track = _begin->next;
+			t_list* track = _begin->next;
+			t_list* tmp;
 			while (track != _end) {
-				if (p(track->content)) {
+				if (p(*(track->content))) {
 					tmp = track->next;
 					this->_lstdetach_el(track);
 					this->_lstdelone(track);
@@ -619,7 +639,9 @@ namespace ft {
 				track->prev = tmp;
 				track = tmp;
 			}
-			_swap_el(_begin, _end);
+			tmp = _end;
+			_end = _begin;
+			_begin = tmp;
 		}
 
 		/* Member functions : unique()
@@ -637,7 +659,7 @@ namespace ft {
 
 			while(track != _end) {
 				tmp = track->next;
-				if (p(track->prev->content, track->content)) {
+				if (p(*(track->prev->content), *(track->content))) {
 					this->_lstdetach_el(track);
 					this->_lstdelone(track);
 					_count -= 1;
@@ -654,18 +676,14 @@ namespace ft {
 		void sort( Compare comp ) {
 			if (_count < 2)
 				return ;
-			t_list* track, next;
+			t_list *track, *next;
 			track = _begin->next;
 			while(track != _end) {
 				next = track->next;
 				while(next != _end) {
-					if (comp(next, track)) {
-						this->_swap_el(track, next);
-						track = _begin;
-						break ;
-					}
-					else
-						next = next->next;
+					if (comp(*(next->content), *(track->content)))
+						this->_swap_el(next, track);
+					next = next->next;
 				}
 				track = track->next;
 			}
@@ -690,6 +708,7 @@ namespace ft {
 		void _init_constructor( const Allocator& alloc ) {
 			T default_val = T();
 
+			_a = alloc;
 			_begin = _lstnew(default_val);
 			_end = _lstnew(default_val);
 			_link_el(_begin, _end);
@@ -702,14 +721,11 @@ namespace ft {
 		}
 
 		void _swap_el( t_list* first, t_list *second ) {
-			t_list* tmp;
+			T* tmp;
 
-			tmp = first->next;
-			first->next = second->next;
-			second->next = tmp;
-			tmp = first->prev;
-			first->prev = second->prev;
-			second->prev = tmp;
+			tmp = first->content;
+			first->content = second->content;
+			second->content = tmp;
 		}
 
 		t_list* _lstnew( const_reference val ) {
@@ -720,6 +736,7 @@ namespace ft {
 			_a.construct(new_el->content, val);
 			new_el->next = NULL;
 			new_el->prev = NULL;
+			return (new_el);
 		}
 
 		void _lstinsert_el(t_list* el_before, t_list* el_toadd) {
@@ -739,7 +756,7 @@ namespace ft {
 		}
 
 		void _lstdetach_el(t_list* el_todetach) {
-			t_list* prev, next;
+			t_list *prev, *next;
 
 			prev = el_todetach->prev;
 			next = el_todetach->next;
@@ -805,7 +822,7 @@ namespace ft {
 			t_list* track_lhs = lhs._begin->next;
 			t_list* track_rhs = rhs._begin->next;
 			while (track_lhs != lhs._end && track_rhs != rhs._end
-				   && track_lhs->content == track_rhs->content) {
+				   && *(track_lhs->content) == *(track_rhs->content)) {
 				track_lhs = track_lhs->next;
 				track_rhs = track_rhs->next;
 			}
@@ -818,19 +835,19 @@ namespace ft {
 			t_list* track_lhs = lhs._begin->next;
 			t_list* track_rhs = rhs._begin->next;
 			while (track_lhs != lhs._end && track_rhs != rhs._end
-				   && track_lhs->content == track_rhs->content) {
+				   && *(track_lhs->content) == *(track_rhs->content)) {
 				track_lhs = track_lhs->next;
 				track_rhs = track_rhs->next;
 			}
 			if (track_lhs == lhs._end && track_rhs == rhs._end)
 				return (false);
-			return track_lhs->content < track_rhs->content;
+			return *(track_lhs->content) < *(track_rhs->content);
 		}
 		friend bool operator<=(const List<T>& lhs, const List<T>& rhs) {
 			return lhs < rhs || lhs == rhs;
 		}
 		friend bool operator>(const List<T>& lhs, const List<T>& rhs) {
-			return !(lhs < rhs);
+			return !(lhs < rhs) && lhs != rhs;
 		}
 		friend bool operator>=(const List& lhs, const List& rhs) {
 			return lhs > rhs || lhs == rhs;

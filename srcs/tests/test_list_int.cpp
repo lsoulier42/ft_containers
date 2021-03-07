@@ -272,7 +272,7 @@ void test_list_int_unique(void) {
 	std::cout << "The size is now: " << unique_test.size() << std::endl;
 }
 
-/*void test_list_int_sort(void) {
+void test_list_int_sort(void) {
 	ft::List<int> sort_test;
 
 	std::cout << std::endl << "Function \033[31;4msort()\033[0m: " << std::endl;
@@ -290,7 +290,7 @@ void test_list_int_unique(void) {
 	std::cout << "Let's use sort() fct:" << std::endl;
 	sort_test.sort();
 	print_list(sort_test);
-}*/
+}
 
 void test_list_int_operator(void) {
 	ft::List<int> operator1, operator2;
@@ -364,6 +364,22 @@ void test_list_int_iterator(void) {
 	ft::List<int>::const_iterator cit = iterator_test.begin();
 	std::cout << "The return of *cit, with cit =  list.begin() is : " << *cit << std::endl;
 	std::cout << "The return of *(++cit) : " << *(++cit) << std::endl;
+
+	std::cout << "Let's test reverse_iterator" << std::endl;
+	std::cout << "Let's test rbegin()" << std::endl;
+	ft::List<int>::reverse_iterator rit = iterator_test.rbegin();
+	std::cout << "The return of *rit, with rit = list.rbegin() is : " << *rit << std::endl;
+	std::cout << " The return of *(++rit) is : " << *(++rit) << std::endl;
+	std::cout << "The return of *(rit++) is : " << *(rit++) << " then *rit is : " << *rit << std::endl;
+	std::cout << " The return of *(--rit) is : " << *(--rit) << std::endl;
+	std::cout << "The return of *(rit--) is : " << *(rit--) << " then *rit is : " << *rit << std::endl;
+	std::cout << "Let's test rend()" << std::endl;
+	ft::List<int>::reverse_iterator rite = iterator_test.rend();
+	std::cout << "The return of *rite, with rite = list.rend() is : " << *rite << std::endl;
+	std::cout << " The return of *(++rite) is : " << *(++rite) << std::endl;
+	std::cout << "The return of *(rite++) is : " << *(rite++) << " then *rite is : " << *rite << std::endl;
+	std::cout << " The return of *(--rite) is : " << *(--rite) << std::endl;
+	std::cout << "The return of *(rite--) is : " << *(rite--) << " then *rite is : " << *rite << std::endl;
 }
 
 void test_list_int_insert(void) {
@@ -449,12 +465,10 @@ void test_list_int_splice(void) {
 	ft::List<int>::iterator it_other = other4.begin();
 	it_other++;
 	it_list++;
-	/*std::cout << "Let's try to use splice to insert the second element of the second list at the second place of the first list O_O " << std::endl;
+	std::cout << "Let's try to use splice to insert the second element of the second list at the second place of the first list O_O " << std::endl;
 	splice_test4.splice(it_list, other4, it_other);
 	print_list(splice_test4);
 	print_list(other4);
-	splice_test4.splice(it_list, other4, other4.begin(), other4.end());
-	print_list(splice_test4);*/
 }
 
 void test_list_int_max_size(void) {
@@ -481,7 +495,7 @@ void test_list_int(void) {
 	test_list_int_merge();
 	test_list_int_reverse();
 	test_list_int_unique();
-	//test_list_int_sort();
+	test_list_int_sort();
 	test_list_int_operator();
 	test_list_int_iterator();
 	test_list_int_insert();
