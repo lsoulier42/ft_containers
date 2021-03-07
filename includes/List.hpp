@@ -15,6 +15,7 @@
 # include <limits>
 # include <memory>
 # include <iostream>
+# include "enable_if.hpp"
 
 namespace ft {
 	template< class T, class Allocator = std::allocator<T> >
@@ -262,13 +263,12 @@ namespace ft {
 				this->push_back(value);
 			}
 		}
-		/*template< class InputIt >
-		void assign( InputIt first, InputIt last ) {
-			if (_count > 0)
-				this->clear();
-			for (iterator it = first; it != last; it++)
+		template< class InputIt >
+		void assign( typename enable_if<is_integral<InputIt>::value>::type first, InputIt last ) {
+			this->clear();
+			for (InputIt it = first; it != last; it++)
 				this->push_back(*it);
-		}*/
+		}
 
 		/* Member functions : front()
 		 * Returns a reference to the first element in the container.
@@ -401,7 +401,7 @@ namespace ft {
 				insert(pos, value);
 		}
 		template< class InputIt >
-		void insert( iterator pos, InputIt first, InputIt last ) {
+		void insert( iterator pos, typename enable_if<is_integral<InputIt>::value>::type first, InputIt last ) {
 			for (InputIt it = first; it != last; it++)
 				insert(pos, *it);
 		}

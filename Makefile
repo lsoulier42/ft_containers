@@ -1,5 +1,5 @@
 NAME= ft_containers
-SRCS_TEST= test_list_int.cpp test_stack.cpp test_queue.cpp
+SRCS_TEST= test_list_int.cpp test_stack.cpp test_vector.cpp test_queue.cpp
 SRCS= main.cpp common.cpp $(addprefix tests/, $(SRCS_TEST))
 OBJS= $(addprefix srcs/, $(SRCS:.cpp=.o))
 CC= clang++

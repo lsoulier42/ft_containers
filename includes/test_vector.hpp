@@ -1,23 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   test_vector.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lsoulier <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: lsoulier <lsoulier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/02/19 13:15:20 by lsoulier          #+#    #+#             */
-/*   Updated: 2021/02/19 13:15:47 by lsoulier         ###   ########.fr       */
+/*   Created: 2021/03/07 14:28:14 by lsoulier          #+#    #+#             */
+/*   Updated: 2021/03/07 14:28:15 by lsoulier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "test_list.hpp"
-#include "test_stack.hpp"
-#include "test_queue.hpp"
-#include "test_vector.hpp"
+#ifndef TEST_VECTOR_HPP
+# define TEST_VECTOR_HPP
+# include "Vector.hpp"
 
-int main() {
-	test_list();
-	test_stack();
-	test_queue();
-	test_vector();
-}
+void test_vector();
+#endif
