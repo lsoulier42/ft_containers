@@ -47,7 +47,24 @@ namespace ft {
 		 *
 		 */
 
-		 class const_iterator;
+		 class const_iterator {
+		 public:
+		     const_iterator() : _node(NULL) { }
+		     const_iterator(pointer node) : _node(node) {}
+		     const_iterator(const const_iterator& src) { *this = src; }
+		     const_iterator& operator=(const const_iterator& rhs) {
+		         if (this != &rhs)
+		             _node = rhs._node;
+		         return *this;
+		     }
+		     virtual ~const_iterator() {}
+
+		     value_type operator*() {
+		         return *_node;
+		     }
+		 private:
+		     pointer _node;
+		 };
 		 class iterator;
 		 class const_reverse_iterator;
 		 class reverse_iterator;
@@ -174,6 +191,20 @@ namespace ft {
         const_reference front() const {
             return const_cast<reference>(_vla[0]);
         }
+
+        /* Member function : back()
+         * Returns a reference to the last element in the container.
+         *
+         *
+         */
+        reference back() {
+            return _vla[_size - 1];
+        }
+        const_reference back() const {
+            return const_cast<reference>(_vla[_size - 1]);
+        }
+
+
 
 	private:
 		/* Private attributes
