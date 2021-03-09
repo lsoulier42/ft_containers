@@ -19,6 +19,7 @@
 # include <stdexcept>
 # include <string>
 # include <sstream>
+# include "Iterator.hpp"
 # define ALLOC_SIZE 512
 
 
@@ -41,15 +42,16 @@ namespace ft {
 		typedef typename Allocator::const_pointer const_pointer;
 
 		/* Iterator classes
-		 *
+		 * vector has random access tag
 		 *
 		 *
 		 *
 		 */
 
-		 class const_iterator {
+		 class const_iterator : public iterator<random_access_iterator_tag,
+		 	value_type, difference_type, pointer, reference > {
 		 public:
-		     const_iterator() : _node(NULL) { }
+		     const_iterator() : _node(NULL), _end(NULL) { }
 		     const_iterator(pointer node) : _node(node) {}
 		     const_iterator(const const_iterator& src) { *this = src; }
 		     const_iterator& operator=(const const_iterator& rhs) {
@@ -62,10 +64,93 @@ namespace ft {
 		     value_type operator*() {
 		         return *_node;
 		     }
+		     bool operator==(const const_iterator& rhs) {
+		     	return _node == rhs._node;
+		     }
+		     bool operator!=(const const_iterator& rhs) {
+		     	return !(*this == rhs);
+		     }
+		     const_iterator& operator++() const { return *this; }
+			 const_iterator operator++(int) const { return *this; }
+			 const_iterator& operator--() const { return *this; }
+			 const_iterator operator--(int) const { return *this; }
+			 const_iterator& operator+=(int) const { return *this; }
+			 const_iterator operator+(int) const { return *this; }
+			 const_iterator& operator-=(int) const { return *this; }
+			 const_iterator operator-(int) const { return *this; }
+			 difference_type operator-(const const_iterator& rhs) {
+				 difference_type ret;
+				 ret = rhs - *this;
+				 return ret;
+			 }
+			 reference operator[](int n) {
+				 return *(this->_node + n);
+			 }
+			 bool operator<(const const_iterator& rhs) {
+		     	return *_node < rhs;
+		     }
+			 bool operator>(const const_iterator& rhs) {
+				 return *_node > rhs;
+			 }
+			 bool operator<=(const const_iterator& rhs) {
+				 return *_node <= rhs;
+			 }
+			 bool operator>=(const const_iterator& rhs) {
+				 return *_node >= rhs;
+			 }
+
 		 private:
 		     pointer _node;
 		 };
-		 class iterator;
+		 class iterator : public const_iterator {
+		 	iterator() : const_iterator() {}
+		 	iterator(pointer node) : const_iterator(node) {}
+		 	iterator(const iterator& src) { *this = src; }
+		 	iterator& operator=(const iterator& rhs) {
+		 		if (this != &rhs)
+		 			this->_node = rhs._node;
+		 		return *this;
+		 	}
+		 	virtual ~iterator() {}
+
+			 iterator& operator++() const {
+		 		this->_node += 1;
+		 		return *this;
+			 }
+			 iterator operator++(int) const {
+		 		iterator tmp = *this;
+		 		this->_node += 1;
+		 		return tmp;
+			 }
+			 iterator& operator--() const {
+				 this->_node -= 1;
+				 return *this;
+			 }
+			 iterator operator--(int) const {
+				 iterator tmp = *this;
+				 this->_node -= 1;
+				 return tmp;
+			 }
+			 iterator& operator+=(int n) const {
+				 this->_node += n;
+				 return *this;
+			 }
+			 iterator operator+(int n) const {
+		 		 iterator tmp = *this;
+		 		 this->_node += n;
+		 		 return tmp;
+			 }
+			 iterator& operator-=(int n) const {
+				 this->_node -= n;
+				 return *this;
+			 }
+			 iterator operator-(int n) const {
+				 iterator tmp = *this;
+				 this->_node -= n;
+				 return tmp;
+			 }
+		 };
+
 		 class const_reverse_iterator;
 		 class reverse_iterator;
 
