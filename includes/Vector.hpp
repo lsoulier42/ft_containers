@@ -79,11 +79,13 @@ namespace ft {
 			 const_iterator operator+(int) const { return *this; }
 			 const_iterator& operator-=(int) const { return *this; }
 			 const_iterator operator-(int) const { return *this; }
+
 			 difference_type operator-(const const_iterator& rhs) {
 				 difference_type ret;
 				 ret = rhs._node - this->_node;
 				 return ret;
 			 }
+
 			 reference operator[](int n) {
 				 return *(this->_node + n);
 			 }
@@ -103,6 +105,7 @@ namespace ft {
 		 private:
 		     pointer _node;
 		 };
+
 		 class iterator : public const_iterator {
 		 	iterator() : const_iterator() {}
 		 	iterator(pointer node) : const_iterator(node) {}
@@ -169,8 +172,7 @@ namespace ft {
 		 explicit Vector( size_type count,
 			const T& value = T(), const Allocator& alloc = Allocator()) {
              _init_constructor(alloc, count);
-             for (size_t i = 0; i < count; i++)
-                 this->assign(value);
+             this->assign(count, value);
 		 }
 		template< class InputIt >
 		Vector( InputIt first, InputIt last, const Allocator& alloc = Allocator() ) {
@@ -189,11 +191,10 @@ namespace ft {
 		  */
 		 virtual ~Vector() {
 		     this->clear();
-		     _capacity = 0;
-		     _size = 0;
-             _a.deconstruct(_vla + _size, 1);
+             _a.deconstruct(_vla[END_PTR(_size)], 1);
 		     _a.desallocate(_vla);
-
+             _capacity = 0;
+             _size = 0;
 		 }
 
 		 /* Member functions : assignation operator
@@ -217,21 +218,23 @@ namespace ft {
 
         void assign( size_type count, const T& value ) {
             this->clear();
-            if (count > _capacity)
+            if (count >= _capacity)
                 _realloc(count);
             for (size_type i = 0; i < count; i++)
                 _vla[i] = value;
             _size = count;
+            _set_end_pointer();
         }
         template< class InputIt >
         void assign( typename enable_if<is_integral<InputIt>::value>::type first, InputIt last ) {
             this->clear();
             int i = 0;
-            if (last - first > _capacity)
+            if (last - first >= _capacity)
                 _realloc(last - first);
             for (iterator it = first; it != last; it++)
                 _vla[i++] = *it;
             _size = i;
+            _set_end_pointer();
         }
 
         /* Member function : at()
@@ -290,6 +293,27 @@ namespace ft {
             return const_cast<reference>(LAST_ELEMENT(_size));
         }
 
+        /* Member function : begin()
+         * Iterator to the first element.
+         *
+         *
+         */
+        iterator begin() {
+            return iterator(_vla);
+        }
+        const_iterator begin() const {
+            return const_iterator(_vla);
+        }
+
+        /* Member function : end()
+         * Returns an iterator to the element following the last element of the vector.
+         *
+         *
+         */
+        iterator end() {
+            return iterator(_vla + END_PTR(_size));
+        }
+
 	private:
 		/* Private attributes
 		 * _size is the number of current element in the array
@@ -308,6 +332,8 @@ namespace ft {
 
 		void _deep_copy(const Vector& other) {
 		    this->clear();
+		    if (_capacity < other._capacity)
+		        _realloc(other._capacity);
 		    _size = other._size;
 		    _capacity = other._capacity;
 		    _vla = _a.allocate(_capacity);
@@ -323,8 +349,8 @@ namespace ft {
 		void _realloc(size_t new_capacity) {
 		   pointer new_vla = _a.allocate(new_capacity);
 		    for (size_type i = 0; i < _size; i++) {
-                _a.construct(new_vla[i], _vla[i]);
-                _a.deconstruct(_vla[i], 1);
+                _a.construct(new_vla + i, _vla[i]);
+                _a.deconstruct(_vla + i, 1);
             }
 		    _a.desallocate(_capacity);
 		    _capacity = new_capacity;
