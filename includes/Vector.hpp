@@ -20,8 +20,9 @@
 # include <string>
 # include <sstream>
 # include "Iterator.hpp"
-# define ALLOC_SIZE 512
-
+# define FIRST_ELEMENT 0
+# define LAST_ELEMENT(x) x - 1
+# define END_PTR(x) x
 
 namespace ft {
 	template<class T, class Allocator = std::allocator<T> >
@@ -51,7 +52,7 @@ namespace ft {
 		 class const_iterator : public iterator<random_access_iterator_tag,
 		 	value_type, difference_type, pointer, reference > {
 		 public:
-		     const_iterator() : _node(NULL), _end(NULL) { }
+		     const_iterator() : _node(NULL) { }
 		     const_iterator(pointer node) : _node(node) {}
 		     const_iterator(const const_iterator& src) { *this = src; }
 		     const_iterator& operator=(const const_iterator& rhs) {
@@ -80,7 +81,7 @@ namespace ft {
 			 const_iterator operator-(int) const { return *this; }
 			 difference_type operator-(const const_iterator& rhs) {
 				 difference_type ret;
-				 ret = rhs - *this;
+				 ret = rhs._node - this->_node;
 				 return ret;
 			 }
 			 reference operator[](int n) {
@@ -163,7 +164,7 @@ namespace ft {
             _init_constructor(Allocator());
 		 }
 		 explicit Vector( const Allocator& alloc ) {
-            _init_constructor(alloc, ALLOC_SIZE);
+            _init_constructor(alloc, 1);
 		 }
 		 explicit Vector( size_type count,
 			const T& value = T(), const Allocator& alloc = Allocator()) {
@@ -190,9 +191,9 @@ namespace ft {
 		     this->clear();
 		     _capacity = 0;
 		     _size = 0;
+             _a.deconstruct(_vla + _size, 1);
 		     _a.desallocate(_vla);
-		     _a.deconstruct(_end, 1);
-             _a.desallocate(_end);
+
 		 }
 
 		 /* Member functions : assignation operator
@@ -271,10 +272,10 @@ namespace ft {
          *
          */
         reference front() {
-            return _vla[0];
+            return _vla[FIRST_ELEMENT];
         }
         const_reference front() const {
-            return const_cast<reference>(_vla[0]);
+            return const_cast<reference>(_vla[FIRST_ELEMENT]);
         }
 
         /* Member function : back()
@@ -283,13 +284,11 @@ namespace ft {
          *
          */
         reference back() {
-            return _vla[_size - 1];
+            return _vla[LAST_ELEMENT(_size)];
         }
         const_reference back() const {
-            return const_cast<reference>(_vla[_size - 1]);
+            return const_cast<reference>(LAST_ELEMENT(_size));
         }
-
-
 
 	private:
 		/* Private attributes
@@ -304,9 +303,7 @@ namespace ft {
 		    _a = alloc;
 		    _size = 0;
 		    _realloc(capacity);
-		    _capacity = capacity;
-		    _end = _a.allocate(1);
-		    _a.construct(_end, T());
+		    _set_end_pointer();
 		}
 
 		void _deep_copy(const Vector& other) {
@@ -315,30 +312,34 @@ namespace ft {
 		    _capacity = other._capacity;
 		    _vla = _a.allocate(_capacity);
 		    for (size_type i = 0; i < _size; i++)
-		        _a.construct(_vla, other._vla[i]);
+		        _a.construct(_vla + i, other._vla[i]);
+		    _set_end_pointer();
 		}
 
-		pointer _realloc(size_t new_capacity) {
-		    if (new_capacity % ALLOC_SIZE != 0)
-		        new_capacity = ((new_capacity / ALLOC_SIZE) + 1) * ALLOC_SIZE;
-		    pointer new_vla = _a.allocate(new_capacity);
+		void _set_end_pointer() {
+            _a.construct(_vla[END_PTR(_size)], T());
+		}
+
+		void _realloc(size_t new_capacity) {
+		   pointer new_vla = _a.allocate(new_capacity);
 		    for (size_type i = 0; i < _size; i++) {
                 _a.construct(new_vla[i], _vla[i]);
                 _a.deconstruct(_vla[i], 1);
             }
 		    _a.desallocate(_capacity);
 		    _capacity = new_capacity;
-		    return new_vla;
+		    _vla = new_vla;
+		    _set_end_pointer();
 		}
-		pointer _realloc(void) {
-		    return _realloc(_capacity + ALLOC_SIZE);
+
+		void _realloc(void) {
+		    return _realloc(_capacity * 2);
 		}
 
 		allocator_type _a;
         size_type _size;
         size_type _capacity;
 		pointer _vla;
-		pointer _end;
 	};
 }
 #endif
