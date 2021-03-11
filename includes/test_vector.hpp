@@ -13,6 +13,9 @@
 #ifndef TEST_VECTOR_HPP
 # define TEST_VECTOR_HPP
 # include "Vector.hpp"
+# include <string>
+# include <iostream>
+# include "common.hpp"
 
 void test_vector();
 #endif

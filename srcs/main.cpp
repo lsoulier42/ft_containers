@@ -16,8 +16,8 @@
 #include "test_vector.hpp"
 
 int main() {
-	test_list();
-	test_stack();
-	test_queue();
+	//test_list();
+	//test_stack();
+	//test_queue();
 	test_vector();
 }
