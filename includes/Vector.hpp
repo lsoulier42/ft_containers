@@ -21,7 +21,7 @@
 # include <sstream>
 # include "Iterator.hpp"
 # define FIRST_ELEMENT 0
-# define LAST_ELEMENT(x) x - 1
+# define LAST_ELEMENT(x) (x - 1)
 # define END_PTR(x) x
 
 namespace ft {
@@ -102,7 +102,7 @@ namespace ft {
 				 return *_node >= rhs;
 			 }
 
-		 private:
+			 //public attribute : pointer to the element T;
 		     pointer _node;
 		 };
 
@@ -191,8 +191,8 @@ namespace ft {
 		  */
 		 virtual ~Vector() {
 		     this->clear();
-             _a.deconstruct(_vla[END_PTR(_size)], 1);
-		     _a.desallocate(_vla);
+             _a.destroy(_vla + END_PTR(_size));
+		     _a.desallocate(_vla, _capacity);
              _capacity = 0;
              _size = 0;
 		 }
@@ -313,12 +313,206 @@ namespace ft {
         iterator end() {
             return iterator(_vla + END_PTR(_size));
         }
+		const_iterator end() const {
+        	return const_iterator(_vla + END_PTR(_size));
+        }
+        //TODO: reverse iterator functions
+
+		reverse_iterator rbegin();
+		const_reverse_iterator rbegin() const;
+		reverse_iterator rend();
+		const_reverse_iterator rend() const;
+
+		/* Member function : empty()
+		 * Checks if the container has no elements
+		 *
+		 */
+
+		bool empty() const {
+			return _size == 0;
+		}
+
+		/* Member function : size();
+		 * Returns the number of elements in the container
+		 *
+		 */
+		size_type size() const {
+			return _size;
+		}
+
+		/* Member function : max_size()
+		 * Returns the maximum number of elements the container is able to hold
+		 * due to system or library implementation limitations
+		 *
+		 */
+		size_type max_size() {
+			return std::numeric_limits<difference_type>::max();
+		}
+
+		/* Member function : reserve()
+		 * Increase the capacity of the vector to a value that's greater or equal to new_cap
+		 * If new_cap is greater than the current capacity(), new storage is allocated,
+		 * otherwise the method does nothing.
+		 * If new_cap is greater than capacity(), all iterators, including the past-the-end iterator,
+		 * and all references to the elements are invalidated
+		 *
+		 */
+		void reserve( size_type new_cap ) {
+			if (new_cap > _capacity)
+				_realloc(new_cap);
+		}
+
+		/* Member function : capacity()
+		 * Returns the number of elements that the container has currently allocated space for.
+		 *
+		 *
+		 *
+		 */
+		size_type capacity() const {
+			return _capacity;
+		}
+
+		/* Member function : clear()
+		 * Erases all elements from the container. After this call, size() returns zero.
+		 * Invalidates any references, pointers, or iterators referring to contained elements.
+		 * Any past-the-end iterators are also invalidated.
+		 * Leaves the capacity() of the vector unchanged
+		 *
+		 */
+		void clear() {
+			for(size_type i = 0; i < _size; i++)
+				_a.destroy(_vla + i);
+			_size = 0;
+			_set_end_pointer();
+		}
+
+		/* Member function : insert()
+		 * Inserts elements at the specified location in the container.
+		 * 1/ inserts value before pos
+		 * 2/ inserts count copies of the value before pos
+		 * 3/ inserts elements from range [first, last) before pos.
+		 *
+		 */
+		iterator insert( iterator pos, const T& value ) {
+			if (_size + 1 >= _capacity)
+				_realloc();
+			size_type index = pos._node - _vla;
+			for (size_type i = _size; i > index; i--) {
+				_a.destroy(_vla + i);
+				_a.construct(_vla + i, _vla[i - 1]);
+			}
+			_a.destroy(_vla + index);
+			_a.construct(_vla + index, value);
+			_size += 1;
+			_set_end_pointer();
+			return iterator(_vla + index);
+		}
+		void insert( iterator pos, size_type count, const T& value ) {
+			while (_size + count >= _capacity)
+				_realloc();
+			//TODO: THINK!!!!
+		}
+		template< class InputIt >
+		void insert( iterator pos, typename enable_if<is_integral<InputIt>::value>::type first, InputIt last) {
+			size_type to_create = last - first;
+			while (_size + to_create >= _capacity)
+				_realloc();
+			//TODO: THINK!!!!
+		}
+
+		/* Member function : erase()
+		 * Erases the specified elements from the container.
+		 * 1) Removes the element at pos.
+		 * 2) Removes the elements in the range [first, last).
+		 * Invalidates iterators and references at or after the point of the erase, including the end() iterator.
+		 *
+		 */
+		iterator erase( iterator pos ) {
+			size_type index = pos._node - _vla;
+
+			_a.destroy(pos._node);
+			for (size_type i = index; i < _size; i++) {
+				_a.construct(_vla + i, _vla[i + 1]);
+				_a.destroy(_vla + i + 1);
+			}
+			_size -= 1;
+			_set_end_pointer();
+			return iterator(_vla + index);
+		}
+		iterator erase( iterator first, iterator last ) {
+			size_type to_erase = last - first;
+			size_type index_dst = first._node - _vla;
+			size_type index_src = last._node - _vla;
+			size_type nb_to_move = _size - to_erase;
+
+			for (size_type i = 0; i < to_erase; i++)
+				_a.destroy(first._node + i);
+			for (size_type i = index_dst; i < nb_to_move; i++) {
+				_a.construct(_vla + i, _vla[index_src]);
+				_a.destroy(_vla + index_src++);
+			}
+			_size -= to_erase;
+			_set_end_pointer();
+			return iterator(_vla + index_dst);
+		}
+		/* Member function : push_back()
+		 * Appends the given element value to the end of the container.
+		 * The new element is initialized as a copy of value.
+		 * 		 *
+		 */
+		void push_back( const T& value ) {
+			this->insert(--end(), value);
+		}
+
+		/* Member function : pop_back()
+		 * Removes the last element of the container.
+		 * Calling pop_back on an empty container results in undefined behavior.
+		 * Iterators and references to the last element, as well as the end() iterator, are invalidated.
+		 *
+		 */
+		void pop_back() {
+			this->erase(--end());
+		}
+
+		/* Member function : resize()
+		 * Resizes the container to contain count elements.
+		 * If the current size is greater than count, the container is reduced to its first count elements.
+		 * If the current size is less than count, additional copies of value are appended.
+		 *
+		 */
+		void resize( size_type count, T value = T() ) {
+			if (count < _size)
+				this->erase(begin() + count, end());
+			else
+				this->insert(end(), count, value);
+		}
+
+		/* Member function : swap()
+		 * Exchanges the contents of the container with those of other
+		 * Does not invoke any move, copy, or swap operations on individual elements.
+		 * All iterators and references remain valid. The past-the-end iterator is invalidated.
+		 *
+		 */
+		void swap( Vector& other ) {
+			pointer tmp_begin;
+			size_type tmp_count;
+
+			tmp_begin = other._vla;
+			other._vla = _vla;
+			_vla = tmp_begin;
+			tmp_count = other._size;
+			other._size = _size;
+			_size = tmp_count;
+			tmp_count = other._capacity;
+			other._capacity = _capacity;
+			_capacity = tmp_count;
+		}
 
 	private:
 		/* Private attributes
 		 * _size is the number of current element in the array
 		 * _capacity is the number of T already allocated
-		 * _vla is the array that is going to grow if _size == _capacity
+		 * _vla is the array that is going to grow when _size == _capacity
 		 *
 		 *
 		 */
@@ -343,14 +537,14 @@ namespace ft {
 		}
 
 		void _set_end_pointer() {
-            _a.construct(_vla[END_PTR(_size)], T());
+            _a.construct(_vla + END_PTR(_size), T());
 		}
 
 		void _realloc(size_t new_capacity) {
 		   pointer new_vla = _a.allocate(new_capacity);
 		    for (size_type i = 0; i < _size; i++) {
                 _a.construct(new_vla + i, _vla[i]);
-                _a.deconstruct(_vla + i, 1);
+                _a.destroy(_vla + i);
             }
 		    _a.desallocate(_capacity);
 		    _capacity = new_capacity;
@@ -366,6 +560,51 @@ namespace ft {
         size_type _size;
         size_type _capacity;
 		pointer _vla;
+
+		/* Non-member functions : operator overloads
+		 *
+		 *
+		 */
+
+		friend bool operator==( const ft::Vector<T>& lhs, const ft::Vector<T>& rhs ) {
+			if (lhs._size != rhs._size)
+				return false;
+			for (size_type i = 0; i < lhs._size; i++)
+				if (lhs[i] != rhs[i])
+					return false;
+			return true;
+		}
+		friend bool operator!=( const ft::Vector<T>& lhs, const ft::Vector<T>& rhs ) {
+			return !(lhs == rhs);
+		}
+		friend bool operator<( const ft::Vector<T>& lhs, const ft::Vector<T>& rhs ) {
+			size_type i = 0;
+			while (i < lhs._size && i < rhs._size) {
+				if (lhs[i] > rhs[i])
+					return false;
+				i++;
+			}
+			return lhs._size < rhs._size;
+		}
+		friend bool operator<=( const ft::Vector<T>& lhs, const ft::Vector<T>& rhs ) {
+			return (lhs < rhs || lhs == rhs);
+		}
+		friend bool operator>( const ft::Vector<T>& lhs, const ft::Vector<T>& rhs ) {
+			return !(lhs <= rhs);
+		}
+		friend bool operator>=( const ft::Vector<T>& lhs, const ft::Vector<T>& rhs ) {
+			return !(lhs < rhs);
+		}
+
+		/* Non-member functions : ft::swap()
+		 * Specializes the std::swap algorithm for std::vector.
+		 * Swaps the contents of lhs and rhs. Calls lhs.swap(rhs).
+		 *
+		 */
+
+		void swap( ft::Vector<T>& lhs, ft::Vector<T>& rhs ) {
+			lhs.swap(rhs);
+		}
 	};
 }
 #endif
