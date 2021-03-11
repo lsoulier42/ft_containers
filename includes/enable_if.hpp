@@ -18,7 +18,7 @@ namespace  ft {
 	struct enable_if {};
 
 	template <class T>
-	struct enable_if<false, T> { typedef T type; };
+	struct enable_if<true, T> { typedef T type; };
 
 	template<typename T>
 	struct is_integral { static const bool value = false; };
@@ -40,6 +40,39 @@ namespace  ft {
 
 	template<>
 	struct is_integral<const unsigned int> { static const bool value = true; };
+
+	template<>
+	struct is_integral<long> { static const bool value = true; };
+
+	template<>
+	struct is_integral<const long> { static const bool value = true; };
+
+	template<>
+	struct is_integral<long long> { static const bool value = true; };
+
+	template<>
+	struct is_integral<const long long> { static const bool value = true; };
+
+	template<>
+	struct is_integral<unsigned long> { static const bool value = true; };
+
+	template<>
+	struct is_integral<const unsigned long> { static const bool value = true; };
+
+	template<>
+	struct is_integral<unsigned long long> { static const bool value = true; };
+
+	template<>
+	struct is_integral<const unsigned long long> { static const bool value = true; };
+
+	template<>
+	struct is_integral<short> { static const bool value = true; };
+
+	template<>
+	struct is_integral<unsigned short> { static const bool value = true; };
+
+	template<>
+	struct is_integral<const unsigned short> { static const bool value = true; };
 
 	template<>
 	struct is_integral<char> { static const bool value = true; };
@@ -64,6 +97,12 @@ namespace  ft {
 
 	template<>
 	struct is_integral<const double> { static const bool value = true; };
+
+	template<>
+	struct is_integral<long double> { static const bool value = true; };
+
+	template<>
+	struct is_integral<const long double> { static const bool value = true; };
 }
 
 #endif

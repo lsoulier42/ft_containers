@@ -52,212 +52,122 @@ namespace ft {
 
 		class const_iterator : public ft::iterator<random_access_iterator_tag,
 		 	value_type, difference_type, pointer, reference > {
-		 public:
-		     const_iterator() : _node(NULL) { }
-		     const_iterator(pointer node) : _node(node) {}
-		     const_iterator(const const_iterator& src) { *this = src; }
-		     const_iterator& operator=(const const_iterator& rhs) {
-		         if (this != &rhs)
-		             _node = rhs._node;
-		         return *this;
-		     }
-		     virtual ~const_iterator() {}
-
-		     value_type operator*() {
-		         return *_node;
-		     }
-		     bool operator==(const const_iterator& rhs) {
-		     	return _node == rhs._node;
-		     }
-		     bool operator!=(const const_iterator& rhs) {
-		     	return !(*this == rhs);
-		     }
-		     const_iterator& operator++() const { return *this; }
-			 const_iterator operator++(int) const { return *this; }
-			 const_iterator& operator--() const { return *this; }
-			 const_iterator operator--(int) const { return *this; }
-			 const_iterator& operator+=(int) const { return *this; }
-			 const_iterator operator+(int) const { return *this; }
-			 const_iterator& operator-=(int) const { return *this; }
-			 const_iterator operator-(int) const { return *this; }
-
-			 difference_type operator-(const const_iterator& rhs) {
-				 difference_type ret;
-				 ret = rhs._node - this->_node;
-				 return ret;
-			 }
-
-			 reference operator[](int n) {
-				 return *(this->_node + n);
-			 }
-			 bool operator<(const const_iterator& rhs) {
-		     	return *_node < rhs;
-		     }
-			 bool operator>(const const_iterator& rhs) {
-				 return *_node > rhs;
-			 }
-			 bool operator<=(const const_iterator& rhs) {
-				 return *_node <= rhs;
-			 }
-			 bool operator>=(const const_iterator& rhs) {
-				 return *_node >= rhs;
-			 }
-
-			 //public attribute : pointer to the element T;
-		     pointer _node;
-		 };
-
-		 class iterator : public const_iterator {
-		 public:
-		 	iterator() : const_iterator() {}
-		 	iterator(pointer node) : const_iterator(node) {}
-		 	iterator(const iterator& src) { *this = src; }
-		 	iterator& operator=(const iterator& rhs) {
-		 		if (this != &rhs)
-		 			this->_node = rhs._node;
-		 		return *this;
-		 	}
-		 	virtual ~iterator() {}
-
-			 iterator& operator++() {
-		 		this->_node += 1;
-		 		return *this;
-			 }
-			 iterator operator++(int) {
-		 		iterator tmp = *this;
-		 		this->_node += 1;
-		 		return tmp;
-			 }
-			 iterator& operator--() {
-				 this->_node -= 1;
-				 return *this;
-			 }
-			 iterator operator--(int) {
-				 iterator tmp = *this;
-				 this->_node -= 1;
-				 return tmp;
-			 }
-			 iterator& operator+=(int n) {
-				 this->_node += n;
-				 return *this;
-			 }
-			 iterator operator+(int n) {
-		 		 this->_node += n;
-		 		 return *this;
-			 }
-			 iterator& operator-=(int n) {
-				 this->_node -= n;
-				 return *this;
-			 }
-			 iterator operator-(int n) {
-				 this->_node -= n;
-				 return *this;
-			 }
-		 };
-
-		class const_reverse_iterator : public ft::iterator<random_access_iterator_tag,
-			value_type, difference_type, pointer, reference > {
 		public:
-			const_reverse_iterator() : _node(NULL) { }
-			const_reverse_iterator(pointer node) : _node(node) {}
-			const_reverse_iterator(const const_reverse_iterator& src) { *this = src; }
-			const_reverse_iterator& operator=(const const_reverse_iterator& rhs) {
+			const_iterator() : _node(NULL) { }
+			const_iterator(pointer node) : _node(node) {}
+			const_iterator(const const_iterator& src) { *this = src; }
+			const_iterator& operator=(const const_iterator& rhs) {
 				if (this != &rhs)
-					_node = rhs._node;
+				 	_node = rhs._node;
 				return *this;
 			}
-			virtual ~const_reverse_iterator() {}
+			virtual ~const_iterator() {}
 
-			value_type operator*() {
+			reference operator*() {
 				return *_node;
 			}
-			bool operator==(const const_reverse_iterator& rhs) {
-				return _node == rhs._node;
+			value_type operator*() const {
+				return *_node;
 			}
-			bool operator!=(const const_reverse_iterator& rhs) {
-				return !(*this == rhs);
+			pointer operator->() {
+				return _node;
 			}
-			const_reverse_iterator& operator++() const { return *this; }
-			const_reverse_iterator operator++(int) const { return *this; }
-			const_reverse_iterator& operator--() const { return *this; }
-			const_reverse_iterator operator--(int) const { return *this; }
-			const_reverse_iterator& operator+=(int) const { return *this; }
-			const_reverse_iterator operator+(int) const { return *this; }
-			const_reverse_iterator& operator-=(int) const { return *this; }
-			const_reverse_iterator operator-(int) const { return *this; }
+			const_pointer operator->() const {
+				return _node;
+			}
 
-			difference_type operator-(const const_reverse_iterator& rhs) {
+			const_iterator& operator++() const { return *this; }
+			const_iterator operator++(int) const { return *this; }
+			const_iterator& operator--() const { return *this; }
+			const_iterator operator--(int) const { return *this; }
+			const_iterator& operator+=(int) const { return *this; }
+			const_iterator operator+(int) const { return *this; }
+			const_iterator& operator-=(int) const { return *this; }
+			const_iterator operator-(int) const { return *this; }
+
+			difference_type operator-(const const_iterator& rhs) {
 				difference_type ret;
 				ret = rhs._node - this->_node;
 				return ret;
 			}
-
 			reference operator[](int n) {
 				return *(this->_node + n);
 			}
-			bool operator<(const const_reverse_iterator& rhs) {
+
+			bool operator==(const const_iterator& rhs) {
+				return _node == rhs._node;
+			}
+			bool operator!=(const const_iterator& rhs) {
+				return !(*this == rhs);
+			}
+
+			bool operator<(const const_iterator& rhs) {
 				return *_node < rhs;
 			}
-			bool operator>(const const_reverse_iterator& rhs) {
+			bool operator>(const const_iterator& rhs) {
 				return *_node > rhs;
 			}
-			bool operator<=(const const_reverse_iterator& rhs) {
+			bool operator<=(const const_iterator& rhs) {
 				return *_node <= rhs;
 			}
-			bool operator>=(const const_reverse_iterator& rhs) {
+			bool operator>=(const const_iterator& rhs) {
 				return *_node >= rhs;
 			}
 
 			//public attribute : pointer to the element T;
 			pointer _node;
 		 };
-		 class reverse_iterator : public const_reverse_iterator {
-		 public:
-			 reverse_iterator() : const_reverse_iterator() {}
-			 reverse_iterator(pointer node) : const_reverse_iterator(node) {}
-			 reverse_iterator(const reverse_iterator& src) { *this = src; }
-			 reverse_iterator& operator=(const reverse_iterator& rhs) {
-				 if (this != &rhs)
-					 this->_node = rhs._node;
-				 return *this;
-			 }
-			 virtual ~reverse_iterator() {}
 
-			 reverse_iterator& operator++() {
-				 this->_node -= 1;
-				 return *this;
-			 }
-			 reverse_iterator operator++(int) {
-				 reverse_iterator tmp = *this;
-				 this->_node -= 1;
-				 return tmp;
-			 }
-			 reverse_iterator& operator--() {
-				 this->_node += 1;
-				 return *this;
-			 }
-			 reverse_iterator operator--(int) {
-				 reverse_iterator tmp = *this;
-				 this->_node += 1;
-				 return tmp;
-			 }
-			 reverse_iterator& operator+=(int n) {
-				 this->_node -= n;
-				 return *this;
-			 }
-			 reverse_iterator operator+(int n) {
-				 this->_node -= n;
-				 return *this;
-			 }
-			 reverse_iterator& operator-=(int n) {
-				 this->_node += n;
-				 return *this;
-			 }
-			 reverse_iterator operator-(int n) {
-				 this->_node += n;
-				 return *this;
-			 }
-		 };
+		class iterator : public const_iterator {
+		public:
+			iterator() : const_iterator() {}
+			iterator(pointer node) : const_iterator(node) {}
+			iterator(const iterator& src) { *this = src; }
+			iterator& operator=(const iterator& rhs) {
+				if (this != &rhs)
+					this->_node = rhs._node;
+				return *this;
+			}
+			virtual ~iterator() {}
+
+			iterator& operator++() {
+				this->_node += 1;
+				return *this;
+			}
+			iterator operator++(int) {
+				iterator tmp = *this;
+				this->_node += 1;
+				return tmp;
+			}
+			iterator& operator--() {
+				this->_node -= 1;
+				return *this;
+			}
+			iterator operator--(int) {
+				iterator tmp = *this;
+				this->_node -= 1;
+				return tmp;
+			}
+			iterator& operator+=(int n) {
+				this->_node += n;
+				return *this;
+			}
+			iterator operator+(int n) {
+				this->_node += n;
+				return *this;
+			}
+			iterator& operator-=(int n) {
+				this->_node -= n;
+				return *this;
+			}
+			iterator operator-(int n) {
+				this->_node -= n;
+				return *this;
+			}
+		};
+
+		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
+		typedef ft::reverse_iterator<iterator> reverse_iterator;
 
 		 /* Member functions : constructors
 		  *
@@ -419,16 +329,16 @@ namespace ft {
         }
 
 		reverse_iterator rbegin() {
-			return reverse_iterator(_vla + LAST_ELEMENT(_size));
+			return reverse_iterator(_vla + END_PTR(_size));
         }
 		const_reverse_iterator rbegin() const {
-			return const_reverse_iterator(_vla + LAST_ELEMENT(_size));
+			return const_reverse_iterator(_vla + END_PTR(_size));
 		}
 		reverse_iterator rend() {
-			return reverse_iterator(_vla + REND_PTR(_size));
+			return reverse_iterator(_vla);
         }
 		const_reverse_iterator rend() const {
-			return const_reverse_iterator(_vla + REND_PTR(_size));
+			return const_reverse_iterator(_vla);
 		}
 
 		/* Member function : empty()
@@ -687,24 +597,29 @@ namespace ft {
         size_type _capacity;
 		pointer _vla;
 
+
+
+	};
 		/* Non-member functions : operator overloads
 		 *
 		 *
 		 */
-
-		friend bool operator==( const ft::Vector<T>& lhs, const ft::Vector<T>& rhs ) {
-			if (lhs._size != rhs._size)
+		template< class T, class Allocator >
+		bool operator==( const ft::Vector<T, Allocator>& lhs, const ft::Vector<T, Allocator>& rhs ) {
+			if (lhs.size() != rhs.size())
 				return false;
-			for (size_type i = 0; i < lhs._size; i++)
+			for (size_t i = 0; i < lhs._size; i++)
 				if (lhs[i] != rhs[i])
 					return false;
 			return true;
 		}
-		friend bool operator!=( const ft::Vector<T>& lhs, const ft::Vector<T>& rhs ) {
+		template< class T, class Allocator >
+		bool operator!=( const ft::Vector<T, Allocator>& lhs, const ft::Vector<T, Allocator>& rhs ) {
 			return !(lhs == rhs);
 		}
-		friend bool operator<( const ft::Vector<T>& lhs, const ft::Vector<T>& rhs ) {
-			size_type i = 0;
+		template< class T, class Allocator >
+		bool operator<( const ft::Vector<T, Allocator>& lhs, const ft::Vector<T, Allocator>& rhs ) {
+			size_t i = 0;
 			while (i < lhs._size && i < rhs._size) {
 				if (lhs[i] > rhs[i])
 					return false;
@@ -712,13 +627,16 @@ namespace ft {
 			}
 			return lhs._size < rhs._size;
 		}
-		friend bool operator<=( const ft::Vector<T>& lhs, const ft::Vector<T>& rhs ) {
+		template< class T, class Allocator >
+		bool operator<=( const ft::Vector<T, Allocator>& lhs, const ft::Vector<T, Allocator>& rhs ) {
 			return (lhs < rhs || lhs == rhs);
 		}
-		friend bool operator>( const ft::Vector<T>& lhs, const ft::Vector<T>& rhs ) {
+		template< class T, class Allocator >
+		bool operator>( const ft::Vector<T, Allocator>& lhs, const ft::Vector<T, Allocator>& rhs ) {
 			return !(lhs <= rhs);
 		}
-		friend bool operator>=( const ft::Vector<T>& lhs, const ft::Vector<T>& rhs ) {
+		template< class T, class Allocator >
+		bool operator>=( const ft::Vector<T, Allocator>& lhs, const ft::Vector<T, Allocator>& rhs ) {
 			return !(lhs < rhs);
 		}
 
@@ -727,10 +645,9 @@ namespace ft {
 		 * Swaps the contents of lhs and rhs. Calls lhs.swap(rhs).
 		 *
 		 */
-
-		void swap( ft::Vector<T>& lhs, ft::Vector<T>& rhs ) {
+		template<class T, class Allocator>
+		void swap( ft::Vector<T, Allocator>& lhs, ft::Vector<T, Allocator>& rhs ) {
 			lhs.swap(rhs);
 		}
-	};
 }
 #endif
