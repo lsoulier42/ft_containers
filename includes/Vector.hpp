@@ -21,8 +21,9 @@
 # include <sstream>
 # include "Iterator.hpp"
 # define FIRST_ELEMENT 0
-# define LAST_ELEMENT(x) (x - 1)
-# define END_PTR(x) x
+# define LAST_ELEMENT(x) ((x) - 1)
+# define END_PTR(x) (x)
+# define REND_PTR(x) (-1)
 
 namespace ft {
 	template<class T, class Allocator = std::allocator<T> >
@@ -49,7 +50,7 @@ namespace ft {
 		 *
 		 */
 
-		 class const_iterator : public iterator<random_access_iterator_tag,
+		class const_iterator : public ft::iterator<random_access_iterator_tag,
 		 	value_type, difference_type, pointer, reference > {
 		 public:
 		     const_iterator() : _node(NULL) { }
@@ -155,8 +156,109 @@ namespace ft {
 			 }
 		 };
 
-		 class const_reverse_iterator;
-		 class reverse_iterator;
+		class const_reverse_iterator : public ft::iterator<random_access_iterator_tag,
+			value_type, difference_type, pointer, reference > {
+			const_reverse_iterator() : _node(NULL) { }
+			const_reverse_iterator(pointer node) : _node(node) {}
+			const_reverse_iterator(const const_reverse_iterator& src) { *this = src; }
+			const_reverse_iterator& operator=(const const_reverse_iterator& rhs) {
+				if (this != &rhs)
+					_node = rhs._node;
+				return *this;
+			}
+			virtual ~const_reverse_iterator() {}
+
+			value_type operator*() {
+				return *_node;
+			}
+			bool operator==(const const_reverse_iterator& rhs) {
+				return _node == rhs._node;
+			}
+			bool operator!=(const const_reverse_iterator& rhs) {
+				return !(*this == rhs);
+			}
+			const_reverse_iterator& operator++() const { return *this; }
+			const_reverse_iterator operator++(int) const { return *this; }
+			const_reverse_iterator& operator--() const { return *this; }
+			const_reverse_iterator operator--(int) const { return *this; }
+			const_reverse_iterator& operator+=(int) const { return *this; }
+			const_reverse_iterator operator+(int) const { return *this; }
+			const_reverse_iterator& operator-=(int) const { return *this; }
+			const_reverse_iterator operator-(int) const { return *this; }
+
+			difference_type operator-(const const_reverse_iterator& rhs) {
+				difference_type ret;
+				ret = rhs._node - this->_node;
+				return ret;
+			}
+
+			reference operator[](int n) {
+				return *(this->_node + n);
+			}
+			bool operator<(const const_reverse_iterator& rhs) {
+				return *_node < rhs;
+			}
+			bool operator>(const const_reverse_iterator& rhs) {
+				return *_node > rhs;
+			}
+			bool operator<=(const const_reverse_iterator& rhs) {
+				return *_node <= rhs;
+			}
+			bool operator>=(const const_reverse_iterator& rhs) {
+				return *_node >= rhs;
+			}
+
+			//public attribute : pointer to the element T;
+			pointer _node;
+		 };
+		 class reverse_iterator : public const_reverse_iterator {
+			 reverse_iterator() : const_reverse_iterator() {}
+			 reverse_iterator(pointer node) : const_reverse_iterator(node) {}
+			 reverse_iterator(const reverse_iterator& src) { *this = src; }
+			 reverse_iterator& operator=(const reverse_iterator& rhs) {
+				 if (this != &rhs)
+					 this->_node = rhs._node;
+				 return *this;
+			 }
+			 virtual ~reverse_iterator() {}
+
+			 reverse_iterator& operator++() const {
+				 this->_node -= 1;
+				 return *this;
+			 }
+			 reverse_iterator operator++(int) const {
+				 reverse_iterator tmp = *this;
+				 this->_node -= 1;
+				 return tmp;
+			 }
+			 reverse_iterator& operator--() const {
+				 this->_node += 1;
+				 return *this;
+			 }
+			 reverse_iterator operator--(int) const {
+				 reverse_iterator tmp = *this;
+				 this->_node += 1;
+				 return tmp;
+			 }
+			 reverse_iterator& operator+=(int n) const {
+				 this->_node -= n;
+				 return *this;
+			 }
+			 reverse_iterator operator+(int n) const {
+				 reverse_iterator tmp = *this;
+				 this->_node -= n;
+				 return tmp;
+			 }
+			 reverse_iterator& operator-=(int n) const {
+				 this->_node += n;
+				 return *this;
+			 }
+			 reverse_iterator operator-(int n) const {
+				 iterator tmp = *this;
+				 this->_node += n;
+				 return tmp;
+			 }
+		 };
 
 		 /* Member functions : constructors
 		  *
@@ -316,12 +418,19 @@ namespace ft {
 		const_iterator end() const {
         	return const_iterator(_vla + END_PTR(_size));
         }
-        //TODO: reverse iterator functions
 
-		reverse_iterator rbegin();
-		const_reverse_iterator rbegin() const;
-		reverse_iterator rend();
-		const_reverse_iterator rend() const;
+		reverse_iterator rbegin() {
+			return reverse_iterator(_vla + LAST_ELEMENT(_size));
+        }
+		const_reverse_iterator rbegin() const {
+			return const_reverse_iterator(_vla + LAST_ELEMENT(_size));
+		}
+		reverse_iterator rend() {
+			return reverse_iterator(_vla + REND_PTR(_size));
+        }
+		const_reverse_iterator rend() const {
+			return const_reverse_iterator(_vla + REND_PTR(_size));
+		}
 
 		/* Member function : empty()
 		 * Checks if the container has no elements
@@ -397,11 +506,11 @@ namespace ft {
 			if (_size + 1 >= _capacity)
 				_realloc();
 			size_type index = pos._node - _vla;
-			for (size_type i = _size; i > index; i--) {
+			_a.destroy(_vla + _size);
+			for (size_type i = _size - 1; i >= index; i--) {
+				_a.construct(_vla + i + 1, _vla[i]);
 				_a.destroy(_vla + i);
-				_a.construct(_vla + i, _vla[i - 1]);
 			}
-			_a.destroy(_vla + index);
 			_a.construct(_vla + index, value);
 			_size += 1;
 			_set_end_pointer();
@@ -410,14 +519,35 @@ namespace ft {
 		void insert( iterator pos, size_type count, const T& value ) {
 			while (_size + count >= _capacity)
 				_realloc();
-			//TODO: THINK!!!!
+			size_type index = pos._node - _vla;
+			_a.destroy(_vla + _size);
+			for (size_type i = _size - 1; i > index; i--) {
+				_a.construct(_vla + i + count, _vla[i]);
+				_a.destroy(_vla + i);
+			}
+			for (size_type i = index; i < count; i++)
+				_a.construct(_vla + i, value);
+			_size += count;
+			_set_end_pointer();
+			return iterator(_vla + index + count - 1);
 		}
 		template< class InputIt >
 		void insert( iterator pos, typename enable_if<is_integral<InputIt>::value>::type first, InputIt last) {
-			size_type to_create = last - first;
-			while (_size + to_create >= _capacity)
+			size_type count = last - first;
+			while (_size + count >= _capacity)
 				_realloc();
-			//TODO: THINK!!!!
+			size_type index = pos._node - _vla;
+			_a.destroy(_vla + _size);
+			for (size_type i = _size - 1; i > index; i--) {
+				_a.construct(_vla + i + count, _vla[i]);
+				_a.destroy(_vla + i);
+			}
+			size_type i = index;
+			for (InputIt it = first; it != last; it++)
+				_a.construct(_vla + i++, *it);
+			_size += count;
+			_set_end_pointer();
+			return iterator(_vla + index + count - 1);
 		}
 
 		/* Member function : erase()
