@@ -14,7 +14,7 @@
 # define MAP_HPP
 # include <memory>
 # include <iostream>
-# include "iterator"
+# include "iterator.hpp"
 # include "enable_if.hpp"
 # include "pair.hpp"
 # include "less.hpp"
@@ -37,7 +37,17 @@ namespace ft {
         typedef std::size_t size_type;
         typedef std::ptrdiff_t difference_type;
         typedef Compare key_compare;
-        
+        typedef Allocator allocator_type;
+        typedef typename Allocator::reference reference;
+        typedef typename Allocator::const_reference const_reference;
+        typedef typename Allocator::pointer pointer;
+        typedef typename Allocator::const_pointer const_pointer;
+        typedef typename ft::bidirectionalIterator<btree*, value_type,
+            difference_type, pointer, reference> iterator;
+        typedef typename ft::constBidirectionalIterator<btree*, value_type,
+                difference_type, pointer, reference> const_iterator;
+        typedef reverse_iterator<const_iterator> const_reverse_iterator;
+        typedef reverse_iterator<iterator> reverse_iterator;
 
 
     private:
