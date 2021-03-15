@@ -23,7 +23,6 @@
 # define FIRST_ELEMENT 0
 # define LAST_ELEMENT(x) ((x) - 1)
 # define END_PTR(x) (x)
-# define REND_PTR(x) (-1)
 
 namespace ft {
 	template<class T, class Allocator = std::allocator<T> >
@@ -42,10 +41,131 @@ namespace ft {
 		typedef typename Allocator::const_reference const_reference;
 		typedef typename Allocator::pointer pointer;
 		typedef typename Allocator::const_pointer const_pointer;
-        typedef typename ft::randomAccessIterator<pointer, value_type,
-                difference_type, pointer, reference> iterator;
-        typedef typename ft::constRandomAccessIterator<pointer, value_type,
-                difference_type, pointer, reference> const_iterator;
+
+		class const_iterator : public ft::iterator<random_access_iterator_tag, T,
+			difference_type, pointer, reference> {
+		public:
+			const_iterator() {}
+			const_iterator(T* node) : _node(node) {}
+			const_iterator(const const_iterator& src) { *this = src; }
+			virtual ~const_iterator() {}
+
+			/* Random access iterator : access
+			 *
+			 *
+			 */
+			reference operator*() const {
+				return *_node;
+			}
+			pointer operator->() const {
+				return _node;
+			}
+			difference_type operator-(const const_iterator& rhs) {
+				difference_type ret;
+				ret = rhs._node - _node;
+				return ret;
+			}
+			reference operator[](int n) {
+				return *(_node + n);
+			}
+
+			/* Random access iterator : comparison
+			 *
+			 *
+			 */
+			bool operator==(const const_iterator& rhs) {
+				return _node == rhs._node;
+			}
+			bool operator!=(const const_iterator& rhs) {
+				return !(*this == rhs);
+			}
+			bool operator<(const const_iterator& rhs) {
+				return *_node < rhs;
+			}
+			bool operator>(const const_iterator& rhs) {
+				return *_node > rhs;
+			}
+			bool operator<=(const const_iterator& rhs) {
+				return *_node <= rhs;
+			}
+			bool operator>=(const const_iterator& rhs) {
+				return *_node >= rhs;
+			}
+
+			/* Random access iterator : arythmetic operator
+			 *
+			 *
+			 */
+
+			const_iterator& operator++() { return *this; }
+			const_iterator operator++(int) { return *this; }
+			const_iterator& operator--() { return *this; }
+			const_iterator operator--(int) { return *this; }
+			const_iterator& operator+=(int) { return *this; }
+			const_iterator operator+(int) { return *this; }
+			const_iterator& operator-=(int) { return *this; }
+			const_iterator operator-(int) { return *this; }
+
+			/* Random access iterator : public attribute
+			 *
+			 *
+			 */
+			T* _node;
+		};
+
+		class iterator : public const_iterator  {
+		public:
+			iterator() {}
+			iterator(T* node) : const_iterator(node) {}
+			iterator(const iterator& src) { *this = src; }
+			iterator(const const_iterator& other) : const_iterator(other) {}
+			iterator& operator=(const iterator& rhs) {
+				if (this != &rhs)
+					this->_node = rhs._node;
+				return *this;
+			}
+			virtual ~iterator() {}
+
+			/* Random access iterator : arythmetic operator
+			 *
+			 *
+			 */
+			iterator& operator++() {
+				this->_node++;
+				return *this;
+			}
+			iterator operator++(int) {
+				iterator tmp = *this;
+				this->_node++;
+				return tmp;
+			}
+			iterator& operator--() {
+				this->_node--;
+				return *this;
+			}
+			iterator operator--(int) {
+				iterator tmp = *this;
+				this->_node--;
+				return tmp;
+			}
+			iterator& operator+=(int n) {
+				this->_node += n;
+				return *this;
+			}
+			iterator operator+(int n) {
+				this->_node += n;
+				return *this;
+			}
+			iterator& operator-=(int n) {
+				this->_node -= n;
+				return *this;
+			}
+			iterator operator-(int n) {
+				this->_node -= n;
+				return *this;
+			}
+		};
+
 		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 		typedef ft::reverse_iterator<iterator> reverse_iterator;
 
@@ -99,6 +219,15 @@ namespace ft {
                 this->_deep_copy(other);
             return *this;
         }
+
+		/* Member functions : get_allocator
+		 * Returns the allocator associated with the container.
+		 *
+		 *
+		 */
+		allocator_type get_allocator() const {
+			return _a;
+		}
 
         /* Member functions : assign()
          * 1) Replaces the contents with count copies of value value
@@ -207,7 +336,6 @@ namespace ft {
 		const_iterator end() const {
         	return const_iterator(_vla + END_PTR(_size));
         }
-
 		reverse_iterator rbegin() {
 			return reverse_iterator(_vla + END_PTR(_size));
         }

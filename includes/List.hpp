@@ -17,20 +17,14 @@
 # include <iostream>
 # include "enable_if.hpp"
 # include "Iterator.hpp"
+# include "less.hpp"
 
 namespace ft {
 	template<class T>
 	struct t_list {
-		T				content;
-		struct t_list	*next;
-		struct t_list	*prev;
-
-		t_list() : content(NULL), next(NULL), prev(NULL) {};
-		~t_list() {}
-
-        T operator*() { return content; }
-        t_list* operator++() { return next; }
-        t_list* operator--() { return prev; }
+		T*		content;
+		t_list	*next;
+		t_list	*prev;
 	};
 
 	template< class T, class Allocator = std::allocator<T> >
@@ -50,10 +44,70 @@ namespace ft {
 		typedef typename Allocator::const_reference const_reference;
 		typedef typename Allocator::pointer pointer;
 		typedef typename Allocator::const_pointer const_pointer;
-        typedef ft::bidirectionalIterator<t_list*, value_type,
-            difference_type, pointer, reference> iterator;
-        typedef ft::constBidirectionalIterator<t_list*, value_type,
-                difference_type, pointer, reference> const_iterator;
+
+		class const_iterator : public ft::iterator<bidirectional_iterator_tag, T, difference_type, pointer, reference> {
+		public:
+			const_iterator() {}
+			const_iterator(const const_iterator& src) { *this = src; }
+			const_iterator(t_list* x) : _node(x) {}
+			virtual ~const_iterator() {}
+
+			reference operator*() {
+				return *(this->_node->content);
+			}
+			pointer operator->() const {
+				return this->_node;
+			}
+			bool operator==(const const_iterator& rhs) const {
+				return (_node == rhs._node);
+			}
+			bool operator!=(const const_iterator& rhs) const {
+				return (_node != rhs._node);
+			}
+
+			const_iterator& operator++() { return *this; }
+			const_iterator operator++(int) { return *this; }
+			const_iterator& operator--() { return *this; }
+			const_iterator operator--(int) { return *this; }
+
+			t_list* _node;
+		};
+
+		class iterator : public const_iterator  {
+		public:
+			iterator() {}
+			iterator(t_list* node) : const_iterator(node) {}
+			iterator(const iterator& src) { *this = src; }
+			iterator(const const_iterator& other) : const_iterator(other) {}
+			iterator& operator=(const iterator& rhs) {
+				if (this != &rhs)
+					this->_node = rhs._node;
+				return *this;
+			}
+			virtual ~iterator() {}
+
+
+			iterator& operator++() {
+				this->_node = this->_node->next;
+				return *this;
+			}
+			iterator operator++(int) {
+				iterator tmp = *this;
+				this->_node = this->_node->next;
+				return tmp;
+			}
+			iterator& operator--() {
+				this->_node = this->_node->prev;
+				return *this;
+			}
+			iterator operator--(int) {
+				iterator tmp = *this;
+				this->_node = this->_node->prev;
+				return tmp;
+			}
+		};
+		
+
 		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 		typedef ft::reverse_iterator<iterator> reverse_iterator;
 
@@ -105,6 +159,15 @@ namespace ft {
 			return *this;
 		}
 
+		/* Member functions : get_allocator
+		 * Returns the allocator associated with the container.
+		 *
+		 *
+		 */
+		allocator_type get_allocator() const {
+			return _a;
+		}
+
 		/* Member functions : assign()
 		 * 1/Replaces the contents with count copies of value value.
 		 * 2/Replaces the contents with copies of those in the range [first, last).
@@ -117,7 +180,7 @@ namespace ft {
 			}
 		}
 		template< class InputIt >
-		void assign( InputIt first, InputIt last ) {
+		void assign( typename enable_if<is_integral<InputIt>::value>::type first, InputIt last ) {
 			this->clear();
 			for (InputIt it = first; it != last; it++)
 				this->push_back(*it);
@@ -419,7 +482,7 @@ namespace ft {
 			other._count = 0;
 		}
 		void merge( List& other ) {
-			cmp_merge comp;
+			ft::less<T> comp;
 			this->merge(other, comp);
 		}
 
@@ -542,7 +605,7 @@ namespace ft {
 			}
 		}
 		void sort() {
-			cmp_merge comp;
+			ft::less<T> comp;
 			this->sort(comp);
 		}
 
@@ -626,29 +689,11 @@ namespace ft {
 		class cmp_unary {
 		public:
 			explicit cmp_unary(const T& ref) : _ref(ref) {}
-			cmp_unary(const cmp_unary & src) : _ref(src._ref) { *this = src; }
-			cmp_unary& operator=(const cmp_unary & rhs) {
-				(void)rhs;
-				return *this;
-			}
 			virtual ~cmp_unary() {}
 			bool operator()(const T& other) const { return other == _ref; }
 		private:
 			cmp_unary() {}
 			const T& _ref;
-		};
-
-		class cmp_merge {
-		public:
-			cmp_merge() {}
-			cmp_merge(const cmp_merge & src) { *this = src; }
-			cmp_merge& operator=(const cmp_merge & rhs) {
-				(void)rhs;
-				return *this;
-			}
-			bool operator() (const T& content1,
-							 const T& content2) const { return content1 < content2; }
-			virtual ~cmp_merge() {}
 		};
 
 		class cmp_unique {
