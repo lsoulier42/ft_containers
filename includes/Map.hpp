@@ -206,6 +206,39 @@ namespace ft {
 			_size = 0;
 		}
 
+		/* Member functions : insert()
+		 * Inserts element(s) into the container,
+		 * if the container doesn't already contain an element with an equivalent key.
+		 *
+		 */
+
+		std::pair<iterator,bool> insert( const value_type& value ) {
+			if (!_root) {
+				_root = _create_node(value);
+				_size += 1;
+				return ft::make_pair(_root, true);
+			} else
+				insert(begin(), value);
+		}
+		iterator insert( iterator hint, const value_type& value ) {
+			if (!_root)
+				insert(value);
+			else {
+				bstree* found = _search(value, hint._node);
+				if (!found) {
+					found = this->_insert(value);
+					_size += 1;
+					return ft::make_pair(found, true);
+				}
+				return ft::make_pair(iterator(found), false);
+			}
+		}
+		template< class InputIt >
+		void insert( InputIt first, InputIt last ) {
+			for (InputIt it = first; it != last; it++)
+				insert(*it);
+		}
+
     private:
     	void _init_constructor(const Compare& comp,
 			const Allocator& alloc) {
