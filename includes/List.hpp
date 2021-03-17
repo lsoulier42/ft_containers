@@ -88,21 +88,25 @@ namespace ft {
 
 
 			iterator& operator++() {
-				this->_node = this->_node->next;
+			    if (this->_node->next)
+				    this->_node = this->_node->next;
 				return *this;
 			}
 			iterator operator++(int) {
 				iterator tmp = *this;
-				this->_node = this->_node->next;
+                if (this->_node->next)
+                    this->_node = this->_node->next;
 				return tmp;
 			}
 			iterator& operator--() {
-				this->_node = this->_node->prev;
+			    if (this->_node->prev)
+				    this->_node = this->_node->prev;
 				return *this;
 			}
 			iterator operator--(int) {
 				iterator tmp = *this;
-				this->_node = this->_node->prev;
+                if (this->_node->prev)
+                    this->_node = this->_node->prev;
 				return tmp;
 			}
 		};
