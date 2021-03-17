@@ -450,7 +450,7 @@ namespace ft {
 
 		void _erase_node(bstree* node) {
 			_a_type.destroy(&node->content);
-			_a_node.deallocate(node);
+			_a_node.deallocate(node, 1);
 		}
 
 		bstree* _search(const Key& key, bstree* node) {

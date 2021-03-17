@@ -13,7 +13,9 @@
 #ifndef TEST_MAP_HPP
 # define TEST_MAP_HPP
 # include "Map.hpp"
+# include <string>
 
 void test_map();
+void test_map_insert();
 
 #endif

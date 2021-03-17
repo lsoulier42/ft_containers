@@ -11,3 +11,15 @@
 /* ************************************************************************** */
 
 #include "test_map.hpp"
+
+void test_map_insert() {
+	ft::Map<std::string, std::string> test_insert;
+	const std::string key = std::string("truc");
+	const ft::pair<const std::string, std::string> content = ft::make_pair(key, std::string("bidule"));
+
+	test_insert.insert(content);
+}
+
+void test_map() {
+	test_map_insert();
+}
