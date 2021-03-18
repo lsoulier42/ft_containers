@@ -73,7 +73,7 @@ namespace ft {
                 return this->_node->content;
             }
             pointer operator->() const {
-                return this->_node;
+                return &(this->_node->content);
             }
             bool operator==(const const_iterator& rhs) const {
                 return (_node == rhs._node);

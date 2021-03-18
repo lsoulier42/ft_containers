@@ -11,16 +11,20 @@
 /* ************************************************************************** */
 
 #include "test_map.hpp"
-#include <map>
-#include <utility>
 
 void test_map_insert() {
-	ft::Map<const char*, const char*> test_insert;
-	//ft::pair<const char*, char*> test_pair = ft::make_pair("truc", "bidule");
-	//std::map<const char*, const char*> test_insert;
+	ft::Map<std::string, std::string> test_insert;
+	std::string strings[10] = {"truc", "bidule", "batman", "robin", "machin", "chose", "la famille adams", "pokemon", "rouge feu", "les simpsons"};
 
-	test_insert["truc"] = "bidule";
+	for (int i = 0; i < 10; i += 2) {
+		test_insert.insert(ft::make_pair(strings[i], strings[i + 1]));
+	}
+
 	std::cout << test_insert["truc"] << std::endl;
+	std::cout << test_insert["batman"] << std::endl;
+	std::cout << test_insert["machin"] << std::endl;
+	std::cout << test_insert["la famille adams"] << std::endl;
+	std::cout << test_insert["rouge feu"] << std::endl;
 }
 
 void test_map() {
