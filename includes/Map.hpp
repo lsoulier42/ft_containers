@@ -280,25 +280,32 @@ namespace ft {
 		 *
 		 */
 
-		std::pair<iterator,bool> insert( const value_type& value ) {
+		ft::pair<iterator,bool> insert( const value_type& value ) {
 			if (!_root) {
 				_root = _create_node(value);
 				_size += 1;
-				return ft::make_pair(_root, true);
-			} else
-				insert(begin(), value);
+				return ft::make_pair(iterator(_root), true);
+			} else {
+				bstree* found = _search(value.first, _root);
+				if (!found) {
+					found = this->_insert(value);
+					_size += 1;
+					return ft::make_pair(iterator(found), true);
+				}
+				return ft::make_pair(iterator(found), false);
+			}
 		}
 		iterator insert( iterator hint, const value_type& value ) {
 			if (!_root)
-				insert(value);
+				return insert(value).first;
 			else {
 				bstree* found = _search(value.first, hint._node);
 				if (!found) {
 					found = this->_insert(value);
 					_size += 1;
-					return ft::make_pair(found, true);
+					return iterator(found);
 				}
-				return ft::make_pair(iterator(found), false);
+				return iterator(found);
 			}
 		}
 		template< class InputIt >
@@ -357,7 +364,7 @@ namespace ft {
          * and another pointing to the first element greater than key.
          *
          */
-        std::pair<iterator,iterator> equal_range( const Key& key ) {
+    	ft::pair<iterator,iterator> equal_range( const Key& key ) {
             bstree* found = _search(key);
             iterator not_less;
             iterator greater;
@@ -366,7 +373,7 @@ namespace ft {
             greater = found && found->next ? iterator(found->right) : end();
             return ft::make_pair(not_less, greater);
         }
-        std::pair<const_iterator,const_iterator> equal_range( const Key& key ) const {
+    	ft::pair<const_iterator,const_iterator> equal_range( const Key& key ) const {
             bstree* found = _search(key);
             const_iterator not_less;
             const_iterator greater;
@@ -446,6 +453,7 @@ namespace ft {
 			new_node->left = NULL;
 			new_node->right = NULL;
 			new_node->parent = NULL;
+			return new_node;
 		}
 
 		void _erase_node(bstree* node) {
