@@ -59,7 +59,7 @@ void printTree(ft::bstree<ft::pair<const std::string, std::string> >* root, Trun
 	}
 
 	showTrunks(trunk);
-	std::cout << "key: " << root->content.first << " value: " << root->content.second << std::endl;
+	std::cout << root->content.first << std::endl;
 
 	if (prev) {
 		prev->str = prev_str;
@@ -67,21 +67,58 @@ void printTree(ft::bstree<ft::pair<const std::string, std::string> >* root, Trun
 	trunk->str = "   |";
 
 	printTree(root->left, trunk, false);
+	delete trunk;
 }
 
-void test_map_insert() {
-	ft::Map<std::string, std::string> test_insert;
-	std::string strings[10] = {"truc", "bidule", "batman", "robin", "machin", "chose", "la famille adams", "pokemon", "rouge feu", "les simpsons"};
+template<class Key, class T>
+void printState(const ft::Map<Key, T>& test_map) {
+	printTree(test_map.begin()._node, NULL, false);
+	std::cout << "current \033[30;4msize()\033[0m: " << test_map.size() << std::endl;
+	std::cout << "the return of \033[30;4mempty()\033[0m: " << verbose_bool(test_map.empty()) << std::endl;
+}
 
-	for (int i = 0; i < 10; i += 2) {
-		test_insert.insert(ft::make_pair(strings[i], strings[i + 1]));
+void test_map_whole() {
+	ft::Map<std::string, std::string> test_insert;
+	std::string strings[] = {"truc", "bidule", "batman", "robin", "machin", "chose",
+		"la famille adams", "pokemon", "rouge feu", "les simpsons", "ululu", "bidule",
+		"wtf", "nausicaa", "show", "me the money", "anna", "montana"};
+	int arrSize = *(&strings + 1) - strings;
+	ft::pair<ft::Map<std::string, std::string>::iterator, bool> test_return;
+
+	std::cout << "This test will focus on \033[31;1;4minsert()\033[0m:" << std::endl;
+	std::cout << "Let's create a map with using this array of strings:" << std::endl;
+	for (int i = 0; i < arrSize; i += 2) {
+		std::cout << "\"" << strings[i] << "\" => \"" << strings[i + 1] << "\"" << std::endl;
 	}
 
-	ft::Map<std::string, std::string>::iterator it = test_insert.begin();
+	for (int i = 0; i < arrSize; i += 2) {
+		test_return = test_insert.insert(ft::make_pair(strings[i], strings[i + 1]));
+		std::cout << "the key : \"" << test_return.first->first;
+		std::cout << "\" with value: \"" << test_return.first->second << "\"";
+		std::cout << (test_return.second ? " has been created" : " cannot be created") << std::endl;
+	}
 
-	printTree(test_insert.begin()._node, NULL, false);
+	test_return = test_insert.insert(ft::make_pair(strings[0], strings[1]));
+	std::cout << "the key : \"" << test_return.first->first;
+	std::cout << "\" with value: \"" << test_return.first->second << "\"";
+	std::cout << (test_return.second ? " has been created" : " cannot be created") << std::endl;
+
+	printState(test_insert);
+
+	std::cout << std::endl << "This test will focus on \033[31;1;4miterators\033[0m:" << std::endl;
+	ft::Map<std::string, std::string>::iterator it = test_insert.begin();
+	while (it != test_insert.end())
+	{
+		std::cout << "return of it: " << it->first << std::endl;
+		it++;
+	}
+
+	std::cout << std::endl << "This test will focus on \033[31;1;4mclear()\033[0m:" << std::endl;
+	test_insert.clear();
+	printState(test_insert);
 }
 
 void test_map() {
-	test_map_insert();
+	std::cout << std::endl << "Test for the container \033[31;1;4mMap\033[0m:" << std::endl;
+	test_map_whole();
 }

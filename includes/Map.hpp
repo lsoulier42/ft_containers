@@ -25,6 +25,7 @@ namespace ft {
 	 *
 	 *
 	 */
+
 	template<class T>
 	struct bstree {
 		T content;
@@ -104,34 +105,47 @@ namespace ft {
 
 
             iterator& operator++() {
-                if (this->_node) {
-                    if (this->_node->left)
-                        this->_node = this->_node->left;
-                    else if (this->_node->right)
-                        this->_node = this->_node->right;
-                }
+				if (this->_node->left)
+					this->_node = this->_node->left;
+				else if (this->_node->right)
+					this->_node = this->_node->right;
+				else
+					this->_node = _find_next(this->_node);
                 return *this;
             }
             iterator operator++(int) {
                 iterator tmp = *this;
-                if (this->_node) {
-                    if (this->_node->left)
-                        this->_node = this->_node->left;
-                    else if (this->_node->right)
-                        this->_node = this->_node->right;
-                }
+				if (this->_node->left)
+					this->_node = this->_node->left;
+				else if (this->_node->right)
+					this->_node = this->_node->right;
+				else
+					this->_node = _find_next(this->_node);
                 return tmp;
             }
             iterator& operator--() {
-                if (this->_node && this->_node->parent)
-                    this->_node = this->_node->parent;
+                this->_node = _find_prev(this->_node);
                 return *this;
             }
             iterator operator--(int) {
                 iterator tmp = *this;
-                if (this->_node && this->_node->parent)
-                    this->_node = this->_node->parent;
+				this->_node = _find_prev(this->_node);
                 return tmp;
+            }
+
+        private:
+			bstree* _find_next(bstree* node) {
+				while(node->parent) {
+					if (node->parent->left == node && node->parent->right)
+						return node->parent->right;
+					node = node->parent;
+				}
+				return node->right;
+			}
+			bstree* _find_prev(bstree* node) {
+            	if (node->parent && node == node->parent->right)
+            		return node->parent->left;
+            	return 
             }
         };
 
@@ -178,8 +192,13 @@ namespace ft {
 		Map( const Map& other ) { *this = other; }
 		~Map() {
 			this->clear();
+			this->_free_node(_end);
 		}
 		/* Member functions : assignation operator
+		 *
+		 *
+		 */
+		/** At the end, you should verify that every attribute is copied
 		 *
 		 *
 		 */
@@ -191,6 +210,9 @@ namespace ft {
 				_a_type = other._a_type;
 				_a_node = other._a_node;
 				_root = other._root;
+				_already_present = other._already_present;
+				_last_created = other._last_created;
+				_end = other._end;
 				_size = other._size;
 			}
 			return *this;
@@ -228,16 +250,16 @@ namespace ft {
 			return const_iterator(_root);
 		}
 		iterator end() {
-			return iterator(_last_node()->left);
+			return iterator(_end);
 		}
 		const_iterator end() const {
-			return const_iterator(_last_node()->left);
+			return const_iterator(_end);
 		}
 		reverse_iterator rbegin() {
-			return reverse_iterator(_last_node()->left);
+			return reverse_iterator(_end);
 		}
 		const_reverse_iterator rbegin() const {
-			return const_reverse_iterator(_last_node()->left);
+			return const_reverse_iterator(_end);
 		}
 		reverse_iterator rend() {
 			return reverse_iterator(_root);
@@ -259,7 +281,7 @@ namespace ft {
 			return _size;
 		}
 		size_type max_size() const {
-			return std::numeric_limits<difference_type>::max();
+			return std::numeric_limits<difference_type>::max() / sizeof(bstree);
 		}
 
 		/* Member functions : clear()
@@ -271,6 +293,10 @@ namespace ft {
 			if (this->empty())
 				return;
 			this->_clear_tree(_root);
+			_root = _end;
+			_end->parent = NULL;
+			_already_present = NULL;
+			_last_created = NULL;
 			_size = 0;
 		}
 
@@ -281,32 +307,36 @@ namespace ft {
 		 */
 
 		ft::pair<iterator,bool> insert( const value_type& value ) {
-			if (!_root) {
-				_root = _create_node(value);
-				_size += 1;
-				return ft::make_pair(iterator(_root), true);
-			} else {
-				bstree* found = _search(value.first, _root);
-				if (!found) {
-					found = this->_insert(value);
-					_size += 1;
-					return ft::make_pair(iterator(found), true);
-				}
-				return ft::make_pair(iterator(found), false);
+			size_type old_size;
+			bstree* node;
+
+			old_size = _size;
+			this->_insert(value, _root);
+			node = _size != old_size ? _last_created : _already_present;
+			if (_root == _end) {
+				_root = node;
+				_root->right = _end;
+				_end->parent = _root;
 			}
+			return ft::make_pair(iterator(node), _size != old_size);
 		}
+		/** the second function has almost the same implementation than the previous one
+		 * don't forget to change both if any modification
+		 *
+		 */
 		iterator insert( iterator hint, const value_type& value ) {
-			if (!_root)
-				return insert(value).first;
-			else {
-				bstree* found = _search(value.first, hint._node);
-				if (!found) {
-					found = this->_insert(value);
-					_size += 1;
-					return iterator(found);
-				}
-				return iterator(found);
+			size_type old_size;
+			bstree* node;
+
+			old_size = _size;
+			this->_insert(value, hint._node);
+			node = _size != old_size ? _last_created : _already_present;
+			if (_root == _end) {
+				_root = node;
+				_root->right = _end;
+				_end->parent = _root;
 			}
+			return iterator(node);
 		}
 		template< class InputIt >
 		void insert( InputIt first, InputIt last ) {
@@ -346,16 +376,16 @@ namespace ft {
          */
         size_type count( const Key& key ) const {
             bstree* found = _search(key);
-            return found != NULL ? 1 : 0;
+            return found != NULL && found != _end;
         }
 
         iterator find( const Key& key ) {
             bstree* found = _search(key);
-            return found != NULL ? iterator(found) : end();
+            return found != NULL && found != _end ? iterator(found) : end();
         }
         const_iterator find( const Key& key ) const {
             bstree* found = _search(key);
-            return found != NULL ? const_iterator(found) : end();
+            return found != NULL && found != _end ? const_iterator(found) : end();
         }
 
         /* Member functions : equal_range()
@@ -410,14 +440,14 @@ namespace ft {
             bstree* found = _search(key);
             iterator greater;
 
-            greater = found && found->next ? iterator(found->right) : end();
+            greater = found && found->right ? iterator(found->right) : end();
             return greater;
         }
         const_iterator upper_bound( const Key& key ) const {
             bstree* found = _search(key);
             const_iterator greater;
 
-            greater = found && found->next ? iterator(found->right) : end();
+            greater = found && found->right ? iterator(found->right) : end();
             return greater;
         }
 
@@ -439,11 +469,18 @@ namespace ft {
         }
 
     private:
+		/** At the end, you should verify that every attribute is initialized
+		 *
+		 *
+		 */
     	void _init_constructor(const Compare& comp,
 			const Allocator& alloc) {
 			_comp_key_less = comp;
 			_a_type = alloc;
-			_root = NULL;
+			_root = _create_node(value_type());
+			_last_created = NULL;
+			_already_present = NULL;
+			_end = _root;
 			_size = 0;
 		}
 
@@ -456,13 +493,14 @@ namespace ft {
 			return new_node;
 		}
 
-		void _erase_node(bstree* node) {
+		void _free_node(bstree* node) {
 			_a_type.destroy(&node->content);
 			_a_node.deallocate(node, 1);
 		}
 
 		bstree* _search(const Key& key, bstree* node) {
-			if (!node || (node != NULL && key == node->content.first))
+			if (!node || node == _end
+				|| (node != NULL && node != _end && key == node->content.first))
 				return node;
 			else if (_comp_key_less(key, node->content.first))
 				return _search(key, node->left);
@@ -474,40 +512,28 @@ namespace ft {
 		}
 
 		bstree* _insert(const value_type& content, bstree* node) {
-			if (!node)
-				return NULL;
-			if (!node->left) {
-				node->left = _create_node(content);
-				node->left->parent = node;
-				return node->left;
+			if (node == NULL || node == _end) {
+				_size += 1;
+				_last_created = _create_node(content);
+				if (node == _end) {
+					_end->parent = _last_created;
+					_last_created->right = _end;
+				}
+				return _last_created;
 			}
-			else if (!node->right) {
-				node->right = _create_node(content);
-				node->right->parent = node;
-				return node->right;
+			if (_comp_key_less(content.first, node->content.first)) {
+				bstree* left_child = _insert(content, node->left);
+				node->left = left_child;
+				left_child->parent = node;
 			}
-			else if (_comp_key_less(content.first, node->content.first))
-				return _insert(content, node->left);
-			else if (content.first != node->content.first)
-				return _insert(content, node->right);
+			else if (content.first != node->content.first) {
+				bstree* right_child = _insert(content, node->right);
+				node->right = right_child;
+				right_child->parent = node;
+			}
+			else
+				_already_present = node;
 			return node;
-		}
-		bstree* _insert(const value_type& content) {
-			return _insert(content, _root);
-		}
-
-		bstree* _last_node(bstree* node) {
-			bstree* last = node;
-
-			if (node->left)
-				last = _last_node(node->left);
-			if (node->right)
-				last = _last_node(node->right);
-			return last;
-		}
-
-		bstree* _last_node() {
-			return _root ? _last_node(_root) : NULL;
 		}
 
 		bstree* _delete_node(const value_type& content, bstree* root) {
@@ -526,14 +552,14 @@ namespace ft {
 			if (root->left == NULL) {
 				bstree* tmp = root->right;
 				bstree* tmpgp = root->parent;
-				_erase_node(root);
+				this->_free_node(root);
 				tmp->parent = tmpgp;
 				return tmp;
 			}
 			else if (root->right == NULL) {
 				bstree* tmp = root->left;
 				bstree* tmpgp = root->parent;
-				_erase_node(root);
+				this->_free_node(root);
 				tmp->parent = tmpgp;
 				return tmp;
 			}
@@ -555,7 +581,7 @@ namespace ft {
 					successor_parent->right = successor->right;
 				successor->right->parent = successor_parent;
 				root->content = successor->content;
-				_erase_node(successor);
+				this->_free_node(successor);
 				return root;
 			}
 		}
@@ -566,15 +592,18 @@ namespace ft {
 		void _clear_tree(bstree* node) {
 			if (node->left)
 				_clear_tree(node->left);
-			if (node->right)
+			if (node->right && node->right != _end)
 				_clear_tree(node->right);
-			_erase_node(node);
+			this->_free_node(node);
 		}
 
 		Compare _comp_key_less;
     	Allocator _a_type;
 		typename Allocator::template rebind<bstree>::other _a_node;
 		bstree* _root;
+		bstree* _last_created;
+		bstree* _already_present;
+		bstree* _end;
 		size_type _size;
     };
 

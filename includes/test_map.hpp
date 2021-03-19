@@ -14,8 +14,8 @@
 # define TEST_MAP_HPP
 # include "Map.hpp"
 # include <string>
+# include "common.hpp"
 
 void test_map();
-void test_map_insert();
-
+void test_map_whole();
 #endif

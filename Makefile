@@ -3,7 +3,7 @@ SRCS_TEST= test_list_int.cpp test_stack.cpp test_vector.cpp test_queue.cpp test_
 SRCS= main.cpp common.cpp $(addprefix tests/, $(SRCS_TEST))
 OBJS= $(addprefix srcs/, $(SRCS:.cpp=.o))
 CC= clang++
-CFLAGS= -Wall -Wextra -Werror -std=c++98 -fsanitize=address
+CFLAGS= -Wall -Wextra -Werror -std=c++98
 HEADER= -I includes
 
 .cpp.o:
