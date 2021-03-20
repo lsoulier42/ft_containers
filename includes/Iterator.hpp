@@ -78,8 +78,7 @@ namespace ft {
 		reverse_iterator( const reverse_iterator<U>& other ) { *this = other; }
 		template< class U >
 		reverse_iterator& operator=( const reverse_iterator<U>& other ) {
-			if (this != &other)
-				_current = other._current;
+			_current = other.base();
 			return *this;
 		}
 		virtual ~reverse_iterator() {}
