@@ -77,19 +77,19 @@ namespace ft {
 				return _node == rhs._node;
 			}
 			bool operator!=(const const_iterator& rhs) {
-				return !(*this == rhs);
+				return _node != rhs._node;
 			}
 			bool operator<(const const_iterator& rhs) {
-				return *_node < rhs;
+				return _node < rhs._node;
 			}
 			bool operator>(const const_iterator& rhs) {
-				return *_node > rhs;
+				return  _node > rhs._node;
 			}
 			bool operator<=(const const_iterator& rhs) {
-				return *_node <= rhs;
+				return  _node <= rhs._node;
 			}
 			bool operator>=(const const_iterator& rhs) {
-				return *_node >= rhs;
+				return  _node >= rhs._node;
 			}
 
 			/* Random access iterator : arythmetic operator
