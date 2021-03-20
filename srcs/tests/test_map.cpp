@@ -144,7 +144,13 @@ void test_map_whole() {
 	std::cout << "Let's try to get the lower bound of 'vroum' key: ";
 	std::cout << test_insert.lower_bound(std::string("vroum"))->first << std::endl;
 
-	/*std::cout << std::endl << "This test will focus on \033[31;1;4merase()\033[0m:" << std::endl;
+	std::cout << std::endl << "This test will focus on \033[31;1;4mupper_bound()\033[0m:" << std::endl;
+	std::cout << "Let's try to get the lower bound of 'batman' key: ";
+	std::cout << test_insert.upper_bound(std::string("batman"))->first << std::endl;
+	std::cout << "Let's try to get the lower bound of 'vroum' key: ";
+	std::cout << test_insert.upper_bound(std::string("vroum"))->first << std::endl;
+
+	std::cout << std::endl << "This test will focus on \033[31;1;4merase()\033[0m:" << std::endl;
 	std::cout << "Let's try to erase a pair with no child 'show': " << std::endl;
 	test_insert.erase(std::string("show"));
 	printState(test_insert);
@@ -165,10 +171,9 @@ void test_map_whole() {
 	std::cout << "let's see the return of count for existant key 'ululu': " << test_insert.count(std::string("ululu")) << std::endl;
 	std::cout << "let's see the return of count for inexistant key 'war': " << test_insert.count(std::string("war")) << std::endl;
 
-
 	std::cout << std::endl << "This test will focus on \033[31;1;4mclear()\033[0m:" << std::endl;
 	test_insert.clear();
-	printState(test_insert);*/
+	printState(test_insert);
 }
 
 void test_map() {

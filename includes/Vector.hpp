@@ -359,7 +359,7 @@ namespace ft {
 		 *
 		 */
 		size_type max_size() {
-			return std::numeric_limits<difference_type>::max();
+			return _a.max_size();
 		}
 
 		/* Member function : reserve()

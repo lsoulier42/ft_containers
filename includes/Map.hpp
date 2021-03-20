@@ -283,7 +283,7 @@ namespace ft {
 			return _size;
 		}
 		size_type max_size() const {
-			return std::numeric_limits<difference_type>::max() / sizeof(bstree);
+			return _a_node.max_size();
 		}
 
 		/* Member functions : clear()
@@ -395,7 +395,12 @@ namespace ft {
          *
          */
         iterator lower_bound( const Key& key ) {
+			if (_root == _end)
+				return end();
 			iterator it = begin();
+			if (it->first == key)
+				return it;
+			it++;
 			while (it != end()) {
 				if (it->first == key || !_comp_key_less(it->first, key))
 					return it;
@@ -404,7 +409,12 @@ namespace ft {
 			return end();
         }
         const_iterator lower_bound( const Key& key ) const {
+			if (_root == _end)
+				return end();
 			const_iterator it = begin();
+			if (it->first == key)
+				return it;
+			it++;
 			while (it != end()) {
 				if (it->first == key || !_comp_key_less(it->first, key))
 					return it;
@@ -418,18 +428,22 @@ namespace ft {
          *
          */
         iterator upper_bound( const Key& key ) {
-			iterator it = begin();
+			if (_root == _end)
+				return end();
+			iterator it = ++begin();
 			while (it != end()) {
-				if (!_comp_key_less(it->first, key))
+				if (!_comp_key_less(it->first, key) && it->first != key)
 					return it;
 				it++;
 			}
 			return end();
         }
         const_iterator upper_bound( const Key& key ) const {
-			const_iterator it = begin();
+			if (_root == _end)
+				return end();
+			const_iterator it = ++begin();
 			while (it != end()) {
-				if (!_comp_key_less(it->first, key))
+				if (!_comp_key_less(it->first, key) && it->first != key)
 					return it;
 				it++;
 			}

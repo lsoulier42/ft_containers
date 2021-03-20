@@ -22,7 +22,7 @@
 namespace ft {
 	template<class T>
 	struct t_list {
-		T*		content;
+		T		content;
 		t_list	*next;
 		t_list	*prev;
 	};
@@ -53,7 +53,7 @@ namespace ft {
 			virtual ~const_iterator() {}
 
 			reference operator*() {
-				return *(this->_node->content);
+				return this->_node->content;
 			}
 			pointer operator->() const {
 				return this->_node;
@@ -163,7 +163,7 @@ namespace ft {
 		 *
 		 */
 		allocator_type get_allocator() const {
-			return _a;
+			return _a_type;
 		}
 
 		/* Member functions : assign()
@@ -267,7 +267,7 @@ namespace ft {
 		 *
 		 */
 		size_type max_size() const {
-			return std::numeric_limits<difference_type>::max();
+			return _a_node.max_size();
 		}
 
 		/* Member functions : clear()
@@ -431,17 +431,17 @@ namespace ft {
 		 *
 		 */
 		void swap( List& other ) {
-			size_type tmp_count = _count;
 			t_list* tmp;
+			size_type  tmp_count;
 
-			_count = other._count;
-			other._count = tmp_count;
 			tmp = _begin;
 			_begin = other._begin;
 			other._begin = tmp;
 			tmp = _end;
 			_end = other._end;
 			other._end = tmp;
+			tmp_count = _count;
+			_count = other._count;
 		}
 
 		/* Member functions : merge()
@@ -460,7 +460,7 @@ namespace ft {
 			t_list* track_this = _begin->next;
 			t_list* tmp;
 			while (track_other != other._end && track_this != _end) {
-				if (comp(*(track_other->content), *(track_this->content))) {
+				if (comp(track_other->content, track_this->content)) {
 					tmp = track_other->next;
 					this->_lstdetach_el(track_other);
 					this->_lstinsert_el(track_this, track_other);
@@ -523,7 +523,7 @@ namespace ft {
 			t_list* track = _begin->next;
 			t_list* tmp;
 			while (track != _end) {
-				if (p(*(track->content))) {
+				if (p(track->content)) {
 					tmp = track->next;
 					this->_lstdetach_el(track);
 					this->_lstdelone(track);
@@ -573,7 +573,7 @@ namespace ft {
 
 			while(track != _end) {
 				tmp = track->next;
-				if (p(*(track->prev->content), *(track->content))) {
+				if (p(track->prev->content, track->content)) {
 					this->_lstdetach_el(track);
 					this->_lstdelone(track);
 					_count -= 1;
@@ -595,7 +595,7 @@ namespace ft {
 			while(track != _end) {
 				next = track->next;
 				while(next != _end) {
-					if (comp(*(next->content), *(track->content)))
+					if (comp(next->content, track->content))
 						this->_swap_el(next, track);
 					next = next->next;
 				}
@@ -614,7 +614,8 @@ namespace ft {
 		 *
 		 *
 		 */
-		allocator_type _a;
+		allocator_type _a_type;
+		typename Allocator::template rebind<t_list>::other _a_node;
 		t_list* _begin;
 		t_list* _end;
 		size_type _count;
@@ -622,7 +623,7 @@ namespace ft {
 		void _init_constructor( const Allocator& alloc ) {
 			T default_val = T();
 
-			_a = alloc;
+			_a_type = alloc;
 			_begin = _lstnew(default_val);
 			_end = _lstnew(default_val);
 			_link_el(_begin, _end);
@@ -635,7 +636,7 @@ namespace ft {
 		}
 
 		void _swap_el( t_list* first, t_list *second ) {
-			T* tmp;
+			T tmp;
 
 			tmp = first->content;
 			first->content = second->content;
@@ -645,9 +646,8 @@ namespace ft {
 		t_list* _lstnew( const_reference val ) {
 			t_list* new_el;
 
-			new_el = new t_list;
-			new_el->content = _a.allocate(1);
-			_a.construct(new_el->content, val);
+			new_el = _a_node.allocate(1);
+			_a_type.construct(&new_el->content, val);
 			new_el->next = NULL;
 			new_el->prev = NULL;
 			return (new_el);
@@ -664,9 +664,8 @@ namespace ft {
 		}
 
 		void _lstdelone( t_list* element ) {
-			_a.destroy(element->content);
-			_a.deallocate(element->content, 1);
-			delete element;
+			_a_type.destroy(&element->content);
+			_a_node.deallocate(element, 1);
 		}
 
 		void _lstdetach_el(t_list* el_todetach) {
@@ -722,7 +721,7 @@ namespace ft {
 		t_list<T>* track_lhs = lhs.begin()._node->next;
 		t_list<T>* track_rhs = rhs.begin()._node->next;
 		while (track_lhs != lhs.end()._node && track_rhs != rhs.end()._node
-			   && *(track_lhs->content) == *(track_rhs->content)) {
+			   && track_lhs->content == track_rhs->content) {
 			track_lhs = track_lhs->next;
 			track_rhs = track_rhs->next;
 		}
@@ -737,13 +736,13 @@ namespace ft {
 		t_list<T>* track_lhs = lhs.begin()._node->next;
 		t_list<T>* track_rhs = rhs.begin()._node->next;
 		while (track_lhs != lhs.end()._node && track_rhs != rhs.end()._node
-			   && *(track_lhs->content) == *(track_rhs->content)) {
+			   && track_lhs->content == track_rhs->content) {
 			track_lhs = track_lhs->next;
 			track_rhs = track_rhs->next;
 		}
 		if (track_lhs == lhs.end()._node && track_rhs == rhs.end()._node)
 			return (false);
-		return *(track_lhs->content) < *(track_rhs->content);
+		return track_lhs->content < track_rhs->content;
 	}
 	template< class T, class Allocator >
 	bool operator<=(const List<T, Allocator>& lhs, const List<T, Allocator>& rhs) {
