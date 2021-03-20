@@ -183,9 +183,6 @@ namespace ft {
 
 		 /* Member functions : destructor
 		  *
-		  *
-		  *
-		  *
 		  */
 		 virtual ~Vector() {
 		     this->clear();

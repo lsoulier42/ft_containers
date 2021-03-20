@@ -191,7 +191,10 @@ namespace ft {
 			for (InputIt it = first; it != last; it++)
 				this->insert(*it);
 		}
-		Map( const Map& other ) { *this = other; }
+		Map( const Map& other ) {
+			_init_constructor(Compare(), Allocator());
+			this->_deep_copy(other);
+		}
 		~Map() {
 			this->clear();
 			this->_free_node(_end);
@@ -205,18 +208,8 @@ namespace ft {
 		 *
 		 */
 		Map& operator=( const Map& other ) {
-			if (!this->empty())
-				this->clear();
-			if (this != &other) {
-				_comp_key_less = other._comp_key_less;
-				_a_type = other._a_type;
-				_a_node = other._a_node;
-				_root = other._root;
-				_already_present = other._already_present;
-				_last_created = other._last_created;
-				_end = other._end;
-				_size = other._size;
-			}
+			this->clear();
+			this->_deep_copy(other);
 			return *this;
 		}
 
@@ -602,6 +595,11 @@ namespace ft {
 				_clear_tree(node->right);
 			this->_free_node(node);
 		}
+
+		void _deep_copy(const Map& other) {
+			for(iterator it = other.begin(); it != other.end(); it++)
+				this->insert(*it);
+    	}
 
 		Compare _comp_key_less;
     	Allocator _a_type;

@@ -214,12 +214,12 @@ namespace ft {
 		 *
 		 */
 		iterator begin() {
-			if (_count > 0)
+			if (_size > 0)
 				return iterator(this->_begin->next);
 			return end();
 		}
 		const_iterator begin() const {
-			if (_count > 0)
+			if (_size > 0)
 				return const_iterator(this->_begin->next);
 			return end();
 		}
@@ -231,12 +231,12 @@ namespace ft {
 		}
 
 		reverse_iterator rbegin() {
-			if (_count > 0)
+			if (_size > 0)
 				return reverse_iterator(this->_end);
 			return rend();
 		}
 		const_reverse_iterator rbegin() const {
-			if (_count > 0)
+			if (_size > 0)
 				return const_reverse_iterator(this->_end);
 			return rend();
 		}
@@ -252,14 +252,14 @@ namespace ft {
 		 *
 		 *
 		 */
-		bool empty() const { return _count == 0; }
+		bool empty() const { return _size == 0; }
 
 		/* Member functions : size()
 		 * Returns the number of elements in the container.
 		 *
 		 *
 		 */
-		size_type size() const { return _count; }
+		size_type size() const { return _size; }
 
 		/* Member functions : max_size()
 		 * Returns the maximum number of elements the container is able to hold.
@@ -286,7 +286,7 @@ namespace ft {
 				track = tmp;
 			}
 			this->_link_el(_begin, _end);
-			_count = 0;
+			_size = 0;
 		}
 
 		/* Member functions : insert()
@@ -307,7 +307,7 @@ namespace ft {
 			}
 			t_list* new_el = this->_lstnew(value);
 			this->_lstinsert_el(pos._node, new_el);
-			this->_count += 1;
+			this->_size += 1;
 			return iterator(new_el);
 		}
 		void insert( iterator pos, size_type count, const T& value ) {
@@ -341,7 +341,7 @@ namespace ft {
 			t_list* to_return = to_erase->next;
 			this->_lstdetach_el(to_erase);
 			this->_lstdelone(to_erase);
-			_count -= 1;
+			_size -= 1;
 			return iterator(to_return);
 		}
 		iterator erase( iterator first, iterator last ) {
@@ -360,7 +360,7 @@ namespace ft {
 			t_list* new_el;
 			new_el = this->_lstnew(value);
 			this->_lstinsert_el(_end, new_el);
-			_count += 1;
+			_size += 1;
 		}
 
 		/* Member functions : pop_back()
@@ -375,7 +375,7 @@ namespace ft {
 			to_pop = _end->prev;
 			this->_lstdetach_el(to_pop);
 			this->_lstdelone(to_pop);
-			_count -= 1;
+			_size -= 1;
 		}
 
 		/* Member functions : push_front()
@@ -387,7 +387,7 @@ namespace ft {
 			t_list* new_el;
 			new_el = this->_lstnew(value);
 			this->_lstinsert_el(_begin->next, new_el);
-			_count += 1;
+			_size += 1;
 		}
 
 		/* Member functions : pop_front()
@@ -402,7 +402,7 @@ namespace ft {
 			to_pop = _begin->next;
 			this->_lstdetach_el(to_pop);
 			this->_lstdelone(to_pop);
-			_count -= 1;
+			_size -= 1;
 		}
 
 		/* Member functions : resize()
@@ -414,11 +414,11 @@ namespace ft {
 		 *
 		 */
 		void resize( size_type count, T value ) {
-			if (count < this->_count) {
-				for (size_type i = 0; i < this->_count - count; i++)
+			if (count < this->_size) {
+				for (size_type i = 0; i < this->_size - count; i++)
 					this->pop_back();
 			}
-			else if (count > this->_count)
+			else if (count > this->_size)
 				this->push_back(value);
 		}
 		void resize( size_type count ) {
@@ -433,7 +433,7 @@ namespace ft {
 		 */
 		void swap( List& other ) {
 			t_list* tmp;
-			size_type  tmp_count;
+			size_type  tmp_size;
 
 			tmp = _begin;
 			_begin = other._begin;
@@ -441,8 +441,8 @@ namespace ft {
 			tmp = _end;
 			_end = other._end;
 			other._end = tmp;
-			tmp_count = _count;
-			_count = other._count;
+			tmp_size = _size;
+			_size = other._size;
 		}
 
 		/* Member functions : merge()
@@ -477,8 +477,8 @@ namespace ft {
 					this->_lstinsert_el(track_this, track_other);
 					track_other = tmp;
 				}
-			_count += other._count;
-			other._count = 0;
+			_size += other._size;
+			other._size = 0;
 		}
 		void merge( List& other ) {
 			ft::less<T> comp;
@@ -495,8 +495,8 @@ namespace ft {
 			to_move = it._node;
 			this->_lstdetach_el(to_move);
 			this->_lstinsert_el(pos._node, to_move);
-			other._count -= 1;
-			_count += 1;
+			other._size -= 1;
+			_size += 1;
 		}
 		void splice( const_iterator pos, List& other,
 			const_iterator first, const_iterator last) {
@@ -529,7 +529,7 @@ namespace ft {
 					this->_lstdetach_el(track);
 					this->_lstdelone(track);
 					track = tmp;
-					_count -= 1;
+					_size -= 1;
 				} else
 					track = track->next;
 			}
@@ -567,7 +567,7 @@ namespace ft {
 		 */
 		template< class BinaryPredicate >
 		void unique( BinaryPredicate p ) {
-			if (_count < 2)
+			if (_size < 2)
 				return ;
 			t_list* track = _begin->next->next;
 			t_list* tmp;
@@ -577,7 +577,7 @@ namespace ft {
 				if (p(track->prev->content, track->content)) {
 					this->_lstdetach_el(track);
 					this->_lstdelone(track);
-					_count -= 1;
+					_size -= 1;
 				}
 				track = tmp;
 			}
@@ -589,7 +589,7 @@ namespace ft {
 
 		template< class Compare >
 		void sort( Compare comp ) {
-			if (_count < 2)
+			if (_size < 2)
 				return ;
 			t_list *track, *next;
 			track = _begin->next;
@@ -619,7 +619,7 @@ namespace ft {
 		typename Allocator::template rebind<t_list>::other _a_node;
 		t_list* _begin;
 		t_list* _end;
-		size_type _count;
+		size_type _size;
 
 		void _init_constructor( const Allocator& alloc ) {
 			T default_val = T();
@@ -628,7 +628,7 @@ namespace ft {
 			_begin = _lstnew(default_val);
 			_end = _lstnew(default_val);
 			_link_el(_begin, _end);
-			_count = 0;
+			_size = 0;
 		}
 
 		void _link_el( t_list* first, t_list *second ) {
@@ -706,8 +706,6 @@ namespace ft {
 							 const T& content2) const { return content1 == content2; }
 			virtual ~cmp_unique() {}
 		};
-
-
 	};
 
 	/* non-member functions

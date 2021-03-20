@@ -22,6 +22,6 @@ int main() {
 	//test_list();
 	//test_stack();
 	//test_queue();
-	//test_vector();
-	test_map();
+	test_vector();
+	//test_map();
 }
