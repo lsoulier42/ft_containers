@@ -103,7 +103,6 @@ namespace ft {
             }
             virtual ~iterator() {}
 
-
             iterator& operator++() {
 				if (this->_node->left)
 					this->_node = this->_node->left;
@@ -124,12 +123,18 @@ namespace ft {
                 return tmp;
             }
             iterator& operator--() {
-                this->_node = _find_prev(this->_node);
+            	if (this->_node->parent->left == this->_node)
+            		this->_node = this->_node->parent;
+            	else
+                	this->_node = _find_prev(this->_node);
                 return *this;
             }
             iterator operator--(int) {
                 iterator tmp = *this;
-				this->_node = _find_prev(this->_node);
+				if (this->_node->parent->left == this->_node)
+					this->_node = this->_node->parent;
+				else
+					this->_node = _find_prev(this->_node);
                 return tmp;
             }
 
@@ -143,9 +148,13 @@ namespace ft {
 				return node->right;
 			}
 			bstree* _find_prev(bstree* node) {
-            	if (node->parent && node == node->parent->right)
-            		return node->parent->left;
-            	return 
+            	node = node->parent;
+            	if (node->left) {
+            		node = node->left;
+					while (node->right)
+						node = node->right;
+				}
+            	return node;
             }
         };
 
@@ -307,28 +316,15 @@ namespace ft {
 		 */
 
 		ft::pair<iterator,bool> insert( const value_type& value ) {
-			size_type old_size;
-			bstree* node;
-
-			old_size = _size;
-			this->_insert(value, _root);
-			node = _size != old_size ? _last_created : _already_present;
-			if (_root == _end) {
-				_root = node;
-				_root->right = _end;
-				_end->parent = _root;
-			}
-			return ft::make_pair(iterator(node), _size != old_size);
+			size_type old_size = _size;
+			iterator it = insert(begin(), value);
+			return ft::make_pair(it, _size != old_size);
 		}
-		/** the second function has almost the same implementation than the previous one
-		 * don't forget to change both if any modification
-		 *
-		 */
+
 		iterator insert( iterator hint, const value_type& value ) {
-			size_type old_size;
+			size_type old_size = _size;
 			bstree* node;
 
-			old_size = _size;
 			this->_insert(value, hint._node);
 			node = _size != old_size ? _last_created : _already_present;
 			if (_root == _end) {
@@ -349,15 +345,16 @@ namespace ft {
 		 *
 		 */
         void erase( iterator pos ) {
-            bstree* deleted_node = pos._node;
-            bstree* new_root = this->_delete_node(*pos);
-            if (_root == deleted_node)
-                _root = new_root;
-            _size -= 1;
+        	erase(pos._node->content.first);
         }
         void erase( iterator first, iterator last ) {
             for (iterator it = first; it != last; it++)
-                erase(it);
+                erase(it._node->content.first);
+        }
+		size_type erase( const key_type& key ) {
+        	size_type old_size = _size;
+			this->_delete_node(key);
+        	return _size != old_size;
         }
 
         /* Member functions : swap()
@@ -375,13 +372,12 @@ namespace ft {
          * which is either 1 or 0 since this container does not allow duplicates.
          */
         size_type count( const Key& key ) const {
-            bstree* found = _search(key);
-            return found != NULL && found != _end;
+            return find(key) != end();
         }
 
         iterator find( const Key& key ) {
             bstree* found = _search(key);
-            return found != NULL && found != _end ? iterator(found) : end();
+            return (found != NULL && found != _end ? iterator(found) : end());
         }
         const_iterator find( const Key& key ) const {
             bstree* found = _search(key);
@@ -498,7 +494,7 @@ namespace ft {
 			_a_node.deallocate(node, 1);
 		}
 
-		bstree* _search(const Key& key, bstree* node) {
+		bstree* _search(const Key& key, bstree* node) const {
 			if (!node || node == _end
 				|| (node != NULL && node != _end && key == node->content.first))
 				return node;
@@ -507,7 +503,7 @@ namespace ft {
 			else
 				return _search(key, node->right);
 		}
-		bstree* _search(const Key& key) {
+		bstree* _search(const Key& key) const {
 			return _search(key, _root);
 		}
 
@@ -536,31 +532,34 @@ namespace ft {
 			return node;
 		}
 
-		bstree* _delete_node(const value_type& content, bstree* root) {
-			if (root == NULL)
+		bstree* _delete_node(const key_type& key , bstree* root) {
+			//key not found
+			if (root == NULL || root == _end)
 				return root;
-			if (_comp_key_less(content.first, root->content.first)) {
-				root->left = _delete_node(content, root->left);
+
+			//search the node
+			if (_comp_key_less(key, root->content.first)) {
+				root->left = _delete_node(key, root->left);
 				return root;
 			}
-			else if (_comp_key_less(root->content.first, content.first)) {
-				root->right = _delete_node(content, root->right);
-				return root->right;
+			else if (_comp_key_less(root->content.first, key)) {
+				root->right = _delete_node(key, root->right);
+				return root;
 			}
 
-			//case one child empty
-			if (root->left == NULL) {
-				bstree* tmp = root->right;
-				bstree* tmpgp = root->parent;
+			_size -= 1;
+			//case no child
+			if (!root->left && !root->right) {
+				if (root == _root)
+					_root = _end;
 				this->_free_node(root);
-				tmp->parent = tmpgp;
-				return tmp;
-			}
-			else if (root->right == NULL) {
-				bstree* tmp = root->left;
-				bstree* tmpgp = root->parent;
+				return NULL;
+			} else if (!root->left || !root->right) {
+				bstree* tmp = root->left == NULL ? root->right : root->left;
+				tmp->parent = root->parent;
+				if (root == _root)
+					_root = tmp;
 				this->_free_node(root);
-				tmp->parent = tmpgp;
 				return tmp;
 			}
 			else { // case both children exist
@@ -573,20 +572,24 @@ namespace ft {
 					successor_parent = successor;
 					successor = successor->left;
 				}
-
-				//then delete successor
 				if (successor_parent != root)
 					successor_parent->left = successor->right;
 				else
 					successor_parent->right = successor->right;
-				successor->right->parent = successor_parent;
-				root->content = successor->content;
-				this->_free_node(successor);
-				return root;
+				if (successor->right)
+					successor->right->parent = successor_parent;
+
+				successor->right = root->right;
+				successor->left = root->left;
+				successor->parent = root->parent;
+				if (root == _root)
+					_root = successor;
+				this->_free_node(root);
+				return successor;
 			}
 		}
-		bstree* _delete_node(const value_type& content) {
-			return _delete_node(content, _root);
+		bstree* _delete_node(const key_type& key) {
+			return _delete_node(key, _root);
 		}
 
 		void _clear_tree(bstree* node) {
@@ -605,10 +608,72 @@ namespace ft {
 		bstree* _already_present;
 		bstree* _end;
 		size_type _size;
-    };
+	};
 
+    /* Non member functions : comparison operators
+     * Checks if the contents of lhs and rhs are equal,
+     * that is, they have the same number of elements
+     * and each element in lhs compares equal with the element in rhs at the same position.
+     *
+     */
 
+	template< class Key, class T, class Compare, class Alloc >
+	bool operator==( const ft::Map<Key,T,Compare,Alloc>& lhs,
+		const ft::Map<Key,T,Compare,Alloc>& rhs ) {
+		if (lhs.size() != rhs.size())
+			return false;
+		typename ft::Map<Key,T,Compare,Alloc>::iterator lhs_it = lhs.begin();
+		typename ft::Map<Key,T,Compare,Alloc>::iterator rhs_it = rhs.begin();
+		while (lhs_it != lhs.end() && rhs_it != rhs.end()) {
+			if (*lhs_it != *rhs_it)
+				return false;
+			lhs_it++;
+			rhs_it++;
+		}
+		return lhs_it == lhs.end() && rhs_it == rhs.end();
+	}
+	template< class Key, class T, class Compare, class Alloc >
+	bool operator!=( const ft::Map<Key,T,Compare,Alloc>& lhs,
+					 const ft::Map<Key,T,Compare,Alloc>& rhs ) {
+		return !(lhs == rhs);
+	}
+	template< class Key, class T, class Compare, class Alloc >
+	bool operator<( const ft::Map<Key,T,Compare,Alloc>& lhs,
+					 const ft::Map<Key,T,Compare,Alloc>& rhs ) {
+		typename ft::Map<Key,T,Compare,Alloc>::iterator lhs_it = lhs.begin();
+		typename ft::Map<Key,T,Compare,Alloc>::iterator rhs_it = rhs.begin();
+		while (lhs_it != lhs.end() && rhs_it != rhs.end()) {
+			if (*rhs_it < *lhs_it || *lhs_it == *rhs_it)
+				return false;
+			lhs_it++;
+			rhs_it++;
+		}
+		return lhs_it == lhs.end();
+	}
+	template< class Key, class T, class Compare, class Alloc >
+	bool operator<=( const ft::Map<Key,T,Compare,Alloc>& lhs,
+					const ft::Map<Key,T,Compare,Alloc>& rhs ) {
+		return (lhs == rhs || lhs < rhs);
+	}
+	template< class Key, class T, class Compare, class Alloc >
+	bool operator>( const ft::Map<Key,T,Compare,Alloc>& lhs,
+					 const ft::Map<Key,T,Compare,Alloc>& rhs ) {
+		return (rhs < lhs);
+	}
+	template< class Key, class T, class Compare, class Alloc >
+	bool operator>=( const ft::Map<Key,T,Compare,Alloc>& lhs,
+					const ft::Map<Key,T,Compare,Alloc>& rhs ) {
+		return (lhs > rhs || lhs == rhs);
+	}
 
+	/* Non member functions : ft::swap() map specialization
+	 * Swaps the contents of lhs and rhs.
+	 *
+	 */
+	template< class Key, class T, class Compare, class Alloc >
+	void swap( ft::Map<Key,T,Compare,Alloc>& lhs,
+			   ft::Map<Key,T,Compare,Alloc>& rhs ) {
+		lhs.swap(rhs);
+	}
 }
-
 #endif

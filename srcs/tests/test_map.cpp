@@ -59,7 +59,7 @@ void printTree(ft::bstree<ft::pair<const std::string, std::string> >* root, Trun
 	}
 
 	showTrunks(trunk);
-	std::cout << root->content.first << std::endl;
+	std::cout << (root->content.first == "" ? "\033[31;4mendptr\033[0m" : root->content.first) << std::endl;
 
 	if (prev) {
 		prev->str = prev_str;
@@ -106,12 +106,58 @@ void test_map_whole() {
 	printState(test_insert);
 
 	std::cout << std::endl << "This test will focus on \033[31;1;4miterators\033[0m:" << std::endl;
+	std::cout << "Let's take an iterator it = begin() and increment it till end():" << std::endl;
 	ft::Map<std::string, std::string>::iterator it = test_insert.begin();
 	while (it != test_insert.end())
 	{
 		std::cout << "return of it: " << it->first << std::endl;
 		it++;
 	}
+	std::cout << "Now let's decrement it till begin: " << std::endl;
+	while (1)
+	{
+		it--;
+		std::cout << "return of it: " << it->first << std::endl;
+		if (it == test_insert.begin())
+			break;
+	}
+
+	std::cout << std::endl << "This test will focus on \033[31;1;4mfind()\033[0m:" << std::endl;
+	std::cout << "If i put 'batman' as a key, the iterator found contains: ";
+	ft::Map<std::string, std::string>::iterator found = test_insert.find(std::string("batman"));
+	std::cout << found->first << "-" << found->second << std::endl;
+	std::cout << "If i put 'yolo' as a key, the iterator found contains: ";
+	found = test_insert.find(std::string("yolo"));
+	std::cout << found->first << "-" << found->second << std::endl;
+
+	std::cout << std::endl << "This test will focus on \033[31;1;4moperator[]\033[0m:" << std::endl;
+	std::cout << "if I print test_insert[\"batman\"], the ouput is: " << test_insert["batman"] << std::endl;
+	std::cout << "if I print test_insert[\"ululu\"], the ouput is: " << test_insert["ululu"] << std::endl;
+	std::cout << "if I print test_insert[\"anna\"], the ouput is: " << test_insert["anna"] << std::endl;
+	std::cout << "Now if i try with an inexistant key 'pikachu' : " << test_insert["pikachu"] << std::endl;
+	std::cout << "Let's if the tree has been updated: " << std::endl;
+	printState(test_insert);
+
+	std::cout << std::endl << "This test will focus on \033[31;1;4merase()\033[0m:" << std::endl;
+	std::cout << "Let's try to erase a pair with no child 'show': " << std::endl;
+	test_insert.erase(std::string("show"));
+	printState(test_insert);
+	std::cout << "Let's try to erase a pair with one child 'rouge feu': " << std::endl;
+	test_insert.erase(std::string("rouge feu"));
+	printState(test_insert);
+	std::cout << "Let's try to erase a pair with two children 'machin': " << std::endl;
+	test_insert.erase(std::string("machin"));
+	printState(test_insert);
+	std::cout << "Let's try to erase the pair before the end ptr: " << std::endl;
+	test_insert.erase(std::string("wtf"));
+	printState(test_insert);
+	std::cout << "Let's try to erase the root: " << std::endl;
+	test_insert.erase(std::string("truc"));
+	printState(test_insert);
+
+	std::cout << std::endl << "This test will focus on \033[31;1;4mcount()\033[0m:" << std::endl;
+	std::cout << "let's see the return of count for existant key 'ululu': " << test_insert.count(std::string("ululu")) << std::endl;
+	std::cout << "let's see the return of count for inexistant key 'war': " << test_insert.count(std::string("war")) << std::endl;
 
 	std::cout << std::endl << "This test will focus on \033[31;1;4mclear()\033[0m:" << std::endl;
 	test_insert.clear();

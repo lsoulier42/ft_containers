@@ -608,7 +608,7 @@ namespace ft {
 
 
 	};
-		/* Non-member functions : operator overloads
+		/* Non-member functions : comparison operator overloads
 		 *
 		 *
 		 */
@@ -628,12 +628,12 @@ namespace ft {
 		template< class T, class Allocator >
 		bool operator<( const ft::Vector<T, Allocator>& lhs, const ft::Vector<T, Allocator>& rhs ) {
 			size_t i = 0;
-			while (i < lhs._size && i < rhs._size) {
+			while (i < lhs.size()  && i < rhs.size()) {
 				if (lhs[i] > rhs[i])
 					return false;
 				i++;
 			}
-			return lhs._size < rhs._size;
+			return i == lhs.size();
 		}
 		template< class T, class Allocator >
 		bool operator<=( const ft::Vector<T, Allocator>& lhs, const ft::Vector<T, Allocator>& rhs ) {
