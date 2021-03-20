@@ -233,7 +233,7 @@ namespace ft {
             _set_end_pointer();
         }
         template< class InputIt >
-        void assign( typename enable_if<is_integral<InputIt>::value>::type first, InputIt last ) {
+        void assign( InputIt first, InputIt last, typename ft::enable_if<!is_integral<InputIt>::value>::type* = NULL ) {
             this->clear();
             int i = 0;
             while(last - first >= _capacity)
@@ -424,7 +424,8 @@ namespace ft {
 			_set_end_pointer();
 		}
 		template< class InputIt >
-		void insert( iterator pos, typename enable_if<is_integral<InputIt>::value>::type first, InputIt last) {
+		void insert( iterator pos, InputIt first, InputIt last,
+			   typename ft::enable_if<!is_integral<InputIt>::value>::type* = NULL) {
 			size_type count = 0;
 			for(InputIt it = first; it != last; it++)
 				count++;

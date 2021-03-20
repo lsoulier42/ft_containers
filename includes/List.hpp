@@ -178,7 +178,7 @@ namespace ft {
 			}
 		}
 		template< class InputIt >
-		void assign( typename enable_if<is_integral<InputIt>::value>::type first, InputIt last ) {
+		void assign( InputIt first, InputIt last, typename ft::enable_if<!is_integral<InputIt>::value>::type* = NULL ) {
 			this->clear();
 			for (InputIt it = first; it != last; it++)
 				this->push_back(*it);
@@ -315,7 +315,8 @@ namespace ft {
 				insert(pos, value);
 		}
 		template< class InputIt >
-		void insert( iterator pos, typename enable_if<is_integral<InputIt>::value>::type first, InputIt last ) {
+		void insert( iterator pos, InputIt first, InputIt last,
+			   typename ft::enable_if<!is_integral<InputIt>::value>::type* = NULL) {
 			for (InputIt it = first; it != last; it++)
 				insert(pos, *it);
 		}
