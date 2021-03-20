@@ -65,10 +65,28 @@ namespace ft {
 				return (_node != rhs._node);
 			}
 
-			const_iterator& operator++() { return *this; }
-			const_iterator operator++(int) { return *this; }
-			const_iterator& operator--() { return *this; }
-			const_iterator operator--(int) { return *this; }
+			const_iterator& operator++() {
+				if (this->_node->next)
+					this->_node = this->_node->next;
+				return *this;
+			}
+			const_iterator operator++(int) {
+				const_iterator tmp = *this;
+				if (this->_node->next)
+					this->_node = this->_node->next;
+				return tmp;
+			}
+			const_iterator& operator--() {
+				if (this->_node->prev)
+					this->_node = this->_node->prev;
+				return *this;
+			}
+			const_iterator operator--(int) {
+				const_iterator tmp = *this;
+				if (this->_node->prev)
+					this->_node = this->_node->prev;
+				return tmp;
+			}
 
 			t_list* _node;
 		};
@@ -85,30 +103,6 @@ namespace ft {
 				return *this;
 			}
 			virtual ~iterator() {}
-
-
-			iterator& operator++() {
-			    if (this->_node->next)
-				    this->_node = this->_node->next;
-				return *this;
-			}
-			iterator operator++(int) {
-				iterator tmp = *this;
-                if (this->_node->next)
-                    this->_node = this->_node->next;
-				return tmp;
-			}
-			iterator& operator--() {
-			    if (this->_node->prev)
-				    this->_node = this->_node->prev;
-				return *this;
-			}
-			iterator operator--(int) {
-				iterator tmp = *this;
-                if (this->_node->prev)
-                    this->_node = this->_node->prev;
-				return tmp;
-			}
 		};
 		
 

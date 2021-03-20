@@ -97,14 +97,40 @@ namespace ft {
 			 *
 			 */
 
-			const_iterator& operator++() { return *this; }
-			const_iterator operator++(int) { return *this; }
-			const_iterator& operator--() { return *this; }
-			const_iterator operator--(int) { return *this; }
-			const_iterator& operator+=(int) { return *this; }
-			const_iterator operator+(int) { return *this; }
-			const_iterator& operator-=(int) { return *this; }
-			const_iterator operator-(int) { return *this; }
+			const_iterator& operator++() {
+				this->_node++;
+				return *this;
+			}
+			const_iterator operator++(int) {
+				const_iterator tmp = *this;
+				this->_node++;
+				return tmp;
+			}
+			const_iterator& operator--() {
+				this->_node--;
+				return *this;
+			}
+			const_iterator operator--(int) {
+				const_iterator tmp = *this;
+				this->_node--;
+				return tmp;
+			}
+			const_iterator& operator+=(int n) {
+				this->_node += n;
+				return *this;
+			}
+			const_iterator operator+(int n) {
+				this->_node += n;
+				return *this;
+			}
+			const_iterator& operator-=(int n) {
+				this->_node -= n;
+				return *this;
+			}
+			const_iterator operator-(int n) {
+				this->_node -= n;
+				return *this;
+			}
 
 			/* Random access iterator : public attribute
 			 *
@@ -125,45 +151,6 @@ namespace ft {
 				return *this;
 			}
 			virtual ~iterator() {}
-
-			/* Random access iterator : arythmetic operator
-			 *
-			 *
-			 */
-			iterator& operator++() {
-				this->_node++;
-				return *this;
-			}
-			iterator operator++(int) {
-				iterator tmp = *this;
-				this->_node++;
-				return tmp;
-			}
-			iterator& operator--() {
-				this->_node--;
-				return *this;
-			}
-			iterator operator--(int) {
-				iterator tmp = *this;
-				this->_node--;
-				return tmp;
-			}
-			iterator& operator+=(int n) {
-				this->_node += n;
-				return *this;
-			}
-			iterator operator+(int n) {
-				this->_node += n;
-				return *this;
-			}
-			iterator& operator-=(int n) {
-				this->_node -= n;
-				return *this;
-			}
-			iterator operator-(int n) {
-				this->_node -= n;
-				return *this;
-			}
 		};
 
 		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;

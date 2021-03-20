@@ -83,13 +83,60 @@ namespace ft {
                 return (_node != rhs._node);
             }
 
-            const_iterator& operator++() { return *this; }
-            const_iterator operator++(int) { return *this; }
-            const_iterator& operator--() { return *this; }
-            const_iterator operator--(int) { return *this; }
+			const_iterator& operator++() {
+				this->_node = _find_next(this->_node);
+				return *this;
+			}
+			const_iterator operator++(int) {
+				const_iterator tmp = *this;
+				this->_node = _find_next(this->_node);
+				return tmp;
+			}
+			const_iterator& operator--() {
+				this->_node = _find_prev(this->_node);
+				return *this;
+			}
+			const_iterator operator--(int) {
+				const_iterator tmp = *this;
+				this->_node = _find_prev(this->_node);
+				return tmp;
+			}
 
+			/* Bidirectionnal iterator : public attribute
+			 *
+			 *
+			 */
             bstree* _node;
+
+		private:
+			bstree* _find_next(bstree* node) {
+				if (node->left)
+					return node->left;
+				else if (node->right)
+					return node->right;
+				while (node->parent) {
+					if (node->parent->left == node
+						&& node->parent->right)
+						return node->parent->right;
+					node = node->parent;
+				}
+				return node->right;
+			}
+			bstree* _find_prev(bstree* node) {
+				if (!node->parent)
+					return node;
+				if (node->parent->left == node)
+					return node->parent;
+				node = node->parent;
+				if (node->left) {
+					node = node->left;
+					while (node->right)
+						node = node->right;
+				}
+				return node;
+			}
         };
+
         class iterator : public const_iterator {
         public:
             iterator() {}
@@ -102,60 +149,6 @@ namespace ft {
                 return *this;
             }
             virtual ~iterator() {}
-
-            iterator& operator++() {
-				if (this->_node->left)
-					this->_node = this->_node->left;
-				else if (this->_node->right)
-					this->_node = this->_node->right;
-				else
-					this->_node = _find_next(this->_node);
-                return *this;
-            }
-            iterator operator++(int) {
-                iterator tmp = *this;
-				if (this->_node->left)
-					this->_node = this->_node->left;
-				else if (this->_node->right)
-					this->_node = this->_node->right;
-				else
-					this->_node = _find_next(this->_node);
-                return tmp;
-            }
-            iterator& operator--() {
-            	if (this->_node->parent->left == this->_node)
-            		this->_node = this->_node->parent;
-            	else
-                	this->_node = _find_prev(this->_node);
-                return *this;
-            }
-            iterator operator--(int) {
-                iterator tmp = *this;
-				if (this->_node->parent->left == this->_node)
-					this->_node = this->_node->parent;
-				else
-					this->_node = _find_prev(this->_node);
-                return tmp;
-            }
-
-        private:
-			bstree* _find_next(bstree* node) {
-				while(node->parent) {
-					if (node->parent->left == node && node->parent->right)
-						return node->parent->right;
-					node = node->parent;
-				}
-				return node->right;
-			}
-			bstree* _find_prev(bstree* node) {
-            	node = node->parent;
-            	if (node->left) {
-            		node = node->left;
-					while (node->right)
-						node = node->right;
-				}
-            	return node;
-            }
         };
 
         typedef reverse_iterator<const_iterator> const_reverse_iterator;
@@ -391,22 +384,10 @@ namespace ft {
          *
          */
     	ft::pair<iterator,iterator> equal_range( const Key& key ) {
-            bstree* found = _search(key);
-            iterator not_less;
-            iterator greater;
-
-            not_less = found && found->parent ? iterator(found) : end();
-            greater = found && found->next ? iterator(found->right) : end();
-            return ft::make_pair(not_less, greater);
+            return ft::make_pair(lower_bound(key), upper_bound(key));
         }
     	ft::pair<const_iterator,const_iterator> equal_range( const Key& key ) const {
-            bstree* found = _search(key);
-            const_iterator not_less;
-            const_iterator greater;
-
-            not_less = found && found->parent ? iterator(found) : end();
-            greater = found && found->next ? iterator(found->right) : end();
-            return ft::make_pair(not_less, greater);
+			return ft::make_pair(lower_bound(key), upper_bound(key));
         }
 
         /* Member functions : lower_bound()
@@ -414,18 +395,22 @@ namespace ft {
          *
          */
         iterator lower_bound( const Key& key ) {
-            bstree* found = _search(key);
-            iterator not_less;
-
-            not_less = found && found->parent ? iterator(found) : end();
-            return not_less;
+			iterator it = begin();
+			while (it != end()) {
+				if (it->first == key || !_comp_key_less(it->first, key))
+					return it;
+				it++;
+			}
+			return end();
         }
         const_iterator lower_bound( const Key& key ) const {
-            bstree* found = _search(key);
-            const_iterator not_less;
-
-            not_less = found && found->parent ? iterator(found) : end();
-            return not_less;
+			const_iterator it = begin();
+			while (it != end()) {
+				if (it->first == key || !_comp_key_less(it->first, key))
+					return it;
+				it++;
+			}
+			return end();
         }
 
         /* Member functions : upper_bound()
@@ -433,18 +418,22 @@ namespace ft {
          *
          */
         iterator upper_bound( const Key& key ) {
-            bstree* found = _search(key);
-            iterator greater;
-
-            greater = found && found->right ? iterator(found->right) : end();
-            return greater;
+			iterator it = begin();
+			while (it != end()) {
+				if (!_comp_key_less(it->first, key))
+					return it;
+				it++;
+			}
+			return end();
         }
         const_iterator upper_bound( const Key& key ) const {
-            bstree* found = _search(key);
-            const_iterator greater;
-
-            greater = found && found->right ? iterator(found->right) : end();
-            return greater;
+			const_iterator it = begin();
+			while (it != end()) {
+				if (!_comp_key_less(it->first, key))
+					return it;
+				it++;
+			}
+			return end();
         }
 
         /* Observers : key_comp()
