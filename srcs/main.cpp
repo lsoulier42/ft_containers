@@ -16,10 +16,12 @@
 #include "test_vector.hpp"
 #include "test_map.hpp"
 
+#include <list>
+
 int main() {
-	test_list();
+	//test_list();
 	//test_stack();
 	//test_queue();
 	//test_vector();
-	//test_map();
+	test_map();
 }
