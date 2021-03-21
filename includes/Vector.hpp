@@ -184,6 +184,7 @@ namespace ft {
             this->assign(first, last);
 		 }
 		Vector( const Vector& other ) {
+			_init_constructor(Allocator(), 0);
             this->_deep_copy(other);
 		 }
 
@@ -205,8 +206,8 @@ namespace ft {
 		  */
 
         Vector& operator=( const Vector& other ) {
-            if (this != &other)
-                this->_deep_copy(other);
+			this->clear();
+			this->_deep_copy(other);
             return *this;
         }
 
@@ -515,18 +516,9 @@ namespace ft {
 		 *
 		 */
 		void swap( Vector& other ) {
-			pointer tmp_begin;
-			size_type tmp_count;
-
-			tmp_begin = other._vla;
-			other._vla = _vla;
-			_vla = tmp_begin;
-			tmp_count = other._size;
-			other._size = _size;
-			_size = tmp_count;
-			tmp_count = other._capacity;
-			other._capacity = _capacity;
-			_capacity = tmp_count;
+			Vector tmp = other;
+			other = *this;
+			*this = tmp;
 		}
 
 	private:
@@ -548,7 +540,6 @@ namespace ft {
 		}
 
 		void _deep_copy(const Vector& other) {
-		    this->clear();
 		    if (_capacity < other._capacity)
 		        _realloc(other._capacity);
 		    _size = other._size;

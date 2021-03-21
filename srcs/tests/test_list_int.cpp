@@ -355,10 +355,10 @@ void test_list_int_iterator(void) {
 	std::cout << "Let's test end() iterator: " << std::endl;
 	ite = iterator_test.end();
 	std::cout << "The return of *ite, with ite = list.end() is: " << *ite << std::endl;
-	std::cout << "The return of *(++ite) is :" << *(++ite) << std::endl;
-	std::cout << "The return of *(ite++) is :" << *(ite++) << " then *ite is " << *ite << std::endl;
 	std::cout << "The return of *(--ite) is : " << *(--ite) << std::endl;
 	std::cout << "The return of *(ite--) is : " << *(ite--) << " then *ite is " << *ite << std::endl;
+	std::cout << "The return of *(++ite) is :" << *(++ite) << std::endl;
+	std::cout << "The return of *(ite++) is :" << *(ite++) << " then *ite is " << *ite << std::endl;
 
 	std::cout << "Let's test const_iterator " << std::endl;
 	ft::List<int>::const_iterator cit = iterator_test.begin();
@@ -376,10 +376,10 @@ void test_list_int_iterator(void) {
 	std::cout << "Let's test rend()" << std::endl;
 	ft::List<int>::reverse_iterator rite = iterator_test.rend();
 	std::cout << "The return of *rite, with rite = list.rend() is : " << *rite << std::endl;
-	std::cout << " The return of *(++rite) is : " << *(++rite) << std::endl;
-	std::cout << "The return of *(rite++) is : " << *(rite++) << " then *rite is : " << *rite << std::endl;
 	std::cout << " The return of *(--rite) is : " << *(--rite) << std::endl;
 	std::cout << "The return of *(rite--) is : " << *(rite--) << " then *rite is : " << *rite << std::endl;
+	std::cout << " The return of *(++rite) is : " << *(++rite) << std::endl;
+	std::cout << "The return of *(rite++) is : " << *(rite++) << " then *rite is : " << *rite << std::endl;
 }
 
 void test_list_int_insert(void) {

@@ -133,6 +133,7 @@ namespace ft {
 			this->assign(first, last);
 		}
 		List( const List& other ) {
+			_init_constructor(Allocator());
 			this->_deep_copy(other);
 		}
 
@@ -153,8 +154,10 @@ namespace ft {
 		 *
 		 */
 		List& operator=( const List& other ) {
-			if (this != &other)
+			if (this != &other) {
+				this->clear();
 				this->_deep_copy(other);
+			}
 			return *this;
 		}
 
@@ -203,10 +206,10 @@ namespace ft {
 		 *
 		 */
 		reference back() {
-			return *(this->end());
+			return *(--end());
 		}
 		const_reference back() const {
-			return *(this->end());
+			return *(--end());
 		}
 
 		/* Member functions : iterators
@@ -428,17 +431,9 @@ namespace ft {
 		 *
 		 */
 		void swap( List& other ) {
-			t_list* tmp;
-			size_type  tmp_size;
-
-			tmp = _begin;
-			_begin = other._begin;
-			other._begin = tmp;
-			tmp = _end;
-			_end = other._end;
-			other._end = tmp;
-			tmp_size = _size;
-			_size = other._size;
+			List tmp = other;
+			other = *this;
+			*this = tmp;
 		}
 
 		/* Member functions : merge()
@@ -669,7 +664,6 @@ namespace ft {
 		}
 
 		void _deep_copy( const List& other ) {
-			this->clear();
 			for (iterator it = other.begin(); it != other.end(); it++)
 				this->push_back(*it);
 		}
