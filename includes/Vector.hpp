@@ -21,9 +21,6 @@
 # include "Iterator.hpp"
 # include "enable_if.hpp"
 # include "Comparison.hpp"
-# define FIRST_ELEMENT 0
-# define LAST_ELEMENT(x) ((x) - 1)
-# define END_PTR(x) (x)
 
 namespace ft {
 	template<class T, class Allocator = std::allocator<T> >
@@ -168,10 +165,10 @@ namespace ft {
 		  *
 		  */
 		 Vector() {
-            _init_constructor(Allocator(), 0);
+            _init_constructor(Allocator(), 1);
 		 }
 		 explicit Vector( const Allocator& alloc ) {
-            _init_constructor(alloc, 0);
+            _init_constructor(alloc, 1);
 		 }
 		 explicit Vector( size_type count,
 			const T& value = T(), const Allocator& alloc = Allocator()) {
@@ -184,7 +181,7 @@ namespace ft {
             this->assign(first, last);
 		 }
 		Vector( const Vector& other ) {
-			_init_constructor(Allocator(), 0);
+			_init_constructor(Allocator(), 1);
             this->_deep_copy(other);
 		 }
 
@@ -193,8 +190,7 @@ namespace ft {
 		  */
 		 virtual ~Vector() {
 		     this->clear();
-             _a.destroy(_vla + END_PTR(_size));
-		     _a.deallocate(_vla, _capacity);
+			 _a.deallocate(_vla, _capacity);
              _capacity = 0;
              _size = 0;
 		 }
@@ -230,24 +226,13 @@ namespace ft {
          */
 
         void assign( size_type count, const T& value ) {
-            this->clear();
-            while(count >= _capacity)
-                _realloc(_capacity * 2);
-            for (size_type i = 0; i < count; i++)
-                _vla[i] = value;
-            _size = count;
-            _set_end_pointer();
+			this->clear();
+            this->insert(begin(), count, value);
         }
         template< class InputIt >
         void assign( InputIt first, InputIt last, typename ft::enable_if<!is_integral<InputIt>::value>::type* = NULL ) {
-            this->clear();
-            int i = 0;
-            while(last - first >= _capacity)
-                _realloc(_capacity * 2);
-            for (iterator it = first; it != last; it++)
-                _vla[i++] = *it;
-            _size = i;
-            _set_end_pointer();
+			this->clear();
+			this->insert(begin(), first, last);
         }
 
         /* Member function : at()
@@ -288,10 +273,10 @@ namespace ft {
          *
          */
         reference front() {
-            return _vla[FIRST_ELEMENT];
+            return _vla[0];
         }
         const_reference front() const {
-            return const_cast<reference>(_vla[FIRST_ELEMENT]);
+            return const_cast<reference>(_vla[0]);
         }
 
         /* Member function : back()
@@ -300,10 +285,10 @@ namespace ft {
          *
          */
         reference back() {
-            return _vla[LAST_ELEMENT(_size)];
+            return _vla[_size - 1];
         }
         const_reference back() const {
-            return const_cast<reference>(LAST_ELEMENT(_size));
+            return _vla[_size - 1];
         }
 
         /* Member function : iterator functions
@@ -318,10 +303,10 @@ namespace ft {
             return const_iterator(_vla);
         }
         iterator end() {
-            return iterator(_vla + END_PTR(_size));
+            return iterator(_vla + _size);
         }
 		const_iterator end() const {
-        	return const_iterator(_vla + END_PTR(_size));
+        	return const_iterator(_vla + _size);
         }
 		reverse_iterator rbegin() {
 			return reverse_iterator(end());
@@ -398,7 +383,6 @@ namespace ft {
 			for(size_type i = 0; i < _size; i++)
 				_a.destroy(_vla + i);
 			_size = 0;
-			_set_end_pointer();
 		}
 
 		/* Member function : insert()
@@ -415,13 +399,12 @@ namespace ft {
 		}
 		void insert( iterator pos, size_type count, const T& value ) {
 			size_type index = pos._node - _vla;
-			while (_size + count >= _capacity)
+			while (_size + count > _capacity)
 				_realloc(_capacity * 2);
 			this->_shift_right_elements(index, count);
 			for (size_type i = index; i < count + index; i++)
 				_a.construct(_vla + i, value);
 			_size += count;
-			_set_end_pointer();
 		}
 		template< class InputIt >
 		void insert( iterator pos, InputIt first, InputIt last,
@@ -430,14 +413,13 @@ namespace ft {
 			for(InputIt it = first; it != last; it++)
 				count++;
 			size_type index = pos._node - _vla;
-			while (_size + count >= _capacity)
+			while (_size + count > _capacity)
 				_realloc(_capacity * 2);
 			this->_shift_right_elements(index, count);
 			size_type i = index;
 			for (InputIt it = first; it != last; it++)
 				_a.construct(_vla + i++, *it);
 			_size += count;
-			_set_end_pointer();
 		}
 
 		/* Member function : erase()
@@ -448,22 +430,17 @@ namespace ft {
 		 *
 		 */
 		iterator erase( iterator pos ) {
-			if (this->empty())
-				return NULL;
 			size_type index = pos._node - _vla;
 
 			_a.destroy(pos._node);
-			for (size_type i = index; i < _size; i++) {
+			for (size_type i = index; i < _size - 1; i++) {
 				_a.construct(_vla + i, _vla[i + 1]);
 				_a.destroy(_vla + i + 1);
 			}
 			_size -= 1;
-			_set_end_pointer();
 			return iterator(_vla + index);
 		}
 		iterator erase( iterator first, iterator last ) {
-			if (this->empty())
-				return NULL;
 			size_type to_erase = last - first;
 			size_type index_dst = first._node - _vla;
 			size_type index_src = last._node - _vla;
@@ -476,7 +453,6 @@ namespace ft {
 				_a.destroy(_vla + index_src++);
 			}
 			_size -= to_erase;
-			_set_end_pointer();
 			return iterator(_vla + index_dst);
 		}
 		/* Member function : push_back()
@@ -495,7 +471,7 @@ namespace ft {
 		 *
 		 */
 		void pop_back() {
-			this->erase(end());
+			this->erase(--end());
 		}
 
 		/* Member function : resize()
@@ -508,7 +484,7 @@ namespace ft {
 			if (count < _size)
 				this->erase(begin() + count, end());
 			else
-				this->insert(end(), count, value);
+				this->insert(end(), count - _size, value);
 		}
 
 		/* Member function : swap()
@@ -535,29 +511,22 @@ namespace ft {
 		void _init_constructor(const allocator_type& alloc, size_type count) {
 		    _a = alloc;
 		    _size = 0;
-		    _capacity = count + 1;
+		    _capacity = count;
 		    _vla = _a.allocate(_capacity);
 		    for(size_type i = 0; i < _capacity; i++)
 		    	_a.construct(_vla + i, T());
 		}
 
 		void _deep_copy(const Vector& other) {
-		    if (_capacity < other._capacity)
-		        _realloc(other._capacity);
+	        _realloc(other._capacity);
+		    _a = other._a;
 		    _size = other._size;
-		    _capacity = other._capacity;
 		    _vla = _a.allocate(_capacity);
 		    for (size_type i = 0; i < _size; i++)
 		        _a.construct(_vla + i, other._vla[i]);
-		    _set_end_pointer();
-		}
-
-		void _set_end_pointer() {
-            _a.construct(_vla + END_PTR(_size), T());
 		}
 
 		void _shift_right_elements(const size_type& first_index, const size_type& count) {
-			_a.destroy(_vla + _size);
 			if (!this->empty()) {
 				for (size_type i = _size; i > first_index; i--) {
 					_a.construct(_vla + i + count - 1, _vla[i - 1]);
@@ -575,16 +544,18 @@ namespace ft {
 		   _a.deallocate(_vla, _capacity);
 		   _capacity = new_capacity;
 		   _vla = new_vla;
-		   _set_end_pointer();
 		}
+
+		/* private attributes
+		 *
+		 *
+		 *
+		 */
 
 		allocator_type _a;
         size_type _size;
         size_type _capacity;
 		pointer _vla;
-
-
-
 	};
 		/* Non-member functions : comparison operator overloads
 		 *

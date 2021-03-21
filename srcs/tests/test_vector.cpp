@@ -70,7 +70,7 @@ void test_vector() {
 	print_vector_state(test_constructor);
 
 	std::cout << std::endl << "Let's try to \033[31;1;4massign()\033[0m with 9 elements 'melofee'" << std::endl;
-	test_constructor.assign(9, "melofee");
+	test_constructor.assign(9, std::string("melofee"));
 	print_vector_content(test_constructor);
 	print_vector_state(test_constructor);
 

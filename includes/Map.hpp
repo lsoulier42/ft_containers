@@ -616,6 +616,12 @@ namespace ft {
 				this->insert(*it);
     	}
 
+		/* private attributes
+		 *
+		 *
+		 *
+		 */
+
 		Compare _comp_key_less;
     	Allocator _a_type;
 		typename Allocator::template rebind<bstree>::other _a_node;
