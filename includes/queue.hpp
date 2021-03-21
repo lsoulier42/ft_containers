@@ -49,25 +49,25 @@ public:
      *
      *
      */
-    reference front() { return _c->front(); }
-    const_reference front() const { return _c->front(); }
-    reference back() { return _c->back(); }
-    const_reference back() const { return _c->back(); }
+    reference front() { return _c.front(); }
+    const_reference front() const { return _c.front(); }
+    reference back() { return _c.back(); }
+    const_reference back() const { return _c.back(); }
 
     /* Member functions : capacity
      *
      *
      */
-    bool empty() const { return _c->empty(); }
-    size_type size() const { return _c->size(); }
+    bool empty() const { return _c.empty(); }
+    size_type size() const { return _c.size(); }
 
     /* Member functions : modifiers
      *
      *
      */
-    void push( const value_type& value ) { _c->push_back(value); }
-    void pop() { _c->pop_front(); }
-    void swap( queue& other ) { _c->swap(other._c); }
+    void push( const value_type& value ) { _c.push_back(value); }
+    void pop() { _c.pop_front(); }
+    void swap( queue& other ) { _c.swap(other._c); }
 
 private:
     Container _c;

@@ -59,8 +59,8 @@ namespace ft {
 		 *
 		 *
 		 */
-		void push( const value_type& value ) { _c->push_back(value); }
-		void pop() { _c->pop_back(); }
+		void push( const value_type& value ) { _c.push_back(value); }
+		void pop() { _c.pop_back(); }
 		void swap( stack& other ) {	_c.swap(other._c); }
 
 	private:
