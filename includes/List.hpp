@@ -658,6 +658,8 @@ namespace ft {
 		}
 
 		void _deep_copy( const List& other ) {
+			_a_type = other._a_type;
+			_a_node = other._a_node;
 			for (iterator it = other.begin(); it != other.end(); it++)
 				this->push_back(*it);
 		}

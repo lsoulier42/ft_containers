@@ -609,6 +609,9 @@ namespace ft {
 		}
 
 		void _deep_copy(const Map& other) {
+    		_comp_key_less = other._comp_key_less;
+    		_a_type = other._a_type;
+    		_a_node = other._a_node;
 			for(iterator it = other.begin(); it != other.end(); it++)
 				this->insert(*it);
     	}
