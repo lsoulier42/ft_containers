@@ -17,7 +17,7 @@
 # include <iostream>
 # include "enable_if.hpp"
 # include "Iterator.hpp"
-# include "less.hpp"
+# include "Comparison.hpp"
 
 namespace ft {
 	template<class T>
@@ -531,7 +531,7 @@ namespace ft {
 			}
 		}
 		void remove( const T& value ) {
-			cmp_unary comp(value);
+			ft::equal_to_unary<T> comp(value);
 			remove_if(comp);
 		}
 
@@ -579,7 +579,7 @@ namespace ft {
 			}
 		}
 		void unique() {
-			cmp_unique comp;
+			ft::equal_to<T> comp;
 			unique(comp);
 		}
 
@@ -606,17 +606,11 @@ namespace ft {
 
 
 	private:
-		/* private attributes
+		/* private functions for management of linked list
 		 *
 		 *
 		 *
 		 */
-		allocator_type _a_type;
-		typename Allocator::template rebind<t_list>::other _a_node;
-		t_list* _begin;
-		t_list* _end;
-		size_type _size;
-
 		void _init_constructor( const Allocator& alloc ) {
 			T default_val = T();
 
@@ -680,28 +674,16 @@ namespace ft {
 				this->push_back(*it);
 		}
 
-		class cmp_unary {
-		public:
-			explicit cmp_unary(const T& ref) : _ref(ref) {}
-			virtual ~cmp_unary() {}
-			bool operator()(const T& other) const { return other == _ref; }
-		private:
-			cmp_unary() {}
-			const T& _ref;
-		};
-
-		class cmp_unique {
-		public:
-			cmp_unique() {}
-			cmp_unique(const cmp_unique & src) { *this = src; }
-			cmp_unique& operator=(const cmp_unique & src) {
-				(void)src;
-				return *this;
-			}
-			bool operator() (const T& content1,
-							 const T& content2) const { return content1 == content2; }
-			virtual ~cmp_unique() {}
-		};
+		/* private attributes
+		 *
+		 *
+		 *
+		 */
+		allocator_type _a_type;
+		typename Allocator::template rebind<t_list>::other _a_node;
+		t_list* _begin;
+		t_list* _end;
+		size_type _size;
 	};
 
 	/* non-member functions
@@ -713,14 +695,7 @@ namespace ft {
 	bool operator==(const List<T, Allocator>& lhs, const List<T, Allocator>& rhs) {
 		if (lhs.size() != rhs.size())
 			return false;
-		t_list<T>* track_lhs = lhs.begin()._node->next;
-		t_list<T>* track_rhs = rhs.begin()._node->next;
-		while (track_lhs != lhs.end()._node && track_rhs != rhs.end()._node
-			   && track_lhs->content == track_rhs->content) {
-			track_lhs = track_lhs->next;
-			track_rhs = track_rhs->next;
-		}
-		return track_lhs == lhs.end()._node && track_rhs == rhs.end()._node;
+		return ft::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 	}
 	template< class T, class Allocator >
 	bool operator!=(const List<T, Allocator>& lhs, const List<T, Allocator>& rhs) {
@@ -728,16 +703,7 @@ namespace ft {
 	}
 	template< class T, class Allocator >
 	bool operator<(const List<T, Allocator>& lhs, const List<T, Allocator>& rhs) {
-		t_list<T>* track_lhs = lhs.begin()._node->next;
-		t_list<T>* track_rhs = rhs.begin()._node->next;
-		while (track_lhs != lhs.end()._node && track_rhs != rhs.end()._node
-			   && track_lhs->content == track_rhs->content) {
-			track_lhs = track_lhs->next;
-			track_rhs = track_rhs->next;
-		}
-		if (track_lhs == lhs.end()._node && track_rhs == rhs.end()._node)
-			return (false);
-		return track_lhs->content < track_rhs->content;
+		return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 	}
 	template< class T, class Allocator >
 	bool operator<=(const List<T, Allocator>& lhs, const List<T, Allocator>& rhs) {
@@ -745,11 +711,11 @@ namespace ft {
 	}
 	template< class T, class Allocator >
 	bool operator>(const List<T, Allocator>& lhs, const List<T, Allocator>& rhs) {
-		return !(lhs < rhs) && lhs != rhs;
+		return !(lhs <= rhs);
 	}
 	template< class T, class Allocator >
 	bool operator>=(const List<T, Allocator>& lhs, const List<T, Allocator>& rhs) {
-		return lhs > rhs || lhs == rhs;
+		return !(lhs < rhs);
 	}
 
 	template< class T, class Alloc >

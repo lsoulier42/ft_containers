@@ -18,7 +18,7 @@
 # include "Iterator.hpp"
 # include "enable_if.hpp"
 # include "pair.hpp"
-# include "less.hpp"
+# include "Comparison.hpp"
 
 namespace ft {
 	/* Base structure : binary search tree
@@ -635,15 +635,7 @@ namespace ft {
 		const ft::Map<Key,T,Compare,Alloc>& rhs ) {
 		if (lhs.size() != rhs.size())
 			return false;
-		typename ft::Map<Key,T,Compare,Alloc>::iterator lhs_it = lhs.begin();
-		typename ft::Map<Key,T,Compare,Alloc>::iterator rhs_it = rhs.begin();
-		while (lhs_it != lhs.end() && rhs_it != rhs.end()) {
-			if (*lhs_it != *rhs_it)
-				return false;
-			lhs_it++;
-			rhs_it++;
-		}
-		return lhs_it == lhs.end() && rhs_it == rhs.end();
+		return ft::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 	}
 	template< class Key, class T, class Compare, class Alloc >
 	bool operator!=( const ft::Map<Key,T,Compare,Alloc>& lhs,
@@ -653,15 +645,7 @@ namespace ft {
 	template< class Key, class T, class Compare, class Alloc >
 	bool operator<( const ft::Map<Key,T,Compare,Alloc>& lhs,
 					 const ft::Map<Key,T,Compare,Alloc>& rhs ) {
-		typename ft::Map<Key,T,Compare,Alloc>::iterator lhs_it = lhs.begin();
-		typename ft::Map<Key,T,Compare,Alloc>::iterator rhs_it = rhs.begin();
-		while (lhs_it != lhs.end() && rhs_it != rhs.end()) {
-			if (*rhs_it < *lhs_it || *lhs_it == *rhs_it)
-				return false;
-			lhs_it++;
-			rhs_it++;
-		}
-		return lhs_it == lhs.end();
+		return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 	}
 	template< class Key, class T, class Compare, class Alloc >
 	bool operator<=( const ft::Map<Key,T,Compare,Alloc>& lhs,
@@ -671,12 +655,12 @@ namespace ft {
 	template< class Key, class T, class Compare, class Alloc >
 	bool operator>( const ft::Map<Key,T,Compare,Alloc>& lhs,
 					 const ft::Map<Key,T,Compare,Alloc>& rhs ) {
-		return (rhs < lhs);
+		return !(lhs <= rhs);
 	}
 	template< class Key, class T, class Compare, class Alloc >
 	bool operator>=( const ft::Map<Key,T,Compare,Alloc>& lhs,
 					const ft::Map<Key,T,Compare,Alloc>& rhs ) {
-		return (lhs > rhs || lhs == rhs);
+		return !(lhs < rhs);
 	}
 
 	/* Non member functions : ft::swap() map specialization

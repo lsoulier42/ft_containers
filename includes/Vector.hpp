@@ -15,11 +15,12 @@
 # include <limits>
 # include <memory>
 # include <iostream>
-# include "enable_if.hpp"
 # include <stdexcept>
 # include <string>
 # include <sstream>
 # include "Iterator.hpp"
+# include "enable_if.hpp"
+# include "Comparison.hpp"
 # define FIRST_ELEMENT 0
 # define LAST_ELEMENT(x) ((x) - 1)
 # define END_PTR(x) (x)
@@ -600,10 +601,7 @@ namespace ft {
 		bool operator==( const ft::Vector<T, Allocator>& lhs, const ft::Vector<T, Allocator>& rhs ) {
 			if (lhs.size() != rhs.size())
 				return false;
-			for (size_t i = 0; i < lhs._size; i++)
-				if (lhs[i] != rhs[i])
-					return false;
-			return true;
+			return ft::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 		}
 		template< class T, class Allocator >
 		bool operator!=( const ft::Vector<T, Allocator>& lhs, const ft::Vector<T, Allocator>& rhs ) {
@@ -611,13 +609,7 @@ namespace ft {
 		}
 		template< class T, class Allocator >
 		bool operator<( const ft::Vector<T, Allocator>& lhs, const ft::Vector<T, Allocator>& rhs ) {
-			size_t i = 0;
-			while (i < lhs.size()  && i < rhs.size()) {
-				if (lhs[i] > rhs[i])
-					return false;
-				i++;
-			}
-			return i == lhs.size();
+			return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 		}
 		template< class T, class Allocator >
 		bool operator<=( const ft::Vector<T, Allocator>& lhs, const ft::Vector<T, Allocator>& rhs ) {
