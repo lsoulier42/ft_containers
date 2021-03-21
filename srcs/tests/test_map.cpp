@@ -71,7 +71,7 @@ void printTree(ft::bstree<ft::pair<const std::string, std::string> >* root, Trun
 }
 
 template<class Key, class T>
-void printState(const ft::Map<Key, T>& test_map) {
+void printState(const ft::map<Key, T>& test_map) {
 
 	printTree(test_map.base(), NULL, false);
 	std::cout << "current \033[30;4msize()\033[0m: " << test_map.size() << std::endl;
@@ -79,12 +79,12 @@ void printState(const ft::Map<Key, T>& test_map) {
 }
 
 void test_map_whole() {
-	ft::Map<std::string, std::string> test_insert;
+	ft::map<std::string, std::string> test_insert;
 	std::string strings[] = {"truc", "bidule", "batman", "robin", "machin", "chose",
 		"la famille adams", "pokemon", "rouge feu", "les simpsons", "ululu", "bidule",
 		"wtf", "nausicaa", "show", "me the money", "anna", "montana"};
 	int arrSize = *(&strings + 1) - strings;
-	ft::pair<ft::Map<std::string, std::string>::iterator, bool> test_return;
+	ft::pair<ft::map<std::string, std::string>::iterator, bool> test_return;
 
 	std::cout << "This test will focus on \033[31;1;4minsert()\033[0m:" << std::endl;
 	std::cout << "Let's create a map with using this array of strings:" << std::endl;
@@ -108,7 +108,7 @@ void test_map_whole() {
 
 	std::cout << std::endl << "This test will focus on \033[31;1;4miterators\033[0m:" << std::endl;
 	std::cout << "Let's take an iterator it = begin() and increment it till end():" << std::endl;
-	ft::Map<std::string, std::string>::iterator it = test_insert.begin();
+	ft::map<std::string, std::string>::iterator it = test_insert.begin();
 	while (it != test_insert.end())
 	{
 		std::cout << "return of it: " << it->first << std::endl;
@@ -125,7 +125,7 @@ void test_map_whole() {
 
 	std::cout << std::endl << "This test will focus on \033[31;1;4mfind()\033[0m:" << std::endl;
 	std::cout << "If i put 'batman' as a key, the iterator found contains: ";
-	ft::Map<std::string, std::string>::iterator found = test_insert.find(std::string("batman"));
+	ft::map<std::string, std::string>::iterator found = test_insert.find(std::string("batman"));
 	std::cout << found->first << "-" << found->second << std::endl;
 	std::cout << "If i put 'yolo' as a key, the iterator found contains: ";
 	found = test_insert.find(std::string("yolo"));
@@ -178,6 +178,6 @@ void test_map_whole() {
 }
 
 void test_map() {
-	std::cout << std::endl << "Test for the container \033[31;1;4mMap\033[0m:" << std::endl;
+	std::cout << std::endl << "Test for the container \033[31;1;4mmap\033[0m:" << std::endl;
 	test_map_whole();
 }

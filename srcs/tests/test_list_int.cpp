@@ -12,15 +12,15 @@
 
 #include "test_list.hpp"
 
-void print_list(ft::List<int> & current_list) {
+void print_list(ft::list<int> & current_list) {
 	std::cout << "This list contains the following ints : ";
 	if (!current_list.empty())
-		for (ft::List<int>::iterator fit = current_list.begin(); fit != current_list.end(); fit++)
+		for (ft::list<int>::iterator fit = current_list.begin(); fit != current_list.end(); fit++)
 			std::cout << *fit << ", ";
 	std::cout << std::endl;
 }
 
-void create_int_container(ft::List<int> *container_ptr) {
+void create_int_container(ft::list<int> *container_ptr) {
 	int ints[ARRAY_SIZE] = { std::rand(), 42, -42, INT_MAX, INT_MIN };
 	std::cout << "Ints that will be pushed: ";
 	for (int i = 0; i < ARRAY_SIZE; i++)
@@ -31,7 +31,7 @@ void create_int_container(ft::List<int> *container_ptr) {
 }
 
 void test_list_int_push_back(void) {
-	ft::List<int> test_push_back;
+	ft::list<int> test_push_back;
 
 	std::cout << std::endl << "Function \033[31;4mpush_back()\033[0m :" << std::endl;
 	create_int_container(&test_push_back);
@@ -39,7 +39,7 @@ void test_list_int_push_back(void) {
 }
 
 void test_list_int_size(void) {
-	ft::List<int> test_size;
+	ft::list<int> test_size;
 
 	std::cout << std::endl << "Function \033[31;4msize()\033[0m : " << std::endl;
 	create_int_container(&test_size);
@@ -47,7 +47,7 @@ void test_list_int_size(void) {
 }
 
 void test_list_int_pop_back(void) {
-	ft::List<int> test_pop_back;
+	ft::list<int> test_pop_back;
 
 	std::cout << std::endl << "Function \033[31;4mpop_back()\033[0m : " << std::endl;
 	create_int_container(&test_pop_back);
@@ -58,7 +58,7 @@ void test_list_int_pop_back(void) {
 }
 
 void test_list_int_clear(void) {
-	ft::List<int> test_clear;
+	ft::list<int> test_clear;
 
 	std::cout << std::endl << "Function \033[31;4mclear()\033[0m : " << std::endl;
 	create_int_container(&test_clear);
@@ -71,7 +71,7 @@ void test_list_int_clear(void) {
 }
 
 void test_list_int_push_front(void) {
-	ft::List<int> test_push_front;
+	ft::list<int> test_push_front;
 	int add[2] = {15, 89};
 
 	std::cout << std::endl << "Function \033[31;4mpush_front()\033[0m: " << std::endl;
@@ -84,7 +84,7 @@ void test_list_int_push_front(void) {
 }
 
 void test_list_int_pop_front(void) {
-	ft::List<int> test_pop_front;
+	ft::list<int> test_pop_front;
 
 	std::cout << std::endl << "Function \033[31;4mpop_front()\033[0m: " << std::endl;
 	create_int_container(&test_pop_front);
@@ -95,7 +95,7 @@ void test_list_int_pop_front(void) {
 }
 
 void test_list_int_assign(void) {
-	ft::List<int> test_assign;
+	ft::list<int> test_assign;
 
 	std::cout << std::endl << "Function \033[31;4massign()\033[0m: " << std::endl;
 	create_int_container(&test_assign);
@@ -105,7 +105,7 @@ void test_list_int_assign(void) {
 }
 
 void test_list_int_front(void) {
-	ft::List<int> test_front;
+	ft::list<int> test_front;
 
 	std::cout << std::endl << "Function \033[31;4mfront()\033[0m: " << std::endl;
 	create_int_container(&test_front);
@@ -113,7 +113,7 @@ void test_list_int_front(void) {
 }
 
 void test_list_int_back(void) {
-	ft::List<int> test_back;
+	ft::list<int> test_back;
 
 	std::cout << std::endl << "Function \033[31;4mback()\033[0m: " << std::endl;
 	create_int_container(&test_back);
@@ -121,7 +121,7 @@ void test_list_int_back(void) {
 }
 
 void test_list_int_resize(void) {
-	ft::List<int> test_resize;
+	ft::list<int> test_resize;
 
 	std::cout << std::endl << "Function \033[31;4mresize()\033[0m: " << std::endl;
 	create_int_container(&test_resize);
@@ -134,7 +134,7 @@ void test_list_int_resize(void) {
 }
 
 void test_list_int_remove(void) {
-	ft::List<int> test_remove;
+	ft::list<int> test_remove;
 
 	std::cout << std::endl << "Function \033[31;4mremove()\033[0m: " << std::endl;
 	create_int_container(&test_remove);
@@ -146,7 +146,7 @@ void test_list_int_remove(void) {
 	print_list(test_remove);
 	std::cout << "The last element using back(): " << test_remove.back() << std::endl;
 
-	ft::List<int> test_one_el;
+	ft::list<int> test_one_el;
 	int rand_nb = std::rand();
 	test_one_el.push_back(rand_nb);
 	std::cout << "Let's test with a list with a unique int" << std::endl;
@@ -158,8 +158,8 @@ void test_list_int_remove(void) {
 }
 
 void test_list_int_swap(void) {
-	ft::List<int> test_swap;
-	ft::List<int> test_swap2;
+	ft::list<int> test_swap;
+	ft::list<int> test_swap2;
 
 	std::cout << std::endl << "Function \033[31;4mswap()\033[0m: " << std::endl;
 	create_int_container(&test_swap);
@@ -180,12 +180,12 @@ void test_list_int_swap(void) {
 }
 
 void test_list_int_merge(void) {
-	ft::List<int> merge1, merge2;
-	ft::List<int> merge3, merge4;
-	ft::List<int> merge5, merge6;
+	ft::list<int> merge1, merge2;
+	ft::list<int> merge3, merge4;
+	ft::list<int> merge5, merge6;
 
 	std::cout << std::endl << "Function \033[31;4mmerge()\033[0m: " << std::endl;
-	std::cout << "List 2 won't affect list 1 _begin and _end :" << std::endl;
+	std::cout << "list 2 won't affect list 1 _begin and _end :" << std::endl;
 	merge1.push_back(1);
 	merge1.push_back(3);
 	merge1.push_back(5);
@@ -203,7 +203,7 @@ void test_list_int_merge(void) {
 	std::cout << "Let's see if list 2 is clear :" << std::endl;
 	print_list(merge2);
 
-	std::cout << "List 2 affects list 1 _begin:" << std::endl;
+	std::cout << "list 2 affects list 1 _begin:" << std::endl;
 	merge3.push_back(1);
 	merge3.push_back(3);
 	merge3.push_back(5);
@@ -218,7 +218,7 @@ void test_list_int_merge(void) {
 	print_list(merge3);
 	std::cout << "The return of front() is : " << merge3.front() << std::endl;
 
-	std::cout << "List 2 affects list 1 _end:" << std::endl;
+	std::cout << "list 2 affects list 1 _end:" << std::endl;
 	merge5.push_back(1);
 	merge5.push_back(3);
 	merge5.push_back(5);
@@ -235,7 +235,7 @@ void test_list_int_merge(void) {
 }
 
 void test_list_int_reverse() {
-	ft::List<int> reverse_test;
+	ft::list<int> reverse_test;
 
 	std::cout << std::endl << "Function \033[31;4mreverse()\033[0m: " << std::endl;
 	create_int_container(&reverse_test);
@@ -248,7 +248,7 @@ void test_list_int_reverse() {
 }
 
 void test_list_int_unique(void) {
-	ft::List<int> unique_test;
+	ft::list<int> unique_test;
 
 	std::cout << std::endl << "Function \033[31;4munique()\033[0m: " << std::endl;
 	unique_test.push_back(1);
@@ -273,7 +273,7 @@ void test_list_int_unique(void) {
 }
 
 void test_list_int_sort(void) {
-	ft::List<int> sort_test;
+	ft::list<int> sort_test;
 
 	std::cout << std::endl << "Function \033[31;4msort()\033[0m: " << std::endl;
 	sort_test.push_back(8);
@@ -293,8 +293,8 @@ void test_list_int_sort(void) {
 }
 
 void test_list_int_operator(void) {
-	ft::List<int> operator1, operator2;
-	ft::List<int> operator3, operator4;
+	ft::list<int> operator1, operator2;
+	ft::list<int> operator3, operator4;
 
 	std::cout << std::endl << "Non member overload \033[31;4moperators\033[0m: " << std::endl;
 	std::cout << "Case same lists:" << std::endl;
@@ -335,9 +335,9 @@ void test_list_int_operator(void) {
 }
 
 void test_list_int_iterator(void) {
-	ft::List<int> iterator_test;
-	ft::List<int>::iterator it;
-	ft::List<int>::iterator ite;
+	ft::list<int> iterator_test;
+	ft::list<int>::iterator it;
+	ft::list<int>::iterator ite;
 
 	std::cout << std::endl << "Test of \033[31;4mITERATORS\033[0m: " << std::endl;
 	create_int_container(&iterator_test);
@@ -361,20 +361,20 @@ void test_list_int_iterator(void) {
 	std::cout << "The return of *(ite++) is :" << *(ite++) << " then *ite is " << *ite << std::endl;
 
 	std::cout << "Let's test const_iterator " << std::endl;
-	ft::List<int>::const_iterator cit = iterator_test.begin();
+	ft::list<int>::const_iterator cit = iterator_test.begin();
 	std::cout << "The return of *cit, with cit =  list.begin() is : " << *cit << std::endl;
 	std::cout << "The return of *(++cit) : " << *(++cit) << std::endl;
 
 	std::cout << "Let's test reverse_iterator" << std::endl;
 	std::cout << "Let's test rbegin()" << std::endl;
-	ft::List<int>::reverse_iterator rit = iterator_test.rbegin();
+	ft::list<int>::reverse_iterator rit = iterator_test.rbegin();
 	std::cout << "The return of *rit, with rit = list.rbegin() is : " << *rit << std::endl;
 	std::cout << " The return of *(++rit) is : " << *(++rit) << std::endl;
 	std::cout << "The return of *(rit++) is : " << *(rit++) << " then *rit is : " << *rit << std::endl;
 	std::cout << " The return of *(--rit) is : " << *(--rit) << std::endl;
 	std::cout << "The return of *(rit--) is : " << *(rit--) << " then *rit is : " << *rit << std::endl;
 	std::cout << "Let's test rend()" << std::endl;
-	ft::List<int>::reverse_iterator rite = iterator_test.rend();
+	ft::list<int>::reverse_iterator rite = iterator_test.rend();
 	std::cout << "The return of *rite, with rite = list.rend() is : " << *rite << std::endl;
 	std::cout << " The return of *(--rite) is : " << *(--rite) << std::endl;
 	std::cout << "The return of *(rite--) is : " << *(rite--) << " then *rite is : " << *rite << std::endl;
@@ -383,11 +383,11 @@ void test_list_int_iterator(void) {
 }
 
 void test_list_int_insert(void) {
-	ft::List<int> insert_test;
+	ft::list<int> insert_test;
 
 	std::cout << std::endl << "Test of \033[31;4minsert()\033[0m: " << std::endl;
 	create_int_container(&insert_test);
-	ft::List<int>::iterator it = insert_test.begin();
+	ft::list<int>::iterator it = insert_test.begin();
 	print_list(insert_test);
 	std::cout << "Let's try to insert 15 after begin : " << std::endl;
 	insert_test.insert(++it, 15);
@@ -401,7 +401,7 @@ void test_list_int_insert(void) {
 }
 
 void test_list_int_erase(void) {
-	ft::List<int> erase_test;
+	ft::list<int> erase_test;
 
 	std::cout << std::endl << "Test of \033[31;4merase()\033[0m: " << std::endl;
 	create_int_container(&erase_test);
@@ -414,10 +414,10 @@ void test_list_int_erase(void) {
 	print_list(erase_test);
 }
 void test_list_int_splice(void) {
-	ft::List<int> splice_test, other;
-	ft::List<int> splice_test2, other2;
-	ft::List<int> splice_test3, other3;
-	ft::List<int> splice_test4, other4;
+	ft::list<int> splice_test, other;
+	ft::list<int> splice_test2, other2;
+	ft::list<int> splice_test3, other3;
+	ft::list<int> splice_test4, other4;
 
 	std::cout << std::endl << "Test of \033[31;4msplice()\033[0m: " << std::endl;
 	create_int_container(&splice_test);
@@ -448,7 +448,7 @@ void test_list_int_splice(void) {
 	other3.push_back(789);
 	print_list(splice_test3);
 	print_list(other3);
-	ft::List<int>::iterator it = splice_test3.begin();
+	ft::list<int>::iterator it = splice_test3.begin();
 	it++;
 	std::cout << "Let's try to use splice to insert before the second element: " << std::endl;
 	splice_test3.splice(it, other3);
@@ -461,8 +461,8 @@ void test_list_int_splice(void) {
 	other4.push_back(789);
 	print_list(splice_test4);
 	print_list(other4);
-	ft::List<int>::iterator it_list = splice_test4.begin();
-	ft::List<int>::iterator it_other = other4.begin();
+	ft::list<int>::iterator it_list = splice_test4.begin();
+	ft::list<int>::iterator it_other = other4.begin();
 	it_other++;
 	it_list++;
 	std::cout << "Let's try to use splice to insert the second element of the second list at the second place of the first list O_O " << std::endl;
@@ -472,7 +472,7 @@ void test_list_int_splice(void) {
 }
 
 void test_list_int_max_size(void) {
-	ft::List<int> test;
+	ft::list<int> test;
 
 	std::cout << std::endl << "Test of \033[31;4mmax_size()\033[0m: " << std::endl;
 	std::cout << test.max_size() << std::endl;
@@ -505,7 +505,7 @@ void test_list_int(void) {
 }
 
 void test_list(void) {
-	std::cout << "Tests with \033[31;1;4mft::List<>\033[0m container: " << std::endl;
+	std::cout << "Tests with \033[31;1;4mft::list<>\033[0m container: " << std::endl;
 	std::srand(time(NULL));
 	test_list_int();
 }

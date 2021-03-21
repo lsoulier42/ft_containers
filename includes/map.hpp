@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Map.hpp                                            :+:      :+:    :+:   */
+/*   map.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: louise <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -37,7 +37,7 @@ namespace ft {
     template< class Key, class T,
         class Compare = ft::less<Key>,
         class Allocator = std::allocator<ft::pair<const Key, T> >
-    > class Map {
+    > class map {
     public:
         /* Member types
          *
@@ -188,24 +188,24 @@ namespace ft {
 		 *
 		 *
 		 */
-		Map() {
+		map() {
 			_init_constructor(Compare(), Allocator());
 		}
-		explicit Map( const Compare& comp,
+		explicit map( const Compare& comp,
 					  const Allocator& alloc = Allocator() ) {
 			_init_constructor(comp, alloc);
 		}
 		template< class InputIt >
-		Map( InputIt first, InputIt last, const Compare& comp = Compare(), const Allocator& alloc = Allocator() ) {
+		map( InputIt first, InputIt last, const Compare& comp = Compare(), const Allocator& alloc = Allocator() ) {
 			_init_constructor(comp, alloc);
 			for (InputIt it = first; it != last; it++)
 				this->insert(*it);
 		}
-		Map( const Map& other ) {
+		map( const map& other ) {
 			_init_constructor(Compare(), Allocator());
 			this->_deep_copy(other);
 		}
-		~Map() {
+		~map() {
 			this->clear();
 			this->_free_node(_end);
 		}
@@ -217,7 +217,7 @@ namespace ft {
 		 *
 		 *
 		 */
-		Map& operator=( const Map& other ) {
+		map& operator=( const map& other ) {
 			if (this != &other) {
 				this->clear();
 				this->_deep_copy(other);
@@ -365,8 +365,8 @@ namespace ft {
          * Exchanges the contents of the container with those of other.
          *
          */
-        void swap( Map& other ) {
-            Map tmp = other;
+        void swap( map& other ) {
+            map tmp = other;
             other = *this;
             *this = tmp;
         }
@@ -608,7 +608,7 @@ namespace ft {
 			this->_free_node(node);
 		}
 
-		void _deep_copy(const Map& other) {
+		void _deep_copy(const map& other) {
     		_comp_key_less = other._comp_key_less;
     		_a_type = other._a_type;
     		_a_node = other._a_node;
@@ -640,35 +640,35 @@ namespace ft {
      */
 
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator==( const ft::Map<Key,T,Compare,Alloc>& lhs,
-		const ft::Map<Key,T,Compare,Alloc>& rhs ) {
+	bool operator==( const ft::map<Key,T,Compare,Alloc>& lhs,
+		const ft::map<Key,T,Compare,Alloc>& rhs ) {
 		if (lhs.size() != rhs.size())
 			return false;
 		return ft::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 	}
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator!=( const ft::Map<Key,T,Compare,Alloc>& lhs,
-					 const ft::Map<Key,T,Compare,Alloc>& rhs ) {
+	bool operator!=( const ft::map<Key,T,Compare,Alloc>& lhs,
+					 const ft::map<Key,T,Compare,Alloc>& rhs ) {
 		return !(lhs == rhs);
 	}
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator<( const ft::Map<Key,T,Compare,Alloc>& lhs,
-					 const ft::Map<Key,T,Compare,Alloc>& rhs ) {
+	bool operator<( const ft::map<Key,T,Compare,Alloc>& lhs,
+					 const ft::map<Key,T,Compare,Alloc>& rhs ) {
 		return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 	}
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator<=( const ft::Map<Key,T,Compare,Alloc>& lhs,
-					const ft::Map<Key,T,Compare,Alloc>& rhs ) {
+	bool operator<=( const ft::map<Key,T,Compare,Alloc>& lhs,
+					const ft::map<Key,T,Compare,Alloc>& rhs ) {
 		return (lhs == rhs || lhs < rhs);
 	}
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator>( const ft::Map<Key,T,Compare,Alloc>& lhs,
-					 const ft::Map<Key,T,Compare,Alloc>& rhs ) {
+	bool operator>( const ft::map<Key,T,Compare,Alloc>& lhs,
+					 const ft::map<Key,T,Compare,Alloc>& rhs ) {
 		return !(lhs <= rhs);
 	}
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator>=( const ft::Map<Key,T,Compare,Alloc>& lhs,
-					const ft::Map<Key,T,Compare,Alloc>& rhs ) {
+	bool operator>=( const ft::map<Key,T,Compare,Alloc>& lhs,
+					const ft::map<Key,T,Compare,Alloc>& rhs ) {
 		return !(lhs < rhs);
 	}
 
@@ -677,8 +677,8 @@ namespace ft {
 	 *
 	 */
 	template< class Key, class T, class Compare, class Alloc >
-	void swap( ft::Map<Key,T,Compare,Alloc>& lhs,
-			   ft::Map<Key,T,Compare,Alloc>& rhs ) {
+	void swap( ft::map<Key,T,Compare,Alloc>& lhs,
+			   ft::map<Key,T,Compare,Alloc>& rhs ) {
 		lhs.swap(rhs);
 	}
 }

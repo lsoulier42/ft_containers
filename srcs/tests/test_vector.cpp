@@ -13,7 +13,7 @@
 #include "test_vector.hpp"
 
 template<typename T>
-void print_vector_content(const ft::Vector<T>& to_print) {
+void print_vector_content(const ft::vector<T>& to_print) {
 	std::cout << "The vector contains : ";
 	for(size_t i = 0; i < to_print.size(); i++)
 		std::cout << to_print[i] << ", ";
@@ -21,15 +21,15 @@ void print_vector_content(const ft::Vector<T>& to_print) {
 }
 
 template<typename T>
-void print_vector_state(const ft::Vector<T>& to_print) {
+void print_vector_state(const ft::vector<T>& to_print) {
 	std::cout << "The size() is: " << to_print.size();
 	std::cout << ", so empty() is " << verbose_bool(to_print.empty());
 	std::cout << ", and capacity() is " << to_print.capacity() << std::endl;
 }
 
 void test_vector() {
-	std::cout << "Tests for \033[31;1;4mVector()\033[0m container: " << std::endl;
-	ft::Vector<std::string> test_insert;
+	std::cout << "Tests for \033[31;1;4mvector()\033[0m container: " << std::endl;
+	ft::vector<std::string> test_insert;
 	print_vector_content(test_insert);
 	print_vector_state(test_insert);
 	std::cout << std::endl;
@@ -65,7 +65,7 @@ void test_vector() {
 
 	std::cout << std::endl << "Let's create a new container using count = 7";
 	std::cout << " in \033[31;1;4mconstructor\033[0m and 'pika' as default alue" << std::endl;
-	ft::Vector<std::string> test_constructor(7, "pika");
+	ft::vector<std::string> test_constructor(7, "pika");
 	print_vector_content(test_constructor);
 	print_vector_state(test_constructor);
 

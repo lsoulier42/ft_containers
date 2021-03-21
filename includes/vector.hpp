@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Vector.hpp                                         :+:      :+:    :+:   */
+/*   vector.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lsoulier <lsoulier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -24,7 +24,7 @@
 
 namespace ft {
 	template<class T, class Allocator = std::allocator<T> >
-	class Vector {
+	class vector {
 	public:
 		/* Member types
 		 *
@@ -164,23 +164,23 @@ namespace ft {
 		  *
 		  *
 		  */
-		 Vector() {
+		 vector() {
             _init_constructor(Allocator(), 1);
 		 }
-		 explicit Vector( const Allocator& alloc ) {
+		 explicit vector( const Allocator& alloc ) {
             _init_constructor(alloc, 1);
 		 }
-		 explicit Vector( size_type count,
+		 explicit vector( size_type count,
 			const T& value = T(), const Allocator& alloc = Allocator()) {
              _init_constructor(alloc, count);
              this->assign(count, value);
 		 }
 		template< class InputIt >
-		Vector( InputIt first, InputIt last, const Allocator& alloc = Allocator() ) {
+		vector( InputIt first, InputIt last, const Allocator& alloc = Allocator() ) {
             _init_constructor(alloc, last - first);
             this->assign(first, last);
 		 }
-		Vector( const Vector& other ) {
+		vector( const vector& other ) {
 			_init_constructor(Allocator(), 1);
             this->_deep_copy(other);
 		 }
@@ -188,7 +188,7 @@ namespace ft {
 		 /* Member functions : destructor
 		  *
 		  */
-		 virtual ~Vector() {
+		 virtual ~vector() {
 		     this->clear();
 			 _a.deallocate(_vla, _capacity);
              _capacity = 0;
@@ -201,7 +201,7 @@ namespace ft {
 		  *
 		  */
 
-        Vector& operator=( const Vector& other ) {
+        vector& operator=( const vector& other ) {
         	if (this != &other) {
 				this->clear();
 				this->_deep_copy(other);
@@ -493,8 +493,8 @@ namespace ft {
 		 * All iterators and references remain valid. The past-the-end iterator is invalidated.
 		 *
 		 */
-		void swap( Vector& other ) {
-			Vector tmp = other;
+		void swap( vector& other ) {
+			vector tmp = other;
 			other = *this;
 			*this = tmp;
 		}
@@ -517,7 +517,7 @@ namespace ft {
 		    	_a.construct(_vla + i, T());
 		}
 
-		void _deep_copy(const Vector& other) {
+		void _deep_copy(const vector& other) {
 	        _realloc(other._capacity);
 		    _a = other._a;
 		    _size = other._size;
@@ -562,29 +562,29 @@ namespace ft {
 		 *
 		 */
 		template< class T, class Allocator >
-		bool operator==( const ft::Vector<T, Allocator>& lhs, const ft::Vector<T, Allocator>& rhs ) {
+		bool operator==( const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs ) {
 			if (lhs.size() != rhs.size())
 				return false;
 			return ft::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 		}
 		template< class T, class Allocator >
-		bool operator!=( const ft::Vector<T, Allocator>& lhs, const ft::Vector<T, Allocator>& rhs ) {
+		bool operator!=( const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs ) {
 			return !(lhs == rhs);
 		}
 		template< class T, class Allocator >
-		bool operator<( const ft::Vector<T, Allocator>& lhs, const ft::Vector<T, Allocator>& rhs ) {
+		bool operator<( const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs ) {
 			return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 		}
 		template< class T, class Allocator >
-		bool operator<=( const ft::Vector<T, Allocator>& lhs, const ft::Vector<T, Allocator>& rhs ) {
+		bool operator<=( const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs ) {
 			return (lhs < rhs || lhs == rhs);
 		}
 		template< class T, class Allocator >
-		bool operator>( const ft::Vector<T, Allocator>& lhs, const ft::Vector<T, Allocator>& rhs ) {
+		bool operator>( const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs ) {
 			return !(lhs <= rhs);
 		}
 		template< class T, class Allocator >
-		bool operator>=( const ft::Vector<T, Allocator>& lhs, const ft::Vector<T, Allocator>& rhs ) {
+		bool operator>=( const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs ) {
 			return !(lhs < rhs);
 		}
 
@@ -594,7 +594,7 @@ namespace ft {
 		 *
 		 */
 		template<class T, class Allocator>
-		void swap( ft::Vector<T, Allocator>& lhs, ft::Vector<T, Allocator>& rhs ) {
+		void swap( ft::vector<T, Allocator>& lhs, ft::vector<T, Allocator>& rhs ) {
 			lhs.swap(rhs);
 		}
 }

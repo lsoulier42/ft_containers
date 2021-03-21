@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   List.hpp                                           :+:      :+:    :+:   */
+/*   list.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lsoulier <lsoulier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -28,7 +28,7 @@ namespace ft {
 	};
 
 	template< class T, class Allocator = std::allocator<T> >
-	class List {
+	class list {
 	public:
 		/* Member types
 		 *
@@ -115,24 +115,24 @@ namespace ft {
 		 *
 		 *
 		 */
-		List() {
+		list() {
 			_init_constructor(Allocator());
 		}
-		explicit List( const Allocator& alloc ) {
+		explicit list( const Allocator& alloc ) {
 			_init_constructor(alloc);
 		}
-		explicit List( size_type count,	const T& value = T(),
+		explicit list( size_type count,	const T& value = T(),
 			const Allocator& alloc = Allocator() ) {
 			_init_constructor(alloc);
 			this->assign(count, value);
 		}
 		template< class InputIt >
-		List( InputIt first, InputIt last,
+		list( InputIt first, InputIt last,
 			const Allocator& alloc = Allocator() ) {
 			_init_constructor(alloc);
 			this->assign(first, last);
 		}
-		List( const List& other ) {
+		list( const list& other ) {
 			_init_constructor(Allocator());
 			this->_deep_copy(other);
 		}
@@ -142,7 +142,7 @@ namespace ft {
 		 *
 		 *
 		 */
-		virtual ~List() {
+		virtual ~list() {
 			this->clear();
 			_lstdelone(_end);
 		}
@@ -152,7 +152,7 @@ namespace ft {
 		 *
 		 *
 		 */
-		List& operator=( const List& other ) {
+		list& operator=( const list& other ) {
 			if (this != &other) {
 				this->clear();
 				this->_deep_copy(other);
@@ -427,8 +427,8 @@ namespace ft {
 		 *
 		 *
 		 */
-		void swap( List& other ) {
-			List tmp = other;
+		void swap( list& other ) {
+			list tmp = other;
 			other = *this;
 			*this = tmp;
 		}
@@ -440,7 +440,7 @@ namespace ft {
 		 *
 		 */
 		template <class Compare>
-		void merge( List& other, Compare comp ) {
+		void merge( list& other, Compare comp ) {
 			if (this == &other || other.empty())
 				return ;
 			if (this->empty())
@@ -468,7 +468,7 @@ namespace ft {
 			_size += other._size;
 			other._size = 0;
 		}
-		void merge( List& other ) {
+		void merge( list& other ) {
 			ft::less<T> comp;
 			this->merge(other, comp);
 		}
@@ -478,7 +478,7 @@ namespace ft {
 		 * No elements are copied or moved, only the internal pointers of the list nodes are re-pointed
 		 *
 		 */
-		void splice( const_iterator pos, List& other, const_iterator it ) {
+		void splice( const_iterator pos, list& other, const_iterator it ) {
 			t_list* to_move;
 			to_move = it._node;
 			this->_lstdetach_el(to_move);
@@ -486,7 +486,7 @@ namespace ft {
 			other._size -= 1;
 			_size += 1;
 		}
-		void splice( const_iterator pos, List& other,
+		void splice( const_iterator pos, list& other,
 			const_iterator first, const_iterator last) {
 			iterator it = first, tmp;
 			while (it != last) {
@@ -495,7 +495,7 @@ namespace ft {
 				it = tmp;
 			}
 		}
-		void splice( const_iterator pos, List& other ) {
+		void splice( const_iterator pos, list& other ) {
 			splice(pos, other, other.begin(), other.end());
 		}
 
@@ -657,7 +657,7 @@ namespace ft {
 			next->prev = prev;
 		}
 
-		void _deep_copy( const List& other ) {
+		void _deep_copy( const list& other ) {
 			_a_type = other._a_type;
 			_a_node = other._a_node;
 			for (iterator it = other.begin(); it != other.end(); it++)
@@ -681,34 +681,34 @@ namespace ft {
 	 *
 	 */
 	template< class T, class Allocator >
-	bool operator==(const List<T, Allocator>& lhs, const List<T, Allocator>& rhs) {
+	bool operator==(const list<T, Allocator>& lhs, const list<T, Allocator>& rhs) {
 		if (lhs.size() != rhs.size())
 			return false;
 		return ft::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 	}
 	template< class T, class Allocator >
-	bool operator!=(const List<T, Allocator>& lhs, const List<T, Allocator>& rhs) {
+	bool operator!=(const list<T, Allocator>& lhs, const list<T, Allocator>& rhs) {
 		return !(lhs == rhs);
 	}
 	template< class T, class Allocator >
-	bool operator<(const List<T, Allocator>& lhs, const List<T, Allocator>& rhs) {
+	bool operator<(const list<T, Allocator>& lhs, const list<T, Allocator>& rhs) {
 		return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 	}
 	template< class T, class Allocator >
-	bool operator<=(const List<T, Allocator>& lhs, const List<T, Allocator>& rhs) {
+	bool operator<=(const list<T, Allocator>& lhs, const list<T, Allocator>& rhs) {
 		return lhs < rhs || lhs == rhs;
 	}
 	template< class T, class Allocator >
-	bool operator>(const List<T, Allocator>& lhs, const List<T, Allocator>& rhs) {
+	bool operator>(const list<T, Allocator>& lhs, const list<T, Allocator>& rhs) {
 		return !(lhs <= rhs);
 	}
 	template< class T, class Allocator >
-	bool operator>=(const List<T, Allocator>& lhs, const List<T, Allocator>& rhs) {
+	bool operator>=(const list<T, Allocator>& lhs, const list<T, Allocator>& rhs) {
 		return !(lhs < rhs);
 	}
 
 	template< class T, class Alloc >
-	void swap(List<T, Alloc>& lhs, List<T, Alloc>& rhs) {
+	void swap(list<T, Alloc>& lhs, list<T, Alloc>& rhs) {
 		lhs.swap(rhs);
 	}
 }

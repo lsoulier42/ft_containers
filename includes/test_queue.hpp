@@ -12,7 +12,7 @@
 
 #ifndef TEST_QUEUE_HPP
 # define TEST_QUEUE_HPP
-# include "Queue.hpp"
+# include "queue.hpp"
 
 void test_queue(void);
 #endif

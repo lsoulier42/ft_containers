@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Stack.hpp                                          :+:      :+:    :+:   */
+/*   stack.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lsoulier <lsoulier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,11 +12,11 @@
 
 #ifndef STACK_HPP
 # define STACK_HPP
-# include "List.hpp"
+# include "list.hpp"
 
 namespace ft {
-	template<class T, class Container = List<T> >
-	class Stack {
+	template<class T, class Container = list<T> >
+	class stack {
 	public:
 		/* Member types
 		 *
@@ -32,14 +32,14 @@ namespace ft {
 		 *
 		 *
 		 */
-		Stack() {}
-		Stack(const Stack& src) { *this = src; }
-		Stack& operator=(const Stack& rhs) {
+		stack() {}
+		stack(const stack& src) { *this = src; }
+		stack& operator=(const stack& rhs) {
 			if (this != &rhs)
 				_c = rhs._c;
 			return *this;
 		}
-		virtual ~Stack() {}
+		virtual ~stack() {}
 
 		/* Member functions : Element access
 		 *
@@ -61,7 +61,7 @@ namespace ft {
 		 */
 		void push( const value_type& value ) { _c->push_back(value); }
 		void pop() { _c->pop_back(); }
-		void swap( Stack& other ) {	_c.swap(other._c); }
+		void swap( stack& other ) {	_c.swap(other._c); }
 
 	private:
 		Container _c;
@@ -70,26 +70,26 @@ namespace ft {
 		 *
 		 *
 		 */
-		friend bool operator==( const Stack<T,Container>& lhs, const Stack<T,Container>& rhs ) {
+		friend bool operator==( const stack<T,Container>& lhs, const stack<T,Container>& rhs ) {
 			return lhs._c == rhs._c;
 		}
-		friend bool operator!=( const Stack<T,Container>& lhs, const Stack<T,Container>& rhs ) {
+		friend bool operator!=( const stack<T,Container>& lhs, const stack<T,Container>& rhs ) {
 			return lhs._c != rhs._c;
 		}
-		friend bool operator<( const Stack<T,Container>& lhs, const Stack<T,Container>& rhs ) {
+		friend bool operator<( const stack<T,Container>& lhs, const stack<T,Container>& rhs ) {
 			return lhs._c < rhs._c;
 		}
-		friend bool operator<=( const Stack<T,Container>& lhs, const Stack<T,Container>& rhs ) {
+		friend bool operator<=( const stack<T,Container>& lhs, const stack<T,Container>& rhs ) {
 			return lhs._c <= rhs._c;
 		}
-		friend bool operator>( const Stack<T,Container>& lhs, const Stack<T,Container>& rhs ) {
+		friend bool operator>( const stack<T,Container>& lhs, const stack<T,Container>& rhs ) {
 			return lhs._c > rhs._c;
 		}
-		friend bool operator>=( const Stack<T,Container>& lhs, const Stack<T,Container>& rhs ) {
+		friend bool operator>=( const stack<T,Container>& lhs, const stack<T,Container>& rhs ) {
 			return lhs._c >= rhs._c;
 		}
 
-		void swap( Stack<T,Container>& lhs, Stack<T,Container>& rhs ) { lhs.swap(rhs); }
+		void swap( stack<T,Container>& lhs, stack<T,Container>& rhs ) { lhs.swap(rhs); }
 
 	};
 }

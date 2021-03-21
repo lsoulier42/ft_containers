@@ -12,7 +12,7 @@
 
 #ifndef TEST_MAP_HPP
 # define TEST_MAP_HPP
-# include "Map.hpp"
+# include "map.hpp"
 # include <string>
 # include "common.hpp"
 

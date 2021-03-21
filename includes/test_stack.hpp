@@ -12,7 +12,7 @@
 
 #ifndef TEST_STACK_HPP
 # define TEST_STACK_HPP
-# include "Stack.hpp"
+# include "stack.hpp"
 
 void test_stack(void);
 #endif
