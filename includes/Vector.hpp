@@ -206,8 +206,10 @@ namespace ft {
 		  */
 
         Vector& operator=( const Vector& other ) {
-			this->clear();
-			this->_deep_copy(other);
+        	if (this != &other) {
+				this->clear();
+				this->_deep_copy(other);
+			}
             return *this;
         }
 

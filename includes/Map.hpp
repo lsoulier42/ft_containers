@@ -69,9 +69,8 @@ namespace ft {
             const_iterator(const const_iterator& src) { *this = src; }
             const_iterator(bstree* node) : _node(node){}
 			const_iterator& operator=(const const_iterator& rhs) {
-				if (this != &rhs) {
+				if (this != &rhs)
 					this->_node = rhs._node;
-				}
 				return *this;
 			}
             virtual ~const_iterator() {}
@@ -155,9 +154,8 @@ namespace ft {
             iterator(const iterator& src) { *this = src; }
             iterator(const const_iterator& other) : const_iterator(other) {}
 			iterator& operator=(const iterator& rhs) {
-				if (this != &rhs) {
+				if (this != &rhs)
 					this->_node = rhs._node;
-				}
 				return *this;
 			}
             virtual ~iterator() {}
@@ -220,8 +218,10 @@ namespace ft {
 		 *
 		 */
 		Map& operator=( const Map& other ) {
-			this->clear();
-			this->_deep_copy(other);
+			if (this != &other) {
+				this->clear();
+				this->_deep_copy(other);
+			}
 			return *this;
 		}
 
