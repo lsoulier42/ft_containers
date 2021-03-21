@@ -67,10 +67,16 @@ namespace ft {
         public:
             const_iterator() {}
             const_iterator(const const_iterator& src) { *this = src; }
-            const_iterator(bstree* x) : _node(x) {}
+            const_iterator(bstree* node) : _node(node){}
+			const_iterator& operator=(const const_iterator& rhs) {
+				if (this != &rhs) {
+					this->_node = rhs._node;
+				}
+				return *this;
+			}
             virtual ~const_iterator() {}
 
-            reference operator*() {
+            reference operator*() const {
                 return this->_node->content;
             }
             pointer operator->() const {
@@ -89,7 +95,7 @@ namespace ft {
 			}
 			const_iterator operator++(int) {
 				const_iterator tmp = *this;
-				this->_node = _find_next(this->_node);
+				++(*this);
 				return tmp;
 			}
 			const_iterator& operator--() {
@@ -98,7 +104,7 @@ namespace ft {
 			}
 			const_iterator operator--(int) {
 				const_iterator tmp = *this;
-				this->_node = _find_prev(this->_node);
+				--(*this);
 				return tmp;
 			}
 
@@ -107,34 +113,39 @@ namespace ft {
 			 *
 			 */
             bstree* _node;
-
-		private:
+        private:
+        	bstree* _min_value(bstree* node) {
+        		bstree* current = node;
+        		while(current->left)
+        			current = current->left;
+        		return current;
+        	}
+        	bstree* _max_value(bstree* node) {
+        		bstree* current = node;
+        		while(current->right)
+        			current = current->right;
+        		return current;
+        	}
 			bstree* _find_next(bstree* node) {
-				if (node->left)
-					return node->left;
-				else if (node->right)
-					return node->right;
-				while (node->parent) {
-					if (node->parent->left == node
-						&& node->parent->right)
-						return node->parent->right;
-					node = node->parent;
+				if (node->right)
+					return _min_value(node->right);
+				bstree* parent = node->parent;
+				while (parent && node == parent->right) {
+					node = parent;
+					parent = parent->parent;
 				}
-				return node->right;
-			}
+				return parent;
+        	}
 			bstree* _find_prev(bstree* node) {
-				if (!node->parent)
-					return node;
-				if (node->parent->left == node)
-					return node->parent;
-				node = node->parent;
-				if (node->left) {
-					node = node->left;
-					while (node->right)
-						node = node->right;
-				}
-				return node;
-			}
+        		if (node->left)
+        			return _max_value(node->left);
+        		bstree* parent = node->parent;
+        		while(parent && node == parent->left) {
+        			node = parent;
+        			parent = parent->parent;
+        		}
+        		return parent;
+        	}
         };
 
         class iterator : public const_iterator {
@@ -143,11 +154,12 @@ namespace ft {
             iterator(bstree* node) : const_iterator(node) {}
             iterator(const iterator& src) { *this = src; }
             iterator(const const_iterator& other) : const_iterator(other) {}
-            iterator& operator=(const iterator& rhs) {
-                if (this != &rhs)
-                    this->_node = rhs._node;
-                return *this;
-            }
+			iterator& operator=(const iterator& rhs) {
+				if (this != &rhs) {
+					this->_node = rhs._node;
+				}
+				return *this;
+			}
             virtual ~iterator() {}
         };
 
@@ -239,10 +251,16 @@ namespace ft {
 		 *
 		 */
 		iterator begin() {
-			return iterator(_root);
+			bstree* first_element = _root;
+			while (first_element->left)
+				first_element = first_element->left;
+			return iterator(first_element);
 		}
 		const_iterator begin() const {
-			return const_iterator(_root);
+			bstree* first_element = _root;
+			while (first_element->left)
+				first_element = first_element->left;
+			return const_iterator(first_element);
 		}
 		iterator end() {
 			return iterator(_end);
@@ -251,16 +269,16 @@ namespace ft {
 			return const_iterator(_end);
 		}
 		reverse_iterator rbegin() {
-			return reverse_iterator(_end);
+			return reverse_iterator(end());
 		}
 		const_reverse_iterator rbegin() const {
-			return const_reverse_iterator(_end);
+			return const_reverse_iterator(end());
 		}
 		reverse_iterator rend() {
-			return reverse_iterator(_root);
+			return reverse_iterator(begin());
 		}
 		const_reverse_iterator rend() const {
-			return const_reverse_iterator(_root);
+			return const_reverse_iterator(begin());
 		}
 
 		/* Member functions : empty(), size(), max_size()
@@ -303,7 +321,7 @@ namespace ft {
 
 		ft::pair<iterator,bool> insert( const value_type& value ) {
 			size_type old_size = _size;
-			iterator it = insert(begin(), value);
+			iterator it = insert(iterator(_root), value);
 			return ft::make_pair(it, _size != old_size);
 		}
 
@@ -388,12 +406,7 @@ namespace ft {
          *
          */
         iterator lower_bound( const Key& key ) {
-			if (_root == _end)
-				return end();
 			iterator it = begin();
-			if (it->first == key)
-				return it;
-			it++;
 			while (it != end()) {
 				if (it->first == key || !_comp_key_less(it->first, key))
 					return it;
@@ -402,12 +415,7 @@ namespace ft {
 			return end();
         }
         const_iterator lower_bound( const Key& key ) const {
-			if (_root == _end)
-				return end();
 			const_iterator it = begin();
-			if (it->first == key)
-				return it;
-			it++;
 			while (it != end()) {
 				if (it->first == key || !_comp_key_less(it->first, key))
 					return it;
@@ -421,9 +429,7 @@ namespace ft {
          *
          */
         iterator upper_bound( const Key& key ) {
-			if (_root == _end)
-				return end();
-			iterator it = ++begin();
+			iterator it = begin();
 			while (it != end()) {
 				if (!_comp_key_less(it->first, key) && it->first != key)
 					return it;
@@ -432,9 +438,7 @@ namespace ft {
 			return end();
         }
         const_iterator upper_bound( const Key& key ) const {
-			if (_root == _end)
-				return end();
-			const_iterator it = ++begin();
+			const_iterator it = begin();
 			while (it != end()) {
 				if (!_comp_key_less(it->first, key) && it->first != key)
 					return it;
@@ -458,6 +462,14 @@ namespace ft {
          */
         value_compare value_comp() const {
             return value_compare(_comp_key_less);
+        }
+
+        /** This function is for testing purpose only
+         * should be erased before defense
+         *
+         */
+        bstree* base() const {
+        	return this->_root;
         }
 
     private:

@@ -50,9 +50,14 @@ namespace ft {
 			const_iterator() {}
 			const_iterator(const const_iterator& src) { *this = src; }
 			const_iterator(t_list* x) : _node(x) {}
+			const_iterator& operator=(const const_iterator& rhs) {
+				if (this != &rhs)
+					this->_node = rhs._node;
+				return *this;
+			}
 			virtual ~const_iterator() {}
 
-			reference operator*() {
+			reference operator*() const {
 				return this->_node->content;
 			}
 			pointer operator->() const {
@@ -66,25 +71,21 @@ namespace ft {
 			}
 
 			const_iterator& operator++() {
-				if (this->_node->next)
-					this->_node = this->_node->next;
+				this->_node = this->_node->next;
 				return *this;
 			}
 			const_iterator operator++(int) {
 				const_iterator tmp = *this;
-				if (this->_node->next)
-					this->_node = this->_node->next;
+				++(*this);
 				return tmp;
 			}
 			const_iterator& operator--() {
-				if (this->_node->prev)
-					this->_node = this->_node->prev;
+				this->_node = this->_node->prev;
 				return *this;
 			}
 			const_iterator operator--(int) {
 				const_iterator tmp = *this;
-				if (this->_node->prev)
-					this->_node = this->_node->prev;
+				--(*this);
 				return tmp;
 			}
 
@@ -229,22 +230,17 @@ namespace ft {
 		const_iterator end() const {
 			return const_iterator(this->_end);
 		}
-
 		reverse_iterator rbegin() {
-			if (_size > 0)
-				return reverse_iterator(this->_end);
-			return rend();
+			return reverse_iterator(end());
 		}
 		const_reverse_iterator rbegin() const {
-			if (_size > 0)
-				return const_reverse_iterator(this->_end);
-			return rend();
+			return const_reverse_iterator(end());
 		}
 		reverse_iterator rend() {
-			return reverse_iterator(this->_begin->next);
+			return reverse_iterator(begin());
 		}
 		const_reverse_iterator rend() const {
-			return const_reverse_iterator(this->_begin->next);
+			return const_reverse_iterator(begin());
 		}
 
 		/* Member functions : empty()

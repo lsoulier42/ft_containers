@@ -59,7 +59,7 @@ void printTree(ft::bstree<ft::pair<const std::string, std::string> >* root, Trun
 	}
 
 	showTrunks(trunk);
-	std::cout << (root->content.first == "" ? "\033[31;4mendptr\033[0m" : root->content.first) << std::endl;
+	std::cout << (root->content.first.empty() ? "\033[31;4mendptr\033[0m" : root->content.first) << std::endl;
 
 	if (prev) {
 		prev->str = prev_str;
@@ -72,7 +72,8 @@ void printTree(ft::bstree<ft::pair<const std::string, std::string> >* root, Trun
 
 template<class Key, class T>
 void printState(const ft::Map<Key, T>& test_map) {
-	printTree(test_map.begin()._node, NULL, false);
+
+	printTree(test_map.base(), NULL, false);
 	std::cout << "current \033[30;4msize()\033[0m: " << test_map.size() << std::endl;
 	std::cout << "the return of \033[30;4mempty()\033[0m: " << verbose_bool(test_map.empty()) << std::endl;
 }

@@ -48,6 +48,11 @@ namespace ft {
 			const_iterator() {}
 			const_iterator(T* node) : _node(node) {}
 			const_iterator(const const_iterator& src) { *this = src; }
+			const_iterator& operator=(const const_iterator& rhs) {
+				if (this != &rhs)
+					this->_node = rhs._node;
+				return *this;
+			}
 			virtual ~const_iterator() {}
 
 			/* Random access iterator : access
@@ -103,7 +108,7 @@ namespace ft {
 			}
 			const_iterator operator++(int) {
 				const_iterator tmp = *this;
-				this->_node++;
+				++(*this);
 				return tmp;
 			}
 			const_iterator& operator--() {
@@ -112,7 +117,7 @@ namespace ft {
 			}
 			const_iterator operator--(int) {
 				const_iterator tmp = *this;
-				this->_node--;
+				--(*this);
 				return tmp;
 			}
 			const_iterator& operator+=(int n) {
@@ -297,8 +302,8 @@ namespace ft {
             return const_cast<reference>(LAST_ELEMENT(_size));
         }
 
-        /* Member function : begin()
-         * Iterator to the first element.
+        /* Member function : iterator functions
+         *
          *
          *
          */
@@ -308,12 +313,6 @@ namespace ft {
         const_iterator begin() const {
             return const_iterator(_vla);
         }
-
-        /* Member function : end()
-         * Returns an iterator to the element following the last element of the vector.
-         *
-         *
-         */
         iterator end() {
             return iterator(_vla + END_PTR(_size));
         }
@@ -321,16 +320,16 @@ namespace ft {
         	return const_iterator(_vla + END_PTR(_size));
         }
 		reverse_iterator rbegin() {
-			return reverse_iterator(_vla + END_PTR(_size));
-        }
+			return reverse_iterator(end());
+		}
 		const_reverse_iterator rbegin() const {
-			return const_reverse_iterator(_vla + END_PTR(_size));
+			return const_reverse_iterator(end());
 		}
 		reverse_iterator rend() {
-			return reverse_iterator(_vla);
-        }
+			return reverse_iterator(begin());
+		}
 		const_reverse_iterator rend() const {
-			return const_reverse_iterator(_vla);
+			return const_reverse_iterator(begin());
 		}
 
 		/* Member function : empty()
