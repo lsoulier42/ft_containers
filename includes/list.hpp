@@ -16,8 +16,8 @@
 # include <memory>
 # include <iostream>
 # include "enable_if.hpp"
-# include "Iterator.hpp"
-# include "Comparison.hpp"
+# include "iterator.hpp"
+# include "comparison.hpp"
 
 namespace ft {
 	template<class T>

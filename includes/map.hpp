@@ -15,10 +15,10 @@
 # include <memory>
 # include <iostream>
 # include <limits>
-# include "Iterator.hpp"
+# include "iterator.hpp"
 # include "enable_if.hpp"
 # include "pair.hpp"
-# include "Comparison.hpp"
+# include "comparison.hpp"
 
 namespace ft {
 	/* Base structure : binary search tree

@@ -18,9 +18,9 @@
 # include <stdexcept>
 # include <string>
 # include <sstream>
-# include "Iterator.hpp"
+# include "iterator.hpp"
 # include "enable_if.hpp"
-# include "Comparison.hpp"
+# include "comparison.hpp"
 
 namespace ft {
 	template<class T, class Allocator = std::allocator<T> >
