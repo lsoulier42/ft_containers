@@ -144,7 +144,6 @@ namespace ft {
 		 */
 		virtual ~List() {
 			this->clear();
-			_lstdelone(_begin);
 			_lstdelone(_end);
 		}
 
@@ -218,14 +217,10 @@ namespace ft {
 		 *
 		 */
 		iterator begin() {
-			if (_size > 0)
-				return iterator(this->_begin->next);
-			return end();
+			return iterator(this->_end->next);
 		}
 		const_iterator begin() const {
-			if (_size > 0)
-				return const_iterator(this->_begin->next);
-			return end();
+			return const_iterator(this->_end->next);
 		}
 		iterator end() {
 			return iterator(this->_end);
@@ -277,14 +272,14 @@ namespace ft {
 		void clear() {
 			if (this->empty())
 				return ;
-			t_list* track = _begin->next;
+			t_list* track = _end->next;
 			t_list* tmp;
 			while(track != _end) {
 				tmp  = track->next;
 				this->_lstdelone(track);
 				track = tmp;
 			}
-			this->_link_el(_begin, _end);
+			_link_el(_end, _end);
 			_size = 0;
 		}
 
@@ -385,7 +380,7 @@ namespace ft {
 		void push_front( const T& value ) {
 			t_list* new_el;
 			new_el = this->_lstnew(value);
-			this->_lstinsert_el(_begin->next, new_el);
+			this->_lstinsert_el(_end->next, new_el);
 			_size += 1;
 		}
 
@@ -398,7 +393,7 @@ namespace ft {
 			if (this->empty())
 				return ;
 			t_list* to_pop;
-			to_pop = _begin->next;
+			to_pop = _end->next;
 			this->_lstdetach_el(to_pop);
 			this->_lstdelone(to_pop);
 			_size -= 1;
@@ -417,8 +412,10 @@ namespace ft {
 				for (size_type i = 0; i < this->_size - count; i++)
 					this->pop_back();
 			}
-			else if (count > this->_size)
-				this->push_back(value);
+			else if (count > this->_size) {
+				for (size_type i = 0; i < this->_size - count; i++)
+					this->push_back(value);
+			}
 		}
 		void resize( size_type count ) {
 			this->resize(count, T());
@@ -448,8 +445,8 @@ namespace ft {
 				return ;
 			if (this->empty())
 				return this->swap(other);
-			t_list* track_other = other._begin->next;
-			t_list* track_this = _begin->next;
+			t_list* track_other = other._end->next;
+			t_list* track_this = _end->next;
 			t_list* tmp;
 			while (track_other != other._end && track_this != _end) {
 				if (comp(track_other->content, track_this->content)) {
@@ -512,7 +509,7 @@ namespace ft {
 		void remove_if( UnaryPredicate p ) {
 			if (this->empty())
 				return ;
-			t_list* track = _begin->next;
+			t_list* track = _end->next;
 			t_list* tmp;
 			while (track != _end) {
 				if (p(track->content)) {
@@ -536,18 +533,16 @@ namespace ft {
 		 *
 		 */
 		void reverse() {
-			t_list* track = _begin;
+			t_list* track = _end->next;
 			t_list* tmp;
-
-			while(track) {
+			while(1) {
 				tmp = track->next;
 				track->next = track->prev;
 				track->prev = tmp;
+				if (track == _end)
+					break ;
 				track = tmp;
 			}
-			tmp = _end;
-			_end = _begin;
-			_begin = tmp;
 		}
 
 		/* Member functions : unique()
@@ -560,7 +555,7 @@ namespace ft {
 		void unique( BinaryPredicate p ) {
 			if (_size < 2)
 				return ;
-			t_list* track = _begin->next->next;
+			t_list* track = _end->next->next;
 			t_list* tmp;
 
 			while(track != _end) {
@@ -583,7 +578,7 @@ namespace ft {
 			if (_size < 2)
 				return ;
 			t_list *track, *next;
-			track = _begin->next;
+			track = _end->next;
 			while(track != _end) {
 				next = track->next;
 				while(next != _end) {
@@ -610,9 +605,8 @@ namespace ft {
 			T default_val = T();
 
 			_a_type = alloc;
-			_begin = _lstnew(default_val);
 			_end = _lstnew(default_val);
-			_link_el(_begin, _end);
+			_link_el(_end, _end);
 			_size = 0;
 		}
 
@@ -675,7 +669,6 @@ namespace ft {
 		 */
 		allocator_type _a_type;
 		typename Allocator::template rebind<t_list>::other _a_node;
-		t_list* _begin;
 		t_list* _end;
 		size_type _size;
 	};
