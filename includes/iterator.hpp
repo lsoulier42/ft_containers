@@ -111,7 +111,7 @@ namespace ft {
 		 *
 		 */
 		reference operator[]( difference_type n ) const {
-			return _current[n - 1];
+			return base()[n - 1];
 		}
 
 		/* Member function : incrementation operators
@@ -138,10 +138,10 @@ namespace ft {
 			return tmp;
 		}
 		reverse_iterator operator+( difference_type n ) const {
-			return reverse_iterator(_current - n);
+			return reverse_iterator(base() - n);
 		}
 		reverse_iterator operator-( difference_type n ) const {
-			return reverse_iterator(_current + n);
+			return reverse_iterator(base() + n);
 		}
 		reverse_iterator& operator+=( difference_type n ) {
 			_current -= n;

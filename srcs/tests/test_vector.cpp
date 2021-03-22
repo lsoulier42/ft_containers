@@ -342,11 +342,129 @@ void test_vector_resize(void) {
 }
 
 void test_vector_iterator(void) {
+	std::cout << std::endl << "Tests for \033[31;1;4miterators\033[0m: " << std::endl;
+
+	std::cout << "Let's create a int vector with 4, 8, 15, 16, 23, 42" << std::endl;
+	ft::vector<int> test_iterator;
+	test_iterator.push_back(4);
+	test_iterator.push_back(8);
+	test_iterator.push_back(15);
+	test_iterator.push_back(16);
+	test_iterator.push_back(23);
+	test_iterator.push_back(42);
+	std::cout << "Let's create an iterator begin() of this vector" << std::endl;
+	ft::vector<int>::iterator it = test_iterator.begin();
+	std::cout << "*it = " << *it << std::endl;
+	std::cout << "*++it = " << *++it << std::endl;
+	std::cout << "*it++ = " << *it++ << " then *it is : " << *it << std::endl;
+	std::cout << "*(it + 3) = " << *(it + 3) << " then *it is : " << *it << std::endl;
+	std::cout << "*(it += 3) = " << *(it += 3) << std::endl;
+	std::cout << "*--it = " << *(--it) << std::endl;
+	std::cout << "*it-- = " << *(it--) << " then *it is : " << *it << std::endl;
+	std::cout << "*(it - 2) = " << *(it - 2) << " then *it is : " << *it << std::endl;
+	std::cout << "*(it -= 2) = " << *(it -= 2) << std::endl;
+
+	std::cout << std::endl << "Let's create a constant iterator begin() of this vector" << std::endl;
+	ft::vector<int>::const_iterator cit = test_iterator.begin();
+	std::cout << "*cit = " << *cit << std::endl;
+	std::cout << "*++cit = " << *++cit << std::endl;
+	std::cout << "*cit++ = " << *cit++ << " then *cit is : " << *cit << std::endl;
+	std::cout << "*(cit + 3) = " << *(cit + 3) << " then *cit is : " << *cit << std::endl;
+	std::cout << "*(cit += 3) = " << *(cit += 3) << std::endl;
+	std::cout << "*--cit = " << *(--cit) << std::endl;
+	std::cout << "*cit-- = " << *(cit--) << " then *cit is : " << *cit << std::endl;
+	std::cout << "*(cit - 2) = " << *(cit - 2) << " then *cit is : " << *cit << std::endl;
+	std::cout << "*(cit -= 2) = " << *(cit -= 2) << std::endl;
+
+	std::cout << std::endl <<"Let's test comparison between iterator and constant iterators:" << std::endl;
+	std::cout << "(*cit is " << *cit << " and *it is " << *it << ")" << std::endl;
+	std::cout << "cit == it return: " << verbose_bool(cit == it) << std::endl;
+	std::cout << "cit != it return: " << verbose_bool(cit != it) << std::endl;
+	std::cout << "cit < it return: " << verbose_bool(cit < it) << std::endl;
+	std::cout << "cit <= it return: " << verbose_bool(cit <= it) << std::endl;
+	std::cout << "cit > it return: " << verbose_bool(cit > it) << std::endl;
+	std::cout << "cit >= it return: " << verbose_bool(cit >= it) << std::endl;
+	std::cout << "Now let's increase cit by one" << std::endl;
+	std::cout << "(*++cit is " << *++cit << " and *it is " << *it << ")" << std::endl;
+	std::cout << "cit == it return: " << verbose_bool(cit == it) << std::endl;
+	std::cout << "cit != it return: " << verbose_bool(cit != it) << std::endl;
+	std::cout << "cit < it return: " << verbose_bool(cit < it) << std::endl;
+	std::cout << "cit <= it return: " << verbose_bool(cit <= it) << std::endl;
+	std::cout << "cit > it return: " << verbose_bool(cit > it) << std::endl;
+	std::cout << "cit >= it return: " << verbose_bool(cit >= it) << std::endl;
+
+	std::cout << std::endl << "Let's test subtraction it = begin() and it2 = begin() + 2" << std::endl;
+	ft::vector<int>::iterator it2 = test_iterator.begin() + 2;
+	it = test_iterator.begin();
+	std::cout << "it2 - it = " << (it2 - it) << std::endl;
+
+	std::cout << std::endl << "Let's test operator[] with it = begin() :" << std::endl;
+	size_t i = 0;
+	for (ft::vector<int>::iterator pouit = it; pouit != test_iterator.end(); pouit++) {
+		std::cout << "it[" << i << "] = " << it[i] << std::endl;
+		i++;
+	}
+
+	std::cout << std::endl << "Let's create a reverse iterator rbegin()" << std::endl;
+	ft::vector<int>::reverse_iterator rit = test_iterator.rbegin();
+	std::cout << "*rit = " << *rit << std::endl;
+	std::cout << "*++rit = " << *++rit << std::endl;
+	std::cout << "*rit++ = " << *rit++ << " then *rit is : " << *rit << std::endl;
+	std::cout << "*(rit + 3) = " << *(rit + 3) << " then *rit is : " << *rit << std::endl;
+	std::cout << "*(rit += 3) = " << *(rit += 3) << std::endl;
+	std::cout << "*--rit = " << *(--rit) << std::endl;
+	std::cout << "*rit-- = " << *(rit--) << " then *rit is : " << *rit << std::endl;
+	std::cout << "*(rit - 2) = " << *(rit - 2) << " then *rit is : " << *rit << std::endl;
+	std::cout << "*(rit -= 2) = " << *(rit -= 2) << std::endl;
 
 }
 
 void test_vector_comparison(void) {
+	std::cout << std::endl << "Tests for \033[31;1;4mcomparison operators:\033[0m: " << std::endl;
 
+	std::cout << "Let's create two same vectors of char with 'a', 'b', 'c', 'd':" << std::endl;
+	ft::vector<char> test_comparison1, test_comparison2;
+	test_comparison1.push_back('a');
+	test_comparison1.push_back('b');
+	test_comparison1.push_back('c');
+	test_comparison1.push_back('d');
+	test_comparison2 = test_comparison1;
+	print_vector_state(test_comparison1);
+	print_vector_state(test_comparison2);
+	std::cout << "The return of test_comparison1 == test_comparaison2 is : ";
+	std::cout << verbose_bool(test_comparison1 == test_comparison2) << std::endl;
+	std::cout << "The return of test_comparison1 != test_comparaison2 is : ";
+	std::cout << verbose_bool(test_comparison1 != test_comparison2) << std::endl;
+	std::cout << "The return of test_comparison1 < test_comparaison2 is : ";
+	std::cout << verbose_bool(test_comparison1 < test_comparison2) << std::endl;
+	std::cout << "The return of test_comparison1 <= test_comparaison2 is : ";
+	std::cout << verbose_bool(test_comparison1 <= test_comparison2) << std::endl;
+	std::cout << "The return of test_comparison1 > test_comparaison2 is : ";
+	std::cout << verbose_bool(test_comparison1 > test_comparison2) << std::endl;
+	std::cout << "The return of test_comparison1 >= test_comparaison2 is : ";
+	std::cout << verbose_bool(test_comparison1 >= test_comparison2) << std::endl;
+
+
+	std::cout << std::endl << "Let's create a vector with 'e', 'f', 'g', 'h' and compare to the first one" << std::endl;
+	test_comparison2.clear();
+	test_comparison2.push_back('e');
+	test_comparison2.push_back('f');
+	test_comparison2.push_back('g');
+	test_comparison2.push_back('h');
+	print_vector_state(test_comparison1);
+	print_vector_state(test_comparison2);
+	std::cout << "The return of test_comparison1 == test_comparaison2 is : ";
+	std::cout << verbose_bool(test_comparison1 == test_comparison2) << std::endl;
+	std::cout << "The return of test_comparison1 != test_comparaison2 is : ";
+	std::cout << verbose_bool(test_comparison1 != test_comparison2) << std::endl;
+	std::cout << "The return of test_comparison1 < test_comparaison2 is : ";
+	std::cout << verbose_bool(test_comparison1 < test_comparison2) << std::endl;
+	std::cout << "The return of test_comparison1 <= test_comparaison2 is : ";
+	std::cout << verbose_bool(test_comparison1 <= test_comparison2) << std::endl;
+	std::cout << "The return of test_comparison1 > test_comparaison2 is : ";
+	std::cout << verbose_bool(test_comparison1 > test_comparison2) << std::endl;
+	std::cout << "The return of test_comparison1 >= test_comparaison2 is : ";
+	std::cout << verbose_bool(test_comparison1 >= test_comparison2) << std::endl;
 }
 
 void test_vector_swap(void) {

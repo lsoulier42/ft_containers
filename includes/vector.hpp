@@ -40,12 +40,116 @@ namespace ft {
 		typedef typename Allocator::pointer pointer;
 		typedef typename Allocator::const_pointer const_pointer;
 
+		class iterator : public ft::iterator<random_access_iterator_tag, T,
+			difference_type, pointer, reference>  {
+		public:
+			iterator() {}
+			iterator(T* node) : _node(node) {}
+			iterator(const iterator& src) { *this = src; }
+			iterator& operator=(const iterator& rhs) {
+				if (this != &rhs)
+					this->_node = rhs._node;
+				return *this;
+			}
+			virtual ~iterator() {}
+
+			/* Random access iterator : access
+			 *
+			 *
+			 */
+
+			reference operator*() const {
+				return *_node;
+			}
+			pointer operator->() const {
+				return _node;
+			}
+			difference_type operator-(const iterator& rhs) {
+				return this->_node - rhs._node;
+			}
+			reference operator[](int n) {
+				return *(_node + n);
+			}
+
+			/* Random access iterator : comparison
+			 *
+			 *
+			 */
+			friend bool operator==(const iterator& lhs, const iterator& rhs) {
+				return lhs._node == rhs._node;
+			}
+			friend bool operator!=(const iterator& lhs, const iterator& rhs) {
+				return lhs._node != rhs._node;
+			}
+			bool operator<(const iterator& rhs) {
+				return this->_node < rhs._node;
+			}
+			bool operator>(const iterator& rhs) {
+				return  this->_node > rhs._node;
+			}
+			bool operator<=(const iterator& rhs) {
+				return  this->_node <= rhs._node;
+			}
+			bool operator>=(const iterator& rhs) {
+				return  this->_node >= rhs._node;
+			}
+
+			/* Random access iterator : arythmetic operator
+			 *
+			 *
+			 */
+
+			iterator& operator++() {
+				this->_node++;
+				return *this;
+			}
+			iterator operator++(int) {
+				iterator tmp = *this;
+				++(*this);
+				return tmp;
+			}
+			iterator& operator--() {
+				this->_node--;
+				return *this;
+			}
+			iterator operator--(int) {
+				iterator tmp = *this;
+				--(*this);
+				return tmp;
+			}
+			iterator& operator+=(int n) {
+				this->_node += n;
+				return *this;
+			}
+			iterator operator+(difference_type n) {
+				return iterator(this->_node + n);
+			}
+			friend iterator operator+(difference_type n, const iterator& rhs) {
+				return iterator(rhs._node + n);
+			}
+
+			iterator& operator-=(int n) {
+				this->_node -= n;
+				return *this;
+			}
+			iterator operator-(int n) {
+				return iterator(this->_node - n);
+			}
+
+			/* Random access iterator : public attribute
+			 *
+			 *
+			 */
+			T* _node;
+		};
+
 		class const_iterator : public ft::iterator<random_access_iterator_tag, T,
-			difference_type, pointer, reference> {
+				difference_type, pointer, reference> {
 		public:
 			const_iterator() {}
 			const_iterator(T* node) : _node(node) {}
 			const_iterator(const const_iterator& src) { *this = src; }
+			const_iterator(const iterator& src) : _node(src._node) {}
 			const_iterator& operator=(const const_iterator& rhs) {
 				if (this != &rhs)
 					this->_node = rhs._node;
@@ -64,9 +168,7 @@ namespace ft {
 				return _node;
 			}
 			difference_type operator-(const const_iterator& rhs) {
-				difference_type ret;
-				ret = rhs._node - _node;
-				return ret;
+				return this->_node - rhs._node;
 			}
 			reference operator[](int n) {
 				return *(_node + n);
@@ -76,23 +178,23 @@ namespace ft {
 			 *
 			 *
 			 */
-			bool operator==(const const_iterator& rhs) {
-				return _node == rhs._node;
+			friend bool operator==(const const_iterator& lhs, const const_iterator& rhs) {
+				return lhs._node == rhs._node;
 			}
-			bool operator!=(const const_iterator& rhs) {
-				return _node != rhs._node;
+			friend bool operator!=(const const_iterator& lhs, const const_iterator& rhs) {
+				return lhs._node != rhs._node;
 			}
 			bool operator<(const const_iterator& rhs) {
-				return _node < rhs._node;
+				return this->_node < rhs._node;
 			}
 			bool operator>(const const_iterator& rhs) {
-				return  _node > rhs._node;
+				return  this->_node > rhs._node;
 			}
 			bool operator<=(const const_iterator& rhs) {
-				return  _node <= rhs._node;
+				return  this->_node <= rhs._node;
 			}
 			bool operator>=(const const_iterator& rhs) {
-				return  _node >= rhs._node;
+				return  this->_node >= rhs._node;
 			}
 
 			/* Random access iterator : arythmetic operator
@@ -122,17 +224,18 @@ namespace ft {
 				this->_node += n;
 				return *this;
 			}
-			const_iterator operator+(int n) {
-				this->_node += n;
-				return *this;
+			const_iterator operator+(difference_type n) {
+				return const_iterator(this->_node + n);
+			}
+			friend const_iterator operator+(difference_type n, const const_iterator& rhs) {
+				return iterator(rhs._node + n);
 			}
 			const_iterator& operator-=(int n) {
 				this->_node -= n;
 				return *this;
 			}
 			const_iterator operator-(int n) {
-				this->_node -= n;
-				return *this;
+				return const_iterator(this->_node - n);
 			}
 
 			/* Random access iterator : public attribute
@@ -140,20 +243,6 @@ namespace ft {
 			 *
 			 */
 			T* _node;
-		};
-
-		class iterator : public const_iterator  {
-		public:
-			iterator() {}
-			iterator(T* node) : const_iterator(node) {}
-			iterator(const iterator& src) { *this = src; }
-			iterator(const const_iterator& other) : const_iterator(other) {}
-			iterator& operator=(const iterator& rhs) {
-				if (this != &rhs)
-					this->_node = rhs._node;
-				return *this;
-			}
-			virtual ~iterator() {}
 		};
 
 		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
@@ -199,7 +288,7 @@ namespace ft {
 			_capacity = other._capacity;
 			_vla = _a.allocate(_capacity);
 			size_type i = 0;
-			for(iterator it = other.begin(); it != other.end(); it++)
+			for(const_iterator it = other.begin(); it != other.end(); it++)
 				_a.construct(_vla + i++, *it);
 		 }
 
@@ -228,7 +317,7 @@ namespace ft {
 				_size = other._size;
 				_vla = _a.allocate(_capacity);
 				size_type i = 0;
-				for(iterator it = other.begin(); it != other.end(); it++)
+				for(const_iterator it = other.begin(); it != other.end(); it++)
 					_a.construct(_vla + i++, *it);
 			}
             return *this;
@@ -279,7 +368,7 @@ namespace ft {
             return _vla[pos];
         }
         const_reference at( size_type pos ) const {
-            return const_cast<reference>(this->at(pos));
+            return this->at(pos);
         }
 
         /* Member function : operator[]
@@ -292,7 +381,7 @@ namespace ft {
             return _vla[pos];
         }
         const_reference operator[]( size_type pos ) const {
-            return const_cast<reference>(_vla[pos]);
+            return _vla[pos];
         }
 
         /* Member function : front()
