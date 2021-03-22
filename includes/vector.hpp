@@ -177,11 +177,12 @@ namespace ft {
 		 }
 		template< class InputIt >
 		vector( InputIt first, InputIt last, const Allocator& alloc = Allocator() ) {
-            _init_constructor(alloc, last - first);
+            _init_constructor(alloc, 1);
             this->assign(first, last);
 		 }
 		vector( const vector& other ) {
-			_init_constructor(Allocator(), 1);
+			_init_constructor(Allocator(), other.capacity());
+			_a = other._a;
             this->_deep_copy(other);
 		 }
 
@@ -204,6 +205,8 @@ namespace ft {
         vector& operator=( const vector& other ) {
         	if (this != &other) {
 				this->clear();
+				_a = other._a;
+				_realloc(other.capacity());
 				this->_deep_copy(other);
 			}
             return *this;
@@ -230,9 +233,12 @@ namespace ft {
             this->insert(begin(), count, value);
         }
         template< class InputIt >
-        void assign( InputIt first, InputIt last, typename ft::enable_if<!is_integral<InputIt>::value>::type* = NULL ) {
+        void assign( InputIt first, InputIt last,
+			typename ft::enable_if<!is_integral<InputIt>::value>::type* = NULL ) {
 			this->clear();
-			this->insert(begin(), first, last);
+			size_t count = 0;
+			for(InputIt it = first; it != last; it++)
+				this->insert(this->begin() + count++, *it);
         }
 
         /* Member function : at()
@@ -276,7 +282,7 @@ namespace ft {
             return _vla[0];
         }
         const_reference front() const {
-            return const_cast<reference>(_vla[0]);
+            return _vla[0];
         }
 
         /* Member function : back()
@@ -285,10 +291,10 @@ namespace ft {
          *
          */
         reference back() {
-            return _vla[_size - 1];
+            return _size != 0 ? _vla[_size - 1] : _vla[0];
         }
         const_reference back() const {
-            return _vla[_size - 1];
+			return _size != 0 ? _vla[_size - 1] : _vla[0];
         }
 
         /* Member function : iterator functions
@@ -378,7 +384,7 @@ namespace ft {
 		 *
 		 */
 		void clear() {
-			if (_size == 0)
+			if (this->empty())
 				return ;
 			for(size_type i = 0; i < _size; i++)
 				_a.destroy(_vla + i);
@@ -410,17 +416,13 @@ namespace ft {
 		void insert( iterator pos, InputIt first, InputIt last,
 			   typename ft::enable_if<!is_integral<InputIt>::value>::type* = NULL) {
 			size_type count = 0;
-			for(InputIt it = first; it != last; it++)
-				count++;
-			size_type index = pos._node - _vla;
-			while (_size + count > _capacity)
-				_realloc(_capacity * 2);
-			this->_shift_right_elements(index, count);
-			size_type i = index;
-			for (InputIt it = first; it != last; it++)
-				_a.construct(_vla + i++, *it);
-			_size += count;
+			size_type pos_index = pos._node - _vla;
+			for(InputIt it = first; it != last; it++) {
+				insert(pos + count++, *it);
+				pos = iterator(_vla + pos_index);
+			}
 		}
+
 
 		/* Member function : erase()
 		 * Erases the specified elements from the container.
@@ -430,8 +432,9 @@ namespace ft {
 		 *
 		 */
 		iterator erase( iterator pos ) {
+			if (this->empty() || pos == end())
+				return end();
 			size_type index = pos._node - _vla;
-
 			_a.destroy(pos._node);
 			for (size_type i = index; i < _size - 1; i++) {
 				_a.construct(_vla + i, _vla[i + 1]);
@@ -441,6 +444,8 @@ namespace ft {
 			return iterator(_vla + index);
 		}
 		iterator erase( iterator first, iterator last ) {
+			if (this->empty() || first == end())
+				return end();
 			size_type to_erase = last - first;
 			size_type index_dst = first._node - _vla;
 			size_type index_src = last._node - _vla;
@@ -518,12 +523,8 @@ namespace ft {
 		}
 
 		void _deep_copy(const vector& other) {
-	        _realloc(other._capacity);
-		    _a = other._a;
-		    _size = other._size;
-		    _vla = _a.allocate(_capacity);
-		    for (size_type i = 0; i < _size; i++)
-		        _a.construct(_vla + i, other._vla[i]);
+			for(iterator it = other.begin(); it != other.end(); it++)
+				push_back(*it);
 		}
 
 		void _shift_right_elements(const size_type& first_index, const size_type& count) {
@@ -535,7 +536,7 @@ namespace ft {
 			}
 		}
 
-		void _realloc(const size_type& new_capacity) {
+		void _realloc(size_type new_capacity) {
 		   pointer new_vla = _a.allocate(new_capacity);
 		   for (size_type i = 0; i < _size; i++) {
 		   		_a.construct(new_vla + i, _vla[i]);
