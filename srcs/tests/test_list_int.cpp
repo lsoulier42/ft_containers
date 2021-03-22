@@ -478,6 +478,17 @@ void test_list_int_max_size(void) {
 	std::cout << test.max_size() << std::endl;
 }
 
+void test_list_int_iterator_comparison(void) {
+	ft::list<int> iterator_comparison_test;
+	std::cout << std::endl << "Test of iterator comparison: " << std::endl;
+	create_int_container(&iterator_comparison_test);
+	ft::list<int>::iterator it = iterator_comparison_test.begin();
+	ft::list<int>::const_iterator cit = iterator_comparison_test.begin();
+	std::cout << "comparison between const and iterator, both at begin(): " << verbose_bool(cit == it) << std::endl;
+	std::cout << "let's increment cit, now *cit is : " << *++cit << " and *it is : " << *it << std::endl;
+	std::cout << "comparison between const and iterator is now : " << verbose_bool(cit == it) << std::endl;
+}
+
 void test_list_int(void) {
 	std::cout << "\033[31;1;4mInt container\033[0m: ";
 	test_list_int_push_back();
@@ -498,6 +509,7 @@ void test_list_int(void) {
 	test_list_int_sort();
 	test_list_int_operator();
 	test_list_int_iterator();
+	test_list_int_iterator_comparison();
 	test_list_int_insert();
 	test_list_int_erase();
 	test_list_int_splice();
