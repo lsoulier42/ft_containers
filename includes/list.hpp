@@ -128,7 +128,8 @@ namespace ft {
 		}
 		template< class InputIt >
 		list( InputIt first, InputIt last,
-			const Allocator& alloc = Allocator() ) {
+			const Allocator& alloc = Allocator(),
+			typename ft::enable_if<!is_integral<InputIt>::value>::type* = NULL) {
 			_init_constructor(alloc);
 			this->assign(first, last);
 		}

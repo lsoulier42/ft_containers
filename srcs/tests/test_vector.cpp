@@ -93,8 +93,8 @@ void test_vector_assign(void) {
 	print_vector_state(test_assign1);
 
 	ft::vector<std::string> test_assign2;
-	std::cout << std::endl << "Let's create a second vector then push_back() 'mewtwo', 'articodin' and 'raflesia': "
-			  << std::endl;
+	std::cout << std::endl << "Let's create a second vector";
+	std::cout << " then push_back() 'mewtwo', 'articodin' and 'raflesia': " << std::endl;
 	test_assign2.push_back("mewtwo");
 	test_assign2.push_back("articodin");
 	test_assign2.push_back("raflesia");
@@ -144,12 +144,14 @@ void test_vector_insert(void) {
 	std::cout << "*First let's try to insert at pos = begin() with integer 42 :" << std::endl;
 	test_insert1.insert(test_insert1.begin(), 42);
 	print_vector_state(test_insert1);
-	std::cout << "*Let's create a new empty container and try to insert at pos = end() with integer 42 :" << std::endl;
+	std::cout << "*Let's create a new empty container";
+	std::cout << " and try to insert at pos = end() with integer 42 :" << std::endl;
 	ft::vector<int> test_insert2;
 	test_insert2.insert(test_insert2.end(), 42);
 	print_vector_state(test_insert2);
 
-	std::cout << std::endl << "Let's insert on vector<int> container with one element 42 (the previous one):" << std::endl;
+	std::cout << std::endl << "Let's insert on vector<int> container";
+	std::cout << " with one element 42 (the previous one):" << std::endl;
 	std::cout << "*First let's try to insert at pos = begin() with integer 21 :" << std::endl;
 	test_insert1.insert(test_insert1.begin(), 21);
 	print_vector_state(test_insert1);
@@ -203,30 +205,140 @@ void test_vector_erase(void) {
 	std::cout << "Let's try to erase begin() + 1:" << std::endl;
 	test_erase1.erase(test_erase1.begin() + 1);
 	print_vector_state(test_erase1);
+	std::cout << "Let's try to erase end() - 1:" << std::endl;
+	test_erase1.erase(test_erase1.end() - 1);
+	print_vector_state(test_erase1);
+
+	std::cout << std::endl << "Let's create a vector<string> with 'pikachu',";
+	std::cout << " 'bulbizare', 'herbizare', 'florizard', 'raichu':" << std::endl;
+	ft::vector<std::string> test_erase2;
+	test_erase2.push_back("pikachu");
+	test_erase2.push_back("bulbizare");
+	test_erase2.push_back("herbizare");
+	test_erase2.push_back("florizard");
+	test_erase2.push_back("raichu");
+	print_vector_state(test_erase2);
+	std::cout << "Let's use erase() prototype with first = begin + 1 and last = end - 1" << std::endl;
+	test_erase2.erase(test_erase2.begin() + 1, test_erase2.end() - 1);
+	print_vector_state(test_erase2);
 }
 
 void test_vector_at(void) {
+	std::cout << std::endl << "Tests for \033[31;1;4mat()\033[0m: " << std::endl;
 
+	std::cout << "Let's test the exception on an empty container: " << std::endl;
+	ft::vector<std::string> test_at;
+	try {
+		std::string test;
+		test = test_at.at(2);
+		std::cout << "this should not happen and test contains: " << test << std::endl;
+	}
+	catch (std::exception& e) {
+		std::cout << e.what() << std::endl;
+	}
+
+	std::cout << "Let's create a string vector with 'papilusion', 'scarabrute' and 'racaillou'" << std::endl;
+	test_at.push_back("papilusion");
+	test_at.push_back("scarabrute");
+	test_at.push_back("racaillou");
+	try {
+		std::string test;
+		test = test_at.at(2);
+		std::cout << "The result at(2) is: " << test << std::endl;
+	}
+	catch (std::exception& e) {
+		std::cout << "this should not happen" << std::endl;
+		std::cout << e.what() << std::endl;
+	}
+
+	std::cout << "Let's test the exception on this container: " << std::endl;
+	try {
+		std::string test;
+		test = test_at.at(42);
+		std::cout << "this should not happen and test contains: " << test << std::endl;
+	}
+	catch (std::exception& e) {
+		std::cout << e.what() << std::endl;
+	}
 }
 
-void test_vector_operator_crochet(void) {
+void test_vector_operator_bracket(void) {
+	std::cout << std::endl << "Tests for \033[31;1;4moperator[]()\033[0m: " << std::endl;
 
-}
+	std::cout << "Let's create a string vector with 'papilusion', 'scarabrute', ";
+	std::cout << "'racaillou', 'mew', 'voltorbe'" << std::endl;
+	ft::vector<std::string> test_operator_bracket;
+	test_operator_bracket.push_back("papilusion");
+	test_operator_bracket.push_back("scarabrute");
+	test_operator_bracket.push_back("racaillou");
+	test_operator_bracket.push_back("mew");
+	test_operator_bracket.push_back("voltorbe");
+
+	for(int i = 0; i < 5; i++)
+		std::cout << "test[" << i << "] = " << test_operator_bracket[i] << std::endl;
+
+	std::cout << "Let's try to change the content with operator[]:" << std::endl;
+	std::cout << "Let's set test[0] to 'mystherbe'" << std::endl;
+	test_operator_bracket[0] = "mystherbe";
+	std::cout << "test[0] = " << test_operator_bracket[0] << std::endl;
+	print_vector_state(test_operator_bracket);
+ }
 
 void test_vector_clear(void) {
+	std::cout << std::endl << "Tests for \033[31;1;4mclear()\033[0m: " << std::endl;
 
+	std::cout << "Let's create a int vector with new() with count= 9 elements with value = 6" << std::endl;
+	ft::vector<int>* test_clear = new ft::vector<int>(9, 6);
+	print_vector_state(*test_clear);
+
+	std::cout << "Now let's use clear() and print state of the vector:" << std::endl;
+	test_clear->clear();
+	print_vector_state(*test_clear);
+
+	delete test_clear;
 }
 
 void test_vector_max_size(void) {
-
+	std::cout << std::endl << "Tests for \033[31;1;4mmax_size()\033[0m: " << std::endl;
+	ft::vector<int> test_max_size;
+	std::cout << "The return of max_size() for a int vector is: " << test_max_size.max_size() << std::endl;
 }
 
 void test_vector_reserve(void) {
+	std::cout << std::endl << "Tests for \033[31;1;4mreserve()\033[0m: " << std::endl;
+	ft::vector<int> test_reserve;
 
+	std::cout << "Let's test with an empty container:" << std::endl;
+	print_vector_state(test_reserve);
+	std::cout << "Let's reserve 10 blocks" << std::endl;
+	test_reserve.reserve(10);
+	print_vector_state(test_reserve);
+	std::cout << "Now let's insert 10 values" << std::endl;
+	test_reserve.insert(test_reserve.begin(), 10, 42);
+	print_vector_state(test_reserve);
+	std::cout << "Let's try to reserve 10 which shouldn't do anything" << std::endl;
+	test_reserve.reserve(10);
+	print_vector_state(test_reserve);
+	std::cout << "Let's try to reserve 50" << std::endl;
+	test_reserve.reserve(50);
+	print_vector_state(test_reserve);
 }
 
 void test_vector_resize(void) {
+	std::cout << std::endl << "Tests for \033[31;1;4mresize()\033[0m: " << std::endl;
 
+	std::cout << "Let's create an int vector with 10 times integer 42" << std::endl;
+	ft::vector<int> test_resize = ft::vector<int>(10, 42);
+	print_vector_state(test_resize);
+	std::cout << "Let's try to resize to 5" << std::endl;
+	test_resize.resize(5);
+	print_vector_state(test_resize);
+	std::cout << "Let's try to resize to 9 with 21" << std::endl;
+	test_resize.resize(9, 21);
+	print_vector_state(test_resize);
+	std::cout << "Let's try to resize to 50 with default value" << std::endl;
+	test_resize.resize(50);
+	print_vector_state(test_resize);
 }
 
 void test_vector_iterator(void) {
@@ -238,7 +350,29 @@ void test_vector_comparison(void) {
 }
 
 void test_vector_swap(void) {
+	std::cout << std::endl << "Tests for \033[31;1;4mswap()\033[0m: " << std::endl;
 
+	std::cout << "Let's create two int vectors : 1/ 12, 21, 42 - 2/ 4 8 15 16 23 42" << std::endl;
+	ft::vector<int> test_swap1, test_swap2;
+	test_swap1.push_back(12);
+	test_swap1.push_back(21);
+	test_swap1.push_back(42);
+	std::cout << "First container: " << std::endl;
+	print_vector_state(test_swap1);
+	test_swap2.push_back(4);
+	test_swap2.push_back(8);
+	test_swap2.push_back(15);
+	test_swap2.push_back(16);
+	test_swap2.push_back(23);
+	test_swap2.push_back(42);
+	std::cout << "Second container: " << std::endl;
+	print_vector_state(test_swap2);
+	std::cout << "Now let's use swap():" << std::endl;
+	test_swap1.swap(test_swap2);
+	std::cout << "First container: " << std::endl;
+	print_vector_state(test_swap1);
+	std::cout << "Second container: " << std::endl;
+	print_vector_state(test_swap2);
 }
 
 void test_vector() {
@@ -249,5 +383,13 @@ void test_vector() {
 	test_vector_frontback();
 	test_vector_insert();
 	test_vector_erase();
-
+	test_vector_at();
+	test_vector_operator_bracket();
+	test_vector_clear();
+	test_vector_max_size();
+	test_vector_reserve();
+	test_vector_resize();
+	test_vector_iterator();
+	test_vector_comparison();
+	test_vector_swap();
 }

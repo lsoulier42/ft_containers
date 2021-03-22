@@ -25,7 +25,7 @@ void test_vector_frontback(void);
 void test_vector_insert(void);
 void test_vector_erase(void);
 void test_vector_at(void);
-void test_vector_operator_crochet(void);
+void test_vector_operator_bracket(void);
 void test_vector_clear(void);
 void test_vector_max_size(void);
 void test_vector_reserve(void);

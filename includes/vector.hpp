@@ -164,26 +164,43 @@ namespace ft {
 		  *
 		  *
 		  */
-		 vector() {
-            _init_constructor(Allocator(), 1);
+		 vector() : _a(Allocator()), _size(0), _capacity(1) {
+			 _vla = _a.allocate(1);
+			 _a.construct(_vla, T());
 		 }
-		 explicit vector( const Allocator& alloc ) {
-            _init_constructor(alloc, 1);
+		 explicit vector( const Allocator& alloc ) : _a(alloc), _size(0), _capacity(1) {
+			 _vla = _a.allocate(1);
+			 _a.construct(_vla, T());
 		 }
 		 explicit vector( size_type count,
-			const T& value = T(), const Allocator& alloc = Allocator()) {
-             _init_constructor(alloc, count);
-             this->assign(count, value);
+			const T& value = T(), const Allocator& alloc = Allocator()) : _a(alloc),
+			_size(count), _capacity(count) {
+			 _vla = _a.allocate(_capacity);
+			 for (size_type i = 0; i < count; i++)
+				 _a.construct(_vla + i, value);
 		 }
 		template< class InputIt >
-		vector( InputIt first, InputIt last, const Allocator& alloc = Allocator() ) {
-            _init_constructor(alloc, 1);
-            this->assign(first, last);
+		vector( InputIt first, InputIt last, const Allocator& alloc = Allocator(),
+			typename ft::enable_if<!is_integral<InputIt>::value>::type* = NULL) {
+		 	size_type count = 0;
+		 	for (InputIt it = first; it != last; it++)
+		 		count++;
+			_a = alloc;
+			_capacity = count;
+			_size = 0;
+			_vla = _a.allocate(_capacity);
+			size_type i = 0;
+			for(InputIt it = first; it != last; it++)
+				_a.construct(_vla + i++, *it);
 		 }
 		vector( const vector& other ) {
-			_init_constructor(Allocator(), other.capacity());
 			_a = other._a;
-            this->_deep_copy(other);
+			_size = other._size;
+			_capacity = other._capacity;
+			_vla = _a.allocate(_capacity);
+			size_type i = 0;
+			for(iterator it = other.begin(); it != other.end(); it++)
+				_a.construct(_vla + i++, *it);
 		 }
 
 		 /* Member functions : destructor
@@ -205,9 +222,14 @@ namespace ft {
         vector& operator=( const vector& other ) {
         	if (this != &other) {
 				this->clear();
+				_a.deallocate(_vla, _capacity);
 				_a = other._a;
-				_realloc(other.capacity());
-				this->_deep_copy(other);
+				_capacity = other._capacity;
+				_size = other._size;
+				_vla = _a.allocate(_capacity);
+				size_type i = 0;
+				for(iterator it = other.begin(); it != other.end(); it++)
+					_a.construct(_vla + i++, *it);
 			}
             return *this;
         }
@@ -250,7 +272,8 @@ namespace ft {
         reference at( size_type pos ) {
             if (pos >= this->size()) {
                 std::stringstream ss;
-                ss << pos;
+                ss << "vector::_M_range_check: __n (which is " << pos << ")";
+                ss << " >= this->size() (which is " << this->size() << ")";
                 throw std::out_of_range(ss.str());
             }
             return _vla[pos];
@@ -446,7 +469,9 @@ namespace ft {
 		iterator erase( iterator first, iterator last ) {
 			if (this->empty() || first == end())
 				return end();
-			size_type to_erase = last - first;
+			size_type to_erase = 0;
+			for(iterator it = first; it != last; it++)
+				to_erase++;
 			size_type index_dst = first._node - _vla;
 			size_type index_src = last._node - _vla;
 			size_type nb_to_move = _size - to_erase;
@@ -512,21 +537,6 @@ namespace ft {
 		 *
 		 *
 		 */
-
-		void _init_constructor(const allocator_type& alloc, size_type count) {
-		    _a = alloc;
-		    _size = 0;
-		    _capacity = count;
-		    _vla = _a.allocate(_capacity);
-		    for(size_type i = 0; i < _capacity; i++)
-		    	_a.construct(_vla + i, T());
-		}
-
-		void _deep_copy(const vector& other) {
-			for(iterator it = other.begin(); it != other.end(); it++)
-				push_back(*it);
-		}
-
 		void _shift_right_elements(const size_type& first_index, const size_type& count) {
 			if (!this->empty()) {
 				for (size_type i = _size; i > first_index; i--) {
