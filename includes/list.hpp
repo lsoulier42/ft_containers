@@ -573,21 +573,35 @@ namespace ft {
 			unique(comp);
 		}
 
+		/* Member function : sort()
+		 * Sorts the elements in ascending order
+		 * The first version uses comparison function comp to compare the elements,
+		 * the second version uses operator<.
+		 * Merge sort algorithm is used for N log N complexity
+		 *
+		 */
+
 		template< class Compare >
 		void sort( Compare comp ) {
 			if (_size < 2)
 				return ;
-			t_list *track, *next;
-			track = _end->next;
-			while(track != _end) {
-				next = track->next;
-				while(next != _end) {
-					if (comp(next->content, track->content))
-						this->_swap_el(next, track);
-					next = next->next;
-				}
-				track = track->next;
-			}
+			// first make the double linked list uncircular
+			t_list* head = _end->next;
+			t_list* tail = _end->prev;
+			head->prev = NULL;
+			tail->next = NULL;
+
+			//the merge sort algorithm
+			head = this->_merge_sort(head, comp);
+
+			//restore circular characteristics
+			head->prev = _end;
+			_end->next = head;
+			tail = head;
+			while(tail->next)
+				tail = tail->next;
+			tail->next = _end;
+			_end->prev = tail;
 		}
 		void sort() {
 			ft::less<T> comp;
@@ -662,6 +676,61 @@ namespace ft {
 			_a_node = other._a_node;
 			for (iterator it = other.begin(); it != other.end(); it++)
 				this->push_back(*it);
+		}
+
+		template< class Compare >
+		t_list* _merge_sort(t_list* head, Compare comp)
+		{
+			if (!head || !head->next)
+				return head;
+			//principle : split the list in 2 smaller lists till the list is 2 elements
+			t_list* second = this->_split(head);
+
+			// recursive call to merge the 2 smaller lists
+			head = this->_merge_sort(head, comp);
+			second = this->_merge_sort(second, comp);
+
+			// then merge the 2 newly sorted lists
+			return this->_merge(head, second, comp);
+		}
+
+		template< class Compare >
+		t_list* _merge(t_list* first, t_list* second, Compare comp)
+		{
+			//if the split has made empty lists : return the not empty one
+			if (!first)
+				return second;
+			if (!second)
+				return first;
+
+			//swap elements recursively on the smaller lists
+			if (comp(first->content, second->content))
+			{
+				first->next = this->_merge(first->next, second, comp);
+				first->next->prev = first;
+				first->prev = NULL;
+				return first;
+			}
+			else
+			{
+				second->next = this->_merge(first, second->next, comp);
+				second->next->prev = second;
+				second->prev = NULL;
+				return second;
+			}
+		}
+
+		t_list* _split(t_list* head)
+		{
+			t_list *fast = head, *slow = head;
+			while (fast->next && fast->next->next)
+			{
+				fast = fast->next->next;
+				slow = slow->next;
+			}
+			t_list* temp = slow->next;
+			slow->next = NULL;
+			return temp;
 		}
 
 		/* private attributes
