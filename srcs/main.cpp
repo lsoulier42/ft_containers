@@ -20,8 +20,8 @@
 
 int main() {
 	//test_list();
-	test_stack();
-	//test_queue();
+	//test_stack();
+	test_queue();
 	//test_vector();
 	//test_map();
 
