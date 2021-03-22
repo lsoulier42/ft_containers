@@ -81,16 +81,16 @@ namespace ft {
 			friend bool operator!=(const iterator& lhs, const iterator& rhs) {
 				return lhs._node != rhs._node;
 			}
-			bool operator<(const iterator& rhs) {
+			bool operator<(const iterator& rhs) const {
 				return this->_node < rhs._node;
 			}
-			bool operator>(const iterator& rhs) {
+			bool operator>(const iterator& rhs) const {
 				return  this->_node > rhs._node;
 			}
-			bool operator<=(const iterator& rhs) {
+			bool operator<=(const iterator& rhs) const {
 				return  this->_node <= rhs._node;
 			}
-			bool operator>=(const iterator& rhs) {
+			bool operator>=(const iterator& rhs) const {
 				return  this->_node >= rhs._node;
 			}
 
@@ -184,16 +184,16 @@ namespace ft {
 			friend bool operator!=(const const_iterator& lhs, const const_iterator& rhs) {
 				return lhs._node != rhs._node;
 			}
-			bool operator<(const const_iterator& rhs) {
+			bool operator<(const const_iterator& rhs) const {
 				return this->_node < rhs._node;
 			}
-			bool operator>(const const_iterator& rhs) {
+			bool operator>(const const_iterator& rhs) const {
 				return  this->_node > rhs._node;
 			}
-			bool operator<=(const const_iterator& rhs) {
+			bool operator<=(const const_iterator& rhs) const {
 				return  this->_node <= rhs._node;
 			}
-			bool operator>=(const const_iterator& rhs) {
+			bool operator>=(const const_iterator& rhs) const {
 				return  this->_node >= rhs._node;
 			}
 

@@ -62,12 +62,98 @@ namespace ft {
          *
          *
          */
+		class iterator : public ft::iterator<bidirectional_iterator_tag, T, difference_type, pointer, reference> {
+		public:
+			iterator() {}
+			iterator(bstree* node) : _node(node) {}
+			iterator(const iterator& src) { *this = src; }
+			iterator& operator=(const iterator& rhs) {
+				if (this != &rhs)
+					this->_node = rhs._node;
+				return *this;
+			}
+			virtual ~iterator() {}
+
+			reference operator*() const {
+				return this->_node->content;
+			}
+			pointer operator->() const {
+				return &(this->_node->content);
+			}
+			friend bool operator==(const iterator& lhs, const iterator& rhs) {
+				return (lhs._node == rhs._node);
+			}
+			friend bool operator!=(const iterator& lhs, const iterator& rhs) {
+				return (lhs._node != rhs._node);
+			}
+
+			iterator& operator++() {
+				this->_node = _find_next(this->_node);
+				return *this;
+			}
+			iterator operator++(int) {
+				iterator tmp = *this;
+				++(*this);
+				return tmp;
+			}
+			iterator& operator--() {
+				this->_node = _find_prev(this->_node);
+				return *this;
+			}
+			iterator operator--(int) {
+				iterator tmp = *this;
+				--(*this);
+				return tmp;
+			}
+
+			/* Bidirectionnal iterator : public attribute
+			 *
+			 *
+			 */
+			bstree* _node;
+
+		private:
+			bstree* _min_value(bstree* node) {
+				bstree* current = node;
+				while(current->left)
+					current = current->left;
+				return current;
+			}
+			bstree* _max_value(bstree* node) {
+				bstree* current = node;
+				while(current->right)
+					current = current->right;
+				return current;
+			}
+			bstree* _find_next(bstree* node) {
+				if (node->right)
+					return _min_value(node->right);
+				bstree* parent = node->parent;
+				while (parent && node == parent->right) {
+					node = parent;
+					parent = parent->parent;
+				}
+				return parent;
+			}
+			bstree* _find_prev(bstree* node) {
+				if (node->left)
+					return _max_value(node->left);
+				bstree* parent = node->parent;
+				while(parent && node == parent->left) {
+					node = parent;
+					parent = parent->parent;
+				}
+				return parent;
+			}
+		};
+
 
         class const_iterator : public ft::iterator<bidirectional_iterator_tag, T, difference_type, pointer, reference> {
         public:
             const_iterator() {}
             const_iterator(const const_iterator& src) { *this = src; }
             const_iterator(bstree* node) : _node(node){}
+            const_iterator(const iterator& src) : _node(src._node) {}
 			const_iterator& operator=(const const_iterator& rhs) {
 				if (this != &rhs)
 					this->_node = rhs._node;
@@ -81,12 +167,12 @@ namespace ft {
             pointer operator->() const {
                 return &(this->_node->content);
             }
-            bool operator==(const const_iterator& rhs) const {
-                return (_node == rhs._node);
-            }
-            bool operator!=(const const_iterator& rhs) const {
-                return (_node != rhs._node);
-            }
+			friend bool operator==(const const_iterator& lhs, const const_iterator& rhs) {
+				return (lhs._node == rhs._node);
+			}
+			friend bool operator!=(const const_iterator& lhs, const const_iterator& rhs) {
+				return (lhs._node != rhs._node);
+			}
 
 			const_iterator& operator++() {
 				this->_node = _find_next(this->_node);
@@ -145,20 +231,6 @@ namespace ft {
         		}
         		return parent;
         	}
-        };
-
-        class iterator : public const_iterator {
-        public:
-            iterator() {}
-            iterator(bstree* node) : const_iterator(node) {}
-            iterator(const iterator& src) { *this = src; }
-            iterator(const const_iterator& other) : const_iterator(other) {}
-			iterator& operator=(const iterator& rhs) {
-				if (this != &rhs)
-					this->_node = rhs._node;
-				return *this;
-			}
-            virtual ~iterator() {}
         };
 
         typedef reverse_iterator<const_iterator> const_reverse_iterator;
@@ -240,7 +312,7 @@ namespace ft {
 		 *
 		 */
 		T& operator[]( const Key& key ) {
-			iterator it = this->find(key);
+			const_iterator it = this->find(key);
 			if (it == this->end())
 				return this->insert(ft::make_pair(key, T())).first->second;
 			else

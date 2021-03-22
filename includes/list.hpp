@@ -45,11 +45,59 @@ namespace ft {
 		typedef typename Allocator::pointer pointer;
 		typedef typename Allocator::const_pointer const_pointer;
 
+		class iterator : public ft::iterator<bidirectional_iterator_tag, T, difference_type, pointer, reference>  {
+		public:
+			iterator() {}
+			iterator(t_list* node) : _node(node) {}
+			iterator(const iterator& src) { *this = src; }
+			iterator& operator=(const iterator& rhs) {
+				if (this != &rhs)
+					this->_node = rhs._node;
+				return *this;
+			}
+			virtual ~iterator() {}
+
+			reference operator*() const {
+				return this->_node->content;
+			}
+			pointer operator->() const {
+				return this->_node;
+			}
+			friend bool operator==(const iterator& lhs, const iterator& rhs) {
+				return (lhs._node == rhs._node);
+			}
+			friend bool operator!=(const iterator& lhs, const iterator& rhs) {
+				return (lhs._node != rhs._node);
+			}
+
+			iterator& operator++() {
+				this->_node = this->_node->next;
+				return *this;
+			}
+			iterator operator++(int) {
+				iterator tmp = *this;
+				++(*this);
+				return tmp;
+			}
+			iterator& operator--() {
+				this->_node = this->_node->prev;
+				return *this;
+			}
+			iterator operator--(int) {
+				iterator tmp = *this;
+				--(*this);
+				return tmp;
+			}
+
+			t_list* _node;
+		};
+
 		class const_iterator : public ft::iterator<bidirectional_iterator_tag, T, difference_type, pointer, reference> {
 		public:
 			const_iterator() {}
 			const_iterator(const const_iterator& src) { *this = src; }
-			const_iterator(t_list* x) : _node(x) {}
+			const_iterator(t_list* node) : _node(node) {}
+			const_iterator(const iterator& src) : _node(src._node) {}
 			const_iterator& operator=(const const_iterator& rhs) {
 				if (this != &rhs)
 					this->_node = rhs._node;
@@ -63,11 +111,11 @@ namespace ft {
 			pointer operator->() const {
 				return this->_node;
 			}
-			bool operator==(const const_iterator& rhs) const {
-				return (_node == rhs._node);
+			friend bool operator==(const const_iterator& lhs, const const_iterator& rhs) {
+				return (lhs._node == rhs._node);
 			}
-			bool operator!=(const const_iterator& rhs) const {
-				return (_node != rhs._node);
+			friend bool operator!=(const const_iterator& lhs, const const_iterator& rhs) {
+				return (lhs._node != rhs._node);
 			}
 
 			const_iterator& operator++() {
@@ -91,21 +139,6 @@ namespace ft {
 
 			t_list* _node;
 		};
-
-		class iterator : public const_iterator  {
-		public:
-			iterator() {}
-			iterator(t_list* node) : const_iterator(node) {}
-			iterator(const iterator& src) { *this = src; }
-			iterator(const const_iterator& other) : const_iterator(other) {}
-			iterator& operator=(const iterator& rhs) {
-				if (this != &rhs)
-					this->_node = rhs._node;
-				return *this;
-			}
-			virtual ~iterator() {}
-		};
-		
 
 		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 		typedef ft::reverse_iterator<iterator> reverse_iterator;
@@ -341,7 +374,7 @@ namespace ft {
 		}
 		iterator erase( iterator first, iterator last ) {
 			iterator ret;
-			for(iterator it = first; it != last; it++)
+			for(const_iterator it = first; it != last; it++)
 				ret = erase(it);
 			return ret;
 		}
@@ -489,7 +522,7 @@ namespace ft {
 		}
 		void splice( const_iterator pos, list& other,
 			const_iterator first, const_iterator last) {
-			iterator it = first, tmp;
+			const_iterator it = first, tmp;
 			while (it != last) {
 				tmp = iterator(it._node->next);
 				splice(pos, other, it);
@@ -675,7 +708,7 @@ namespace ft {
 		void _deep_copy( const list& other ) {
 			_a_type = other._a_type;
 			_a_node = other._a_node;
-			for (iterator it = other.begin(); it != other.end(); it++)
+			for (const_iterator it = other.begin(); it != other.end(); it++)
 				this->push_back(*it);
 		}
 
