@@ -11,6 +11,52 @@
 /* ************************************************************************** */
 
 #include "test_vector.hpp"
+#include <vector>
+#include <list>
+#define TESTED_NAMESPACE ft
+#define TESTED_TYPE std::string
+
+template <typename T>
+void	printSize(TESTED_NAMESPACE::vector<T> const &vct, bool print_content = 1)
+{
+	std::cout << "size: " << vct.size() << std::endl;
+	std::cout << "capacity: " << vct.capacity() << std::endl;
+	std::cout << "max_size: " << vct.max_size() << std::endl;
+	if (print_content)
+	{
+		typename TESTED_NAMESPACE::vector<T>::const_iterator it = vct.begin();
+		typename TESTED_NAMESPACE::vector<T>::const_iterator ite = vct.end();
+		std::cout << std::endl << "Content is:" << std::endl;
+		for (; it != ite; ++it)
+			std::cout << "- " << *it << std::endl;
+	}
+	std::cout << "###############################################" << std::endl;
+}
+
+void	checkErase(TESTED_NAMESPACE::vector<TESTED_TYPE> const &vct,
+				   TESTED_NAMESPACE::vector<TESTED_TYPE>::const_iterator const &it)
+{
+	static int i = 0;
+	std::cout << "[" << i++ << "] " << "erase: " << it - vct.begin() << std::endl;
+	printSize(vct);
+}
+
+class foo {
+public:
+	foo(void) { };
+	~foo(void) { };
+	void m(void) { std::cout << "foo::m called [" << this->value << "]" << std::endl; };
+	void m(void) const { std::cout << "foo::m const called [" << this->value << "]" << std::endl; };
+	foo &operator=(int src) { this->value = src; return *this; };
+	int getValue(void) const { return this->value; };
+private:
+	int	value;
+};
+
+std::ostream	&operator<<(std::ostream &o, foo const &bar) {
+	o << bar.getValue();
+	return o;
+}
 
 template<typename T>
 void print_vector_content(const ft::vector<T>& to_print) {
@@ -493,9 +539,37 @@ void test_vector_swap(void) {
 	print_vector_state(test_swap2);
 }
 
+void test_mli() {
+	TESTED_NAMESPACE::vector<TESTED_TYPE> vct(10);
+
+	for (unsigned long int i = 0; i < vct.size(); ++i)
+		vct[i] = std::string((vct.size() - i), i + 65);
+	printSize(vct);
+
+	checkErase(vct, vct.erase(vct.begin() + 2));
+
+	checkErase(vct, vct.erase(vct.begin()));
+	checkErase(vct, vct.erase(vct.end() - 1));
+
+	checkErase(vct, vct.erase(vct.begin(), vct.begin() + 3));
+	checkErase(vct, vct.erase(vct.end() - 3, vct.end() - 1));
+
+	vct.push_back("Hello");
+	vct.push_back("Hi there");
+	printSize(vct);
+	checkErase(vct, vct.erase(vct.end() - 3, vct.end()));
+
+	vct.push_back("ONE");
+	vct.push_back("TWO");
+	vct.push_back("THREE");
+	vct.push_back("FOUR");
+	printSize(vct);
+	checkErase(vct, vct.erase(vct.begin(), vct.end()));
+}
+
 void test_vector() {
 	std::cout << "Tests for \033[31;1;4mvector()\033[0m container: " << std::endl;
-	test_vector_constructor();
+	/*test_vector_constructor();
 	test_vector_pushpop_back();
 	test_vector_assign();
 	test_vector_frontback();
@@ -509,5 +583,6 @@ void test_vector() {
 	test_vector_resize();
 	test_vector_iterator();
 	test_vector_comparison();
-	test_vector_swap();
+	test_vector_swap();*/
+	test_mli();
 }

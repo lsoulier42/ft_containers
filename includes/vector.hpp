@@ -26,7 +26,7 @@ namespace ft {
 
 	template< class T >
 	class vectorIterator : public ft::iterator<ft::random_access_iterator_tag, T,
-		std::ptrdiff_t , T*, T&>  {
+			std::ptrdiff_t , T*, T&>  {
 	public:
 		typedef std::ptrdiff_t difference_type;
 		typedef T value_type;
@@ -49,16 +49,16 @@ namespace ft {
 		 *
 		 */
 
-		reference operator*() {
+		reference operator*() const {
 			return *_node;
 		}
-		pointer operator->() {
+		pointer operator->() const {
 			return _node;
 		}
-		difference_type operator-(const vectorIterator& rhs) {
+		difference_type operator-(const vectorIterator& rhs) const {
 			return this->_node - rhs._node;
 		}
-		reference operator[](int n) {
+		reference operator[](int n) const {
 			return *(_node + n);
 		}
 
@@ -112,7 +112,7 @@ namespace ft {
 			this->_node += n;
 			return *this;
 		}
-		vectorIterator operator+(difference_type n) {
+		vectorIterator operator+(difference_type n) const {
 			return vectorIterator(this->_node + n);
 		}
 		friend vectorIterator operator+(difference_type n, const vectorIterator& rhs) {
@@ -123,7 +123,7 @@ namespace ft {
 			this->_node -= n;
 			return *this;
 		}
-		vectorIterator operator-(int n) {
+		vectorIterator operator-(int n) const {
 			return vectorIterator(this->_node - n);
 		}
 
@@ -161,16 +161,16 @@ namespace ft {
 		 *
 		 */
 
-		reference operator*() {
+		reference operator*() const {
 			return *_node;
 		}
-		pointer operator->() {
+		pointer operator->() const {
 			return _node;
 		}
-		difference_type operator-(const vectorConstIterator& rhs) {
+		difference_type operator-(const vectorConstIterator& rhs) const {
 			return this->_node - rhs._node;
 		}
-		reference operator[](int n) {
+		reference operator[](int n) const {
 			return *(_node + n);
 		}
 
@@ -224,7 +224,7 @@ namespace ft {
 			this->_node += n;
 			return *this;
 		}
-		vectorConstIterator operator+(difference_type n) {
+		vectorConstIterator operator+(difference_type n) const {
 			return vectorConstIterator(this->_node + n);
 		}
 		friend vectorConstIterator operator+(difference_type n, const vectorConstIterator& rhs) {
@@ -235,7 +235,7 @@ namespace ft {
 			this->_node -= n;
 			return *this;
 		}
-		vectorConstIterator operator-(int n) {
+		vectorConstIterator operator-(int n) const {
 			return vectorConstIterator(this->_node - n);
 		}
 
@@ -262,8 +262,8 @@ namespace ft {
 		typedef typename Allocator::const_reference const_reference;
 		typedef typename Allocator::pointer pointer;
 		typedef typename Allocator::const_pointer const_pointer;
-		typedef ft::vectorIterator<T> iterator;
-		typedef ft::vectorConstIterator<T> const_iterator;
+		typedef vectorIterator<T> iterator;
+		typedef vectorConstIterator<T> const_iterator;
 		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 		typedef ft::reverse_iterator<iterator> reverse_iterator;
 
@@ -272,13 +272,8 @@ namespace ft {
 		  *
 		  *
 		  */
-		 vector() : _a(Allocator()), _size(0), _capacity(1) {
-			 _vla = _a.allocate(1);
-			 _a.construct(_vla, T());
-		 }
-		 explicit vector( const Allocator& alloc ) : _a(alloc), _size(0), _capacity(1) {
-			 _vla = _a.allocate(1);
-			 _a.construct(_vla, T());
+		 vector() : _a(Allocator()), _size(0), _capacity(0), _vla(NULL) {}
+		 explicit vector( const Allocator& alloc ) : _a(alloc), _size(0), _capacity(0), _vla(NULL) {
 		 }
 		 explicit vector( size_type count,
 			const T& value = T(), const Allocator& alloc = Allocator()) : _a(alloc),
@@ -298,8 +293,10 @@ namespace ft {
 			_size = 0;
 			_vla = _a.allocate(_capacity);
 			size_type i = 0;
-			for(InputIt it = first; it != last; it++)
+			for(InputIt it = first; it != last; it++) {
 				_a.construct(_vla + i++, *it);
+				_size++;
+			}
 		 }
 		vector( const vector& other ) {
 			_a = other._a;
@@ -316,7 +313,8 @@ namespace ft {
 		  */
 		 virtual ~vector() {
 		     this->clear();
-			 _a.deallocate(_vla, _capacity);
+		     if (_capacity != 0)
+			 	_a.deallocate(_vla, _capacity);
              _capacity = 0;
              _size = 0;
 		 }
@@ -330,14 +328,14 @@ namespace ft {
         vector& operator=( const vector& other ) {
         	if (this != &other) {
 				this->clear();
-				_a.deallocate(_vla, _capacity);
+				if (other._size > _capacity)
+					this->reserve(other._size);
 				_a = other._a;
-				_capacity = other._capacity;
-				_size = other._size;
-				_vla = _a.allocate(_capacity);
 				size_type i = 0;
-				for(const_iterator it = other.begin(); it != other.end(); it++)
+				for(const_iterator it = other.begin(); it != other.end(); it++) {
 					_a.construct(_vla + i++, *it);
+					_size++;
+				}
 			}
             return *this;
         }
@@ -360,15 +358,25 @@ namespace ft {
 
         void assign( size_type count, const T& value ) {
 			this->clear();
-            this->insert(begin(), count, value);
+            this->reserve(count);
+            for(size_type i = 0; i < count; i++) {
+				_a.construct(_vla + i, value);
+				_size += 1;
+			}
         }
         template< class InputIt >
         void assign( InputIt first, InputIt last,
 			typename ft::enable_if<!is_integral<InputIt>::value>::type* = NULL ) {
 			this->clear();
-			size_t count = 0;
+			size_type count = 0;
 			for(InputIt it = first; it != last; it++)
-				this->insert(this->begin() + count++, *it);
+				count++;
+			this->reserve(count);
+			size_t i = 0;
+			for(InputIt it = first; it != last; it++) {
+				_a.construct(_vla + i++, *it);
+				_size += 1;
+			}
         }
 
         /* Member function : at()
@@ -387,7 +395,13 @@ namespace ft {
             return _vla[pos];
         }
         const_reference at( size_type pos ) const {
-            return this->at(pos);
+			if (pos >= this->size()) {
+				std::stringstream ss;
+				ss << "vector::_M_range_check: __n (which is " << pos << ")";
+				ss << " >= this->size() (which is " << this->size() << ")";
+				throw std::out_of_range(ss.str());
+			}
+			return _vla[pos];
         }
 
         /* Member function : operator[]
@@ -480,7 +494,7 @@ namespace ft {
 		 * due to system or library implementation limitations
 		 *
 		 */
-		size_type max_size() {
+		size_type max_size() const {
 			return _a.max_size();
 		}
 
@@ -531,13 +545,17 @@ namespace ft {
 		 */
 		iterator insert( iterator pos, const T& value ) {
 			size_type index = pos._node - _vla;
+			size_type pos_index = pos._node - _vla;
+			if (_size + 1 > _capacity)
+				_realloc(_size == 0 ? 1 : _size * 2);
+			pos = iterator(_vla + pos_index);
 			this->insert(pos, 1, value);
 			return iterator(_vla + index);
 		}
 		void insert( iterator pos, size_type count, const T& value ) {
 			size_type index = pos._node - _vla;
-			while (_size + count > _capacity)
-				_realloc(_capacity * 2);
+			if (_size + count > _capacity)
+				_realloc(_size + count);
 			this->_shift_right_elements(index, count);
 			for (size_type i = index; i < count + index; i++)
 				_a.construct(_vla + i, value);
@@ -548,10 +566,15 @@ namespace ft {
 			   typename ft::enable_if<!is_integral<InputIt>::value>::type* = NULL) {
 			size_type count = 0;
 			size_type pos_index = pos._node - _vla;
-			for(InputIt it = first; it != last; it++) {
-				insert(pos + count++, *it);
-				pos = iterator(_vla + pos_index);
-			}
+			for(InputIt it = first; it != last; it++)
+				count++;
+			int j = 0;
+			while (_size + count > _capacity)
+				_realloc(_size == 0 ? count : (_size + j++) * 2);
+			pos = iterator(_vla + pos_index);
+			size_type i = 0;
+			for(InputIt it = first; it != last; it++)
+				insert(pos + i++, *it);
 		}
 
 
@@ -580,6 +603,8 @@ namespace ft {
 			size_type to_erase = 0;
 			for(iterator it = first; it != last; it++)
 				to_erase++;
+			if (to_erase > _size)
+				return end();
 			size_type index_dst = first._node - _vla;
 			size_type index_src = last._node - _vla;
 			size_type nb_to_move = _size - to_erase;
@@ -660,7 +685,8 @@ namespace ft {
 		   		_a.construct(new_vla + i, _vla[i]);
 				_a.destroy(_vla + i);
 		   }
-		   _a.deallocate(_vla, _capacity);
+		   if (_capacity != 0)
+		  	 _a.deallocate(_vla, _capacity);
 		   _capacity = new_capacity;
 		   _vla = new_vla;
 		}
