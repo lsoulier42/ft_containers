@@ -26,26 +26,25 @@
 # endif
 
 void test_list(void);
-void test_list_int(void);
 void print_list(ft::list<int> & current_list);
 void create_int_container(ft::list<int> *container_ptr);
-void test_list_int_push_back(void);
-void test_list_int_size(void);
-void test_list_int_pop_back(void);
-void test_list_int_clear(void);
-void test_list_int_push_front(void);
-void test_list_int_pop_front(void);
-void test_list_int_assign(void);
-void test_list_int_front(void);
-void test_list_int_back(void);
-void test_list_int_resize(void);
-void test_list_int_remove(void);
-void test_list_int_swap(void);
-void test_list_int_merge(void);
-void test_list_int_reverse();
-void test_list_int_unique(void);
-void test_list_int_operator(void);
-void test_list_int_iterator(void);
-void test_list_int_insert(void);
+void test_list_push_back(void);
+void test_list_size(void);
+void test_list_pop_back(void);
+void test_list_clear(void);
+void test_list_push_front(void);
+void test_list_pop_front(void);
+void test_list_assign(void);
+void test_list_front(void);
+void test_list_back(void);
+void test_list_resize(void);
+void test_list_remove(void);
+void test_list_swap(void);
+void test_list_merge(void);
+void test_list_reverse();
+void test_list_unique(void);
+void test_list_operator(void);
+void test_list_iterator(void);
+void test_list_insert(void);
 
 #endif

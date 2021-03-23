@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   test_list_int.cpp                                  :+:      :+:    :+:   */
+/*   test_list.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lsoulier <lsoulier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -30,7 +30,7 @@ void create_int_container(ft::list<int> *container_ptr) {
 		container_ptr->push_back(ints[i]);
 }
 
-void test_list_int_push_back(void) {
+void test_list_push_back(void) {
 	ft::list<int> test_push_back;
 
 	std::cout << std::endl << "Function \033[31;4mpush_back()\033[0m :" << std::endl;
@@ -38,7 +38,7 @@ void test_list_int_push_back(void) {
 	print_list(test_push_back);
 }
 
-void test_list_int_size(void) {
+void test_list_size(void) {
 	ft::list<int> test_size;
 
 	std::cout << std::endl << "Function \033[31;4msize()\033[0m : " << std::endl;
@@ -46,7 +46,7 @@ void test_list_int_size(void) {
 	std::cout << "Size of the containter: " << test_size.size() << std::endl;
 }
 
-void test_list_int_pop_back(void) {
+void test_list_pop_back(void) {
 	ft::list<int> test_pop_back;
 
 	std::cout << std::endl << "Function \033[31;4mpop_back()\033[0m : " << std::endl;
@@ -57,7 +57,7 @@ void test_list_int_pop_back(void) {
 	print_list(test_pop_back);
 }
 
-void test_list_int_clear(void) {
+void test_list_clear(void) {
 	ft::list<int> test_clear;
 
 	std::cout << std::endl << "Function \033[31;4mclear()\033[0m : " << std::endl;
@@ -70,7 +70,7 @@ void test_list_int_clear(void) {
 	std::cout << "Return of empty() function: " << verbose_bool(test_clear.empty()) << std::endl;
 }
 
-void test_list_int_push_front(void) {
+void test_list_push_front(void) {
 	ft::list<int> test_push_front;
 	int add[2] = {15, 89};
 
@@ -83,7 +83,7 @@ void test_list_int_push_front(void) {
 	print_list(test_push_front);
 }
 
-void test_list_int_pop_front(void) {
+void test_list_pop_front(void) {
 	ft::list<int> test_pop_front;
 
 	std::cout << std::endl << "Function \033[31;4mpop_front()\033[0m: " << std::endl;
@@ -94,7 +94,7 @@ void test_list_int_pop_front(void) {
 	print_list(test_pop_front);
 }
 
-void test_list_int_assign(void) {
+void test_list_assign(void) {
 	ft::list<int> test_assign;
 
 	std::cout << std::endl << "Function \033[31;4massign()\033[0m: " << std::endl;
@@ -104,7 +104,7 @@ void test_list_int_assign(void) {
 	print_list(test_assign);
 }
 
-void test_list_int_front(void) {
+void test_list_front(void) {
 	ft::list<int> test_front;
 
 	std::cout << std::endl << "Function \033[31;4mfront()\033[0m: " << std::endl;
@@ -112,7 +112,7 @@ void test_list_int_front(void) {
 	std::cout << "The return of front function is : " << test_front.front() << std::endl;
 }
 
-void test_list_int_back(void) {
+void test_list_back(void) {
 	ft::list<int> test_back;
 
 	std::cout << std::endl << "Function \033[31;4mback()\033[0m: " << std::endl;
@@ -120,7 +120,7 @@ void test_list_int_back(void) {
 	std::cout << "The return of back function is : " << test_back.back() << std::endl;
 }
 
-void test_list_int_resize(void) {
+void test_list_resize(void) {
 	ft::list<int> test_resize;
 
 	std::cout << std::endl << "Function \033[31;4mresize()\033[0m: " << std::endl;
@@ -133,7 +133,7 @@ void test_list_int_resize(void) {
 	print_list(test_resize);
 }
 
-void test_list_int_remove(void) {
+void test_list_remove(void) {
 	ft::list<int> test_remove;
 
 	std::cout << std::endl << "Function \033[31;4mremove()\033[0m: " << std::endl;
@@ -157,7 +157,7 @@ void test_list_int_remove(void) {
 	std::cout << "Empty(): " << verbose_bool(test_one_el.empty()) << std::endl;
 }
 
-void test_list_int_swap(void) {
+void test_list_swap(void) {
 	ft::list<int> test_swap;
 	ft::list<int> test_swap2;
 
@@ -179,7 +179,7 @@ void test_list_int_swap(void) {
 	print_list(test_swap2);
 }
 
-void test_list_int_merge(void) {
+void test_list_merge(void) {
 	ft::list<int> merge1, merge2;
 	ft::list<int> merge3, merge4;
 	ft::list<int> merge5, merge6;
@@ -234,7 +234,7 @@ void test_list_int_merge(void) {
 	std::cout << "The return of back() is : " << merge5.back() << std::endl;
 }
 
-void test_list_int_reverse() {
+void test_list_reverse() {
 	ft::list<int> reverse_test;
 
 	std::cout << std::endl << "Function \033[31;4mreverse()\033[0m: " << std::endl;
@@ -247,7 +247,7 @@ void test_list_int_reverse() {
 	std::cout << "The return of back() is now: " << reverse_test.back() << std::endl;
 }
 
-void test_list_int_unique(void) {
+void test_list_unique(void) {
 	ft::list<int> unique_test;
 
 	std::cout << std::endl << "Function \033[31;4munique()\033[0m: " << std::endl;
@@ -272,7 +272,7 @@ void test_list_int_unique(void) {
 	std::cout << "The size is now: " << unique_test.size() << std::endl;
 }
 
-void test_list_int_sort(void) {
+void test_list_sort(void) {
 	ft::list<int> sort_test;
 
 	std::cout << std::endl << "Function \033[31;4msort()\033[0m: " << std::endl;
@@ -292,7 +292,7 @@ void test_list_int_sort(void) {
 	print_list(sort_test);
 }
 
-void test_list_int_operator(void) {
+void test_list_operator(void) {
 	ft::list<int> operator1, operator2;
 	ft::list<int> operator3, operator4;
 
@@ -334,7 +334,7 @@ void test_list_int_operator(void) {
 	std::cout << "Return of operator>=: " << verbose_bool(operator3 >= operator4) << std::endl;
 }
 
-void test_list_int_iterator(void) {
+void test_list_iterator(void) {
 	ft::list<int> iterator_test;
 	ft::list<int>::iterator it;
 	ft::list<int>::iterator ite;
@@ -382,7 +382,7 @@ void test_list_int_iterator(void) {
 	std::cout << "The return of *(rite++) is : " << *(rite++) << " then *rite is : " << *rite << std::endl;
 }
 
-void test_list_int_insert(void) {
+void test_list_insert(void) {
 	ft::list<int> insert_test;
 
 	std::cout << std::endl << "Test of \033[31;4minsert()\033[0m: " << std::endl;
@@ -400,7 +400,7 @@ void test_list_int_insert(void) {
 	print_list(insert_test);
 }
 
-void test_list_int_erase(void) {
+void test_list_erase(void) {
 	ft::list<int> erase_test;
 
 	std::cout << std::endl << "Test of \033[31;4merase()\033[0m: " << std::endl;
@@ -413,7 +413,7 @@ void test_list_int_erase(void) {
 	erase_test.erase(erase_test.end());
 	print_list(erase_test);
 }
-void test_list_int_splice(void) {
+void test_list_splice(void) {
 	ft::list<int> splice_test, other;
 	ft::list<int> splice_test2, other2;
 	ft::list<int> splice_test3, other3;
@@ -471,14 +471,14 @@ void test_list_int_splice(void) {
 	print_list(other4);
 }
 
-void test_list_int_max_size(void) {
+void test_list_max_size(void) {
 	ft::list<int> test;
 
 	std::cout << std::endl << "Test of \033[31;4mmax_size()\033[0m: " << std::endl;
 	std::cout << test.max_size() << std::endl;
 }
 
-void test_list_int_iterator_comparison(void) {
+void test_list_iterator_comparison(void) {
 	ft::list<int> iterator_comparison_test;
 	std::cout << std::endl << "Test of iterator comparison: " << std::endl;
 	create_int_container(&iterator_comparison_test);
@@ -489,35 +489,30 @@ void test_list_int_iterator_comparison(void) {
 	std::cout << "comparison between const and iterator is now : " << verbose_bool(cit == it) << std::endl;
 }
 
-void test_list_int(void) {
-	std::cout << "\033[31;1;4mInt container\033[0m: ";
-	test_list_int_push_back();
-	test_list_int_size();
-	test_list_int_pop_back();
-	test_list_int_clear();
-	test_list_int_push_front();
-	test_list_int_pop_front();
-	test_list_int_assign();
-	test_list_int_front();
-	test_list_int_back();
-	test_list_int_resize();
-	test_list_int_remove();
-	test_list_int_swap();
-	test_list_int_merge();
-	test_list_int_reverse();
-	test_list_int_unique();
-	test_list_int_sort();
-	test_list_int_operator();
-	test_list_int_iterator();
-	test_list_int_iterator_comparison();
-	test_list_int_insert();
-	test_list_int_erase();
-	test_list_int_splice();
-	test_list_int_max_size();
-}
-
 void test_list(void) {
 	std::cout << "Tests with \033[31;1;4mft::list<>\033[0m container: " << std::endl;
 	std::srand(time(NULL));
-	test_list_int();
+	test_list_push_back();
+	test_list_size();
+	test_list_pop_back();
+	test_list_clear();
+	test_list_push_front();
+	test_list_pop_front();
+	test_list_assign();
+	test_list_front();
+	test_list_back();
+	test_list_resize();
+	test_list_remove();
+	test_list_swap();
+	test_list_merge();
+	test_list_reverse();
+	test_list_unique();
+	test_list_sort();
+	test_list_operator();
+	test_list_iterator();
+	test_list_iterator_comparison();
+	test_list_insert();
+	test_list_erase();
+	test_list_splice();
+	test_list_max_size();
 }

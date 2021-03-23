@@ -32,7 +32,7 @@ namespace ft {
 		 *
 		 *
 		 */
-		stack() {}
+		explicit stack( const Container& cont = Container() ) : _c(cont) {}
 		stack(const stack& src) { *this = src; }
 		stack& operator=(const stack& rhs) {
 			if (this != &rhs)
