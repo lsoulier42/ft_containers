@@ -23,6 +23,229 @@
 # include "comparison.hpp"
 
 namespace ft {
+
+	template< class T >
+	class vectorIterator : public ft::iterator<ft::random_access_iterator_tag, T,
+		std::ptrdiff_t , T*, T&>  {
+	public:
+		typedef std::ptrdiff_t difference_type;
+		typedef T value_type;
+		typedef T* pointer;
+		typedef T& reference;
+		typedef ft::random_access_iterator_tag iterator_category;
+
+		vectorIterator() {}
+		vectorIterator(T* node) : _node(node) {}
+		vectorIterator(const vectorIterator& src) { *this = src; }
+		vectorIterator& operator=(const vectorIterator& rhs) {
+			if (this != &rhs)
+				this->_node = rhs._node;
+			return *this;
+		}
+		virtual ~vectorIterator() {}
+
+		/* Random access iterator : access
+		 *
+		 *
+		 */
+
+		reference operator*() {
+			return *_node;
+		}
+		pointer operator->() {
+			return _node;
+		}
+		difference_type operator-(const vectorIterator& rhs) {
+			return this->_node - rhs._node;
+		}
+		reference operator[](int n) {
+			return *(_node + n);
+		}
+
+		/* Random access iterator : comparison
+		 *
+		 *
+		 */
+		friend bool operator==(const vectorIterator& lhs, const vectorIterator& rhs) {
+			return lhs._node == rhs._node;
+		}
+		friend bool operator!=(const vectorIterator& lhs, const vectorIterator& rhs) {
+			return lhs._node != rhs._node;
+		}
+		bool operator<(const vectorIterator& rhs) const {
+			return this->_node < rhs._node;
+		}
+		bool operator>(const vectorIterator& rhs) const {
+			return  this->_node > rhs._node;
+		}
+		bool operator<=(const vectorIterator& rhs) const {
+			return  this->_node <= rhs._node;
+		}
+		bool operator>=(const vectorIterator& rhs) const {
+			return  this->_node >= rhs._node;
+		}
+
+		/* Random access iterator : arythmetic operator
+		 *
+		 *
+		 */
+
+		vectorIterator& operator++() {
+			this->_node++;
+			return *this;
+		}
+		vectorIterator operator++(int) {
+			vectorIterator tmp = *this;
+			++(*this);
+			return tmp;
+		}
+		vectorIterator& operator--() {
+			this->_node--;
+			return *this;
+		}
+		vectorIterator operator--(int) {
+			vectorIterator tmp = *this;
+			--(*this);
+			return tmp;
+		}
+		vectorIterator& operator+=(int n) {
+			this->_node += n;
+			return *this;
+		}
+		vectorIterator operator+(difference_type n) {
+			return vectorIterator(this->_node + n);
+		}
+		friend vectorIterator operator+(difference_type n, const vectorIterator& rhs) {
+			return vectorIterator(rhs._node + n);
+		}
+
+		vectorIterator& operator-=(int n) {
+			this->_node -= n;
+			return *this;
+		}
+		vectorIterator operator-(int n) {
+			return vectorIterator(this->_node - n);
+		}
+
+		/* Random access iterator : public attribute
+		 *
+		 *
+		 */
+		T* _node;
+	};
+
+
+	template< class T >
+	class vectorConstIterator : public ft::iterator<ft::random_access_iterator_tag, T,
+			std::ptrdiff_t , T*, T&>  {
+	public:
+		typedef std::ptrdiff_t difference_type;
+		typedef T value_type;
+		typedef T* pointer;
+		typedef T& reference;
+		typedef ft::random_access_iterator_tag iterator_category;
+
+		vectorConstIterator() {}
+		vectorConstIterator(T* node) : _node(node) {}
+		vectorConstIterator(const vectorConstIterator& src) { *this = src; }
+		vectorConstIterator(const vectorIterator<T>& src) : _node(src._node) {}
+		vectorConstIterator& operator=(const vectorConstIterator& rhs) {
+			if (this != &rhs)
+				this->_node = rhs._node;
+			return *this;
+		}
+		virtual ~vectorConstIterator() {}
+
+		/* Random access iterator : access
+		 *
+		 *
+		 */
+
+		reference operator*() {
+			return *_node;
+		}
+		pointer operator->() {
+			return _node;
+		}
+		difference_type operator-(const vectorConstIterator& rhs) {
+			return this->_node - rhs._node;
+		}
+		reference operator[](int n) {
+			return *(_node + n);
+		}
+
+		/* Random access iterator : comparison
+		 *
+		 *
+		 */
+		friend bool operator==(const vectorConstIterator& lhs, const vectorConstIterator& rhs) {
+			return lhs._node == rhs._node;
+		}
+		friend bool operator!=(const vectorConstIterator& lhs, const vectorConstIterator& rhs) {
+			return lhs._node != rhs._node;
+		}
+		bool operator<(const vectorConstIterator& rhs) const {
+			return this->_node < rhs._node;
+		}
+		bool operator>(const vectorConstIterator& rhs) const {
+			return  this->_node > rhs._node;
+		}
+		bool operator<=(const vectorConstIterator& rhs) const {
+			return  this->_node <= rhs._node;
+		}
+		bool operator>=(const vectorConstIterator& rhs) const {
+			return  this->_node >= rhs._node;
+		}
+
+		/* Random access iterator : arythmetic operator
+		 *
+		 *
+		 */
+
+		vectorConstIterator& operator++() {
+			this->_node++;
+			return *this;
+		}
+		vectorConstIterator operator++(int) {
+			vectorConstIterator tmp = *this;
+			++(*this);
+			return tmp;
+		}
+		vectorConstIterator& operator--() {
+			this->_node--;
+			return *this;
+		}
+		vectorConstIterator operator--(int) {
+			vectorConstIterator tmp = *this;
+			--(*this);
+			return tmp;
+		}
+		vectorConstIterator& operator+=(int n) {
+			this->_node += n;
+			return *this;
+		}
+		vectorConstIterator operator+(difference_type n) {
+			return vectorConstIterator(this->_node + n);
+		}
+		friend vectorConstIterator operator+(difference_type n, const vectorConstIterator& rhs) {
+			return vectorConstIterator(rhs._node + n);
+		}
+
+		vectorConstIterator& operator-=(int n) {
+			this->_node -= n;
+			return *this;
+		}
+		vectorConstIterator operator-(int n) {
+			return vectorConstIterator(this->_node - n);
+		}
+
+		/* Random access iterator : public attribute
+		 *
+		 *
+		 */
+		T* _node;
+	};
+
 	template<class T, class Allocator = std::allocator<T> >
 	class vector {
 	public:
@@ -39,212 +262,8 @@ namespace ft {
 		typedef typename Allocator::const_reference const_reference;
 		typedef typename Allocator::pointer pointer;
 		typedef typename Allocator::const_pointer const_pointer;
-
-		class iterator : public ft::iterator<random_access_iterator_tag, T,
-			difference_type, pointer, reference>  {
-		public:
-			iterator() {}
-			iterator(T* node) : _node(node) {}
-			iterator(const iterator& src) { *this = src; }
-			iterator& operator=(const iterator& rhs) {
-				if (this != &rhs)
-					this->_node = rhs._node;
-				return *this;
-			}
-			virtual ~iterator() {}
-
-			/* Random access iterator : access
-			 *
-			 *
-			 */
-
-			reference operator*() const {
-				return *_node;
-			}
-			pointer operator->() const {
-				return _node;
-			}
-			difference_type operator-(const iterator& rhs) {
-				return this->_node - rhs._node;
-			}
-			reference operator[](int n) {
-				return *(_node + n);
-			}
-
-			/* Random access iterator : comparison
-			 *
-			 *
-			 */
-			friend bool operator==(const iterator& lhs, const iterator& rhs) {
-				return lhs._node == rhs._node;
-			}
-			friend bool operator!=(const iterator& lhs, const iterator& rhs) {
-				return lhs._node != rhs._node;
-			}
-			bool operator<(const iterator& rhs) const {
-				return this->_node < rhs._node;
-			}
-			bool operator>(const iterator& rhs) const {
-				return  this->_node > rhs._node;
-			}
-			bool operator<=(const iterator& rhs) const {
-				return  this->_node <= rhs._node;
-			}
-			bool operator>=(const iterator& rhs) const {
-				return  this->_node >= rhs._node;
-			}
-
-			/* Random access iterator : arythmetic operator
-			 *
-			 *
-			 */
-
-			iterator& operator++() {
-				this->_node++;
-				return *this;
-			}
-			iterator operator++(int) {
-				iterator tmp = *this;
-				++(*this);
-				return tmp;
-			}
-			iterator& operator--() {
-				this->_node--;
-				return *this;
-			}
-			iterator operator--(int) {
-				iterator tmp = *this;
-				--(*this);
-				return tmp;
-			}
-			iterator& operator+=(int n) {
-				this->_node += n;
-				return *this;
-			}
-			iterator operator+(difference_type n) {
-				return iterator(this->_node + n);
-			}
-			friend iterator operator+(difference_type n, const iterator& rhs) {
-				return iterator(rhs._node + n);
-			}
-
-			iterator& operator-=(int n) {
-				this->_node -= n;
-				return *this;
-			}
-			iterator operator-(int n) {
-				return iterator(this->_node - n);
-			}
-
-			/* Random access iterator : public attribute
-			 *
-			 *
-			 */
-			T* _node;
-		};
-
-		class const_iterator : public ft::iterator<random_access_iterator_tag, T,
-				difference_type, pointer, reference> {
-		public:
-			const_iterator() {}
-			const_iterator(T* node) : _node(node) {}
-			const_iterator(const const_iterator& src) { *this = src; }
-			const_iterator(const iterator& src) : _node(src._node) {}
-			const_iterator& operator=(const const_iterator& rhs) {
-				if (this != &rhs)
-					this->_node = rhs._node;
-				return *this;
-			}
-			virtual ~const_iterator() {}
-
-			/* Random access iterator : access
-			 *
-			 *
-			 */
-			reference operator*() const {
-				return *_node;
-			}
-			pointer operator->() const {
-				return _node;
-			}
-			difference_type operator-(const const_iterator& rhs) {
-				return this->_node - rhs._node;
-			}
-			reference operator[](int n) {
-				return *(_node + n);
-			}
-
-			/* Random access iterator : comparison
-			 *
-			 *
-			 */
-			friend bool operator==(const const_iterator& lhs, const const_iterator& rhs) {
-				return lhs._node == rhs._node;
-			}
-			friend bool operator!=(const const_iterator& lhs, const const_iterator& rhs) {
-				return lhs._node != rhs._node;
-			}
-			bool operator<(const const_iterator& rhs) const {
-				return this->_node < rhs._node;
-			}
-			bool operator>(const const_iterator& rhs) const {
-				return  this->_node > rhs._node;
-			}
-			bool operator<=(const const_iterator& rhs) const {
-				return  this->_node <= rhs._node;
-			}
-			bool operator>=(const const_iterator& rhs) const {
-				return  this->_node >= rhs._node;
-			}
-
-			/* Random access iterator : arythmetic operator
-			 *
-			 *
-			 */
-
-			const_iterator& operator++() {
-				this->_node++;
-				return *this;
-			}
-			const_iterator operator++(int) {
-				const_iterator tmp = *this;
-				++(*this);
-				return tmp;
-			}
-			const_iterator& operator--() {
-				this->_node--;
-				return *this;
-			}
-			const_iterator operator--(int) {
-				const_iterator tmp = *this;
-				--(*this);
-				return tmp;
-			}
-			const_iterator& operator+=(int n) {
-				this->_node += n;
-				return *this;
-			}
-			const_iterator operator+(difference_type n) {
-				return const_iterator(this->_node + n);
-			}
-			friend const_iterator operator+(difference_type n, const const_iterator& rhs) {
-				return iterator(rhs._node + n);
-			}
-			const_iterator& operator-=(int n) {
-				this->_node -= n;
-				return *this;
-			}
-			const_iterator operator-(int n) {
-				return const_iterator(this->_node - n);
-			}
-
-			/* Random access iterator : public attribute
-			 *
-			 *
-			 */
-			T* _node;
-		};
-
+		typedef ft::vectorIterator<T> iterator;
+		typedef ft::vectorConstIterator<T> const_iterator;
 		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 		typedef ft::reverse_iterator<iterator> reverse_iterator;
 
