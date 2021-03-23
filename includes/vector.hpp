@@ -55,8 +55,9 @@ namespace ft {
 		pointer operator->() const {
 			return _node;
 		}
-		difference_type operator-(const vectorIterator& rhs) const {
-			return this->_node - rhs._node;
+		friend difference_type operator-(const vectorIterator& lhs,
+			const vectorIterator& rhs) {
+			return lhs._node - rhs._node;
 		}
 		reference operator[](int n) const {
 			return *(_node + n);
@@ -72,17 +73,17 @@ namespace ft {
 		friend bool operator!=(const vectorIterator& lhs, const vectorIterator& rhs) {
 			return lhs._node != rhs._node;
 		}
-		bool operator<(const vectorIterator& rhs) const {
-			return this->_node < rhs._node;
+		friend bool operator<(const vectorIterator& lhs, const vectorIterator& rhs) {
+			return lhs._node < rhs._node;
 		}
-		bool operator>(const vectorIterator& rhs) const {
-			return  this->_node > rhs._node;
+		friend bool operator<=(const vectorIterator& lhs, const vectorIterator& rhs) {
+			return lhs._node <= rhs._node;
 		}
-		bool operator<=(const vectorIterator& rhs) const {
-			return  this->_node <= rhs._node;
+		friend bool operator>(const vectorIterator& lhs, const vectorIterator& rhs) {
+			return lhs._node > rhs._node;
 		}
-		bool operator>=(const vectorIterator& rhs) const {
-			return  this->_node >= rhs._node;
+		friend bool operator>=(const vectorIterator& lhs, const vectorIterator& rhs) {
+			return lhs._node >= rhs._node;
 		}
 
 		/* Random access iterator : arythmetic operator
@@ -115,7 +116,8 @@ namespace ft {
 		vectorIterator operator+(difference_type n) const {
 			return vectorIterator(this->_node + n);
 		}
-		friend vectorIterator operator+(difference_type n, const vectorIterator& rhs) {
+		friend vectorIterator operator+(difference_type n,
+			const vectorIterator& rhs) {
 			return vectorIterator(rhs._node + n);
 		}
 
@@ -140,9 +142,9 @@ namespace ft {
 			std::ptrdiff_t , T*, T&>  {
 	public:
 		typedef std::ptrdiff_t difference_type;
-		typedef T value_type;
-		typedef T* pointer;
-		typedef T& reference;
+		typedef const T value_type;
+		typedef const T* pointer;
+		typedef const T& reference;
 		typedef ft::random_access_iterator_tag iterator_category;
 
 		vectorConstIterator() {}
@@ -167,8 +169,9 @@ namespace ft {
 		pointer operator->() const {
 			return _node;
 		}
-		difference_type operator-(const vectorConstIterator& rhs) const {
-			return this->_node - rhs._node;
+		friend difference_type operator-(const vectorConstIterator& lhs,
+			const vectorConstIterator& rhs) {
+			return lhs._node - rhs._node;
 		}
 		reference operator[](int n) const {
 			return *(_node + n);
@@ -184,17 +187,17 @@ namespace ft {
 		friend bool operator!=(const vectorConstIterator& lhs, const vectorConstIterator& rhs) {
 			return lhs._node != rhs._node;
 		}
-		bool operator<(const vectorConstIterator& rhs) const {
-			return this->_node < rhs._node;
+		friend bool operator<(const vectorConstIterator& lhs, const vectorConstIterator& rhs) {
+			return lhs._node < rhs._node;
 		}
-		bool operator>(const vectorConstIterator& rhs) const {
-			return  this->_node > rhs._node;
+		friend bool operator<=(const vectorConstIterator& lhs, const vectorConstIterator& rhs) {
+			return lhs._node <= rhs._node;
 		}
-		bool operator<=(const vectorConstIterator& rhs) const {
-			return  this->_node <= rhs._node;
+		friend bool operator>(const vectorConstIterator& lhs, const vectorConstIterator& rhs) {
+			return lhs._node > rhs._node;
 		}
-		bool operator>=(const vectorConstIterator& rhs) const {
-			return  this->_node >= rhs._node;
+		friend bool operator>=(const vectorConstIterator& lhs, const vectorConstIterator& rhs) {
+			return lhs._node >= rhs._node;
 		}
 
 		/* Random access iterator : arythmetic operator
@@ -227,7 +230,8 @@ namespace ft {
 		vectorConstIterator operator+(difference_type n) const {
 			return vectorConstIterator(this->_node + n);
 		}
-		friend vectorConstIterator operator+(difference_type n, const vectorConstIterator& rhs) {
+		friend vectorConstIterator operator+(difference_type n,
+			const vectorConstIterator& rhs) {
 			return vectorConstIterator(rhs._node + n);
 		}
 
@@ -276,11 +280,15 @@ namespace ft {
 		 explicit vector( const Allocator& alloc ) : _a(alloc), _size(0), _capacity(0), _vla(NULL) {
 		 }
 		 explicit vector( size_type count,
-			const T& value = T(), const Allocator& alloc = Allocator()) : _a(alloc),
-			_size(count), _capacity(count) {
+			const T& value = T(), const Allocator& alloc = Allocator()) {
+		 	 _a = alloc;
+		 	 _capacity = count;
+		 	 _size = 0;
 			 _vla = _a.allocate(_capacity);
-			 for (size_type i = 0; i < count; i++)
+			 for (size_type i = 0; i < count; i++) {
 				 _a.construct(_vla + i, value);
+				 _size++;
+			 }
 		 }
 		template< class InputIt >
 		vector( InputIt first, InputIt last, const Allocator& alloc = Allocator(),
@@ -646,8 +654,11 @@ namespace ft {
 		void resize( size_type count, T value = T() ) {
 			if (count < _size)
 				this->erase(begin() + count, end());
-			else
+			else {
+				if (count + _size > _capacity)
+					_realloc(_size == 0 ? count : _size * 2);
 				this->insert(end(), count - _size, value);
+			}
 		}
 
 		/* Member function : swap()
@@ -657,9 +668,19 @@ namespace ft {
 		 *
 		 */
 		void swap( vector& other ) {
-			vector tmp = other;
-			other = *this;
-			*this = tmp;
+			allocator_type tmp_a = other._a;
+			size_type tmp_size = other._size;
+			size_type tmp_capacity = other._capacity;
+			pointer tmp_vla = other._vla;
+
+			other._a = _a;
+			_a = tmp_a;
+			other._size = _size;
+			_size = tmp_size;
+			other._capacity = _capacity;
+			_capacity = tmp_capacity;
+			other._vla = _vla;
+			_vla = tmp_vla;
 		}
 
 	private:

@@ -72,10 +72,10 @@ namespace ft {
 		 * and virtual destructor
 		 */
 
-		reverse_iterator() {}
+		reverse_iterator() : _current() {}
 		explicit reverse_iterator( iterator_type x ) : _current(x) {}
 		template< class U >
-		reverse_iterator( const reverse_iterator<U>& other ) { *this = other; }
+		reverse_iterator( const reverse_iterator<U>& other ) : _current(other.base()) {}
 		template< class U >
 		reverse_iterator& operator=( const reverse_iterator<U>& other ) {
 			_current = other.base();
@@ -111,7 +111,7 @@ namespace ft {
 		 *
 		 */
 		reference operator[]( difference_type n ) const {
-			return base()[n - 1];
+			return base()[- n - 1];
 		}
 
 		/* Member function : incrementation operators
@@ -138,10 +138,10 @@ namespace ft {
 			return tmp;
 		}
 		reverse_iterator operator+( difference_type n ) const {
-			return reverse_iterator(base() - n);
+			return reverse_iterator( base() - n );
 		}
 		reverse_iterator operator-( difference_type n ) const {
-			return reverse_iterator(base() + n);
+			return reverse_iterator( base() + n );
 		}
 		reverse_iterator& operator+=( difference_type n ) {
 			_current -= n;
@@ -174,22 +174,22 @@ namespace ft {
 	template< class Iterator1, class Iterator2 >
 	bool operator<( const reverse_iterator<Iterator1>& lhs,
 					 const reverse_iterator<Iterator2>& rhs ) {
-		return lhs.base() < rhs.base();
+		return lhs.base() > rhs.base();
 	}
 	template< class Iterator1, class Iterator2 >
 	bool operator<=( const reverse_iterator<Iterator1>& lhs,
 					 const reverse_iterator<Iterator2>& rhs ) {
-		return lhs.base() <= rhs.base();
+		return lhs.base() >= rhs.base();
 	}
 	template< class Iterator1, class Iterator2 >
 	bool operator>( const reverse_iterator<Iterator1>& lhs,
 					 const reverse_iterator<Iterator2>& rhs ) {
-		return lhs.base() > rhs.base();
+		return lhs.base() < rhs.base();
 	}
 	template< class Iterator1, class Iterator2 >
 	bool operator>=( const reverse_iterator<Iterator1>& lhs,
 					 const reverse_iterator<Iterator2>& rhs ) {
-		return lhs.base() >= rhs.base();
+		return lhs.base() <= rhs.base();
 	}
 
 	/* Non member functions : addition operator
@@ -209,10 +209,10 @@ namespace ft {
 	 *
 	 */
 
-	template< class Iterator >
-	typename reverse_iterator<Iterator>::difference_type
-	operator-( const reverse_iterator<Iterator>& lhs,
-			   const reverse_iterator<Iterator>& rhs ) {
+	template< class Iterator1, class Iterator2 >
+	typename reverse_iterator<Iterator1>::difference_type
+	operator-( const reverse_iterator<Iterator1>& lhs,
+			   const reverse_iterator<Iterator2>& rhs ) {
 		return rhs.base() - lhs.base();
 	}
 
