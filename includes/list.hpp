@@ -21,126 +21,6 @@
 
 namespace ft {
 
-	template<class T>
-	struct t_list {
-		T		content;
-		t_list	*next;
-		t_list	*prev;
-	};
-
-	template < class T >
-	class listIterator : public ft::iterator<bidirectional_iterator_tag,
-			T, std::ptrdiff_t , T*, T&>  {
-	public:
-		typedef std::ptrdiff_t difference_type;
-		typedef T value_type;
-		typedef T* pointer;
-		typedef T& reference;
-		typedef t_list<T> t_list;
-		typedef ft::bidirectional_iterator_tag iterator_category;
-
-		listIterator() {}
-		listIterator(t_list* node) : _node(node) {}
-		listIterator(const listIterator& src) { *this = src; }
-		listIterator& operator=(const listIterator& rhs) {
-			if (this != &rhs)
-				this->_node = rhs._node;
-			return *this;
-		}
-		virtual ~listIterator() {}
-
-		reference operator*() const {
-			return this->_node->content;
-		}
-		pointer operator->() const {
-			return &(this->_node->content);
-		}
-		friend bool operator==(const listIterator& lhs, const listIterator& rhs) {
-			return (lhs._node == rhs._node);
-		}
-		friend bool operator!=(const listIterator& lhs, const listIterator& rhs) {
-			return (lhs._node != rhs._node);
-		}
-
-		listIterator& operator++() {
-			this->_node = this->_node->next;
-			return *this;
-		}
-		listIterator operator++(int) {
-			listIterator tmp = *this;
-			++(*this);
-			return tmp;
-		}
-		listIterator& operator--() {
-			this->_node = this->_node->prev;
-			return *this;
-		}
-		listIterator operator--(int) {
-			listIterator tmp = *this;
-			--(*this);
-			return tmp;
-		}
-
-		t_list* _node;
-	};
-
-	template < class T >
-	class listConstIterator : public ft::iterator<bidirectional_iterator_tag,
-			T, std::ptrdiff_t , T*, T&> {
-	public:
-		typedef std::ptrdiff_t difference_type;
-		typedef const T value_type;
-		typedef const T* pointer;
-		typedef const T& reference;
-		typedef t_list<T> t_list;
-		typedef ft::bidirectional_iterator_tag iterator_category;
-
-		listConstIterator() {}
-		listConstIterator(const listConstIterator& src) { *this = src; }
-		listConstIterator(t_list* node) : _node(node) {}
-		listConstIterator(const listIterator<T>& src) : _node(src._node) {}
-		listConstIterator& operator=(const listConstIterator& rhs) {
-			if (this != &rhs)
-				this->_node = rhs._node;
-			return *this;
-		}
-		virtual ~listConstIterator() {}
-
-		reference operator*() const {
-			return this->_node->content;
-		}
-		pointer operator->() const {
-			return &(this->_node->content);
-		}
-		friend bool operator==(const listConstIterator& lhs, const listConstIterator& rhs) {
-			return (lhs._node == rhs._node);
-		}
-		friend bool operator!=(const listConstIterator& lhs, const listConstIterator& rhs) {
-			return (lhs._node != rhs._node);
-		}
-
-		listConstIterator& operator++() {
-			this->_node = this->_node->next;
-			return *this;
-		}
-		listConstIterator operator++(int) {
-			listConstIterator tmp = *this;
-			++(*this);
-			return tmp;
-		}
-		listConstIterator& operator--() {
-			this->_node = this->_node->prev;
-			return *this;
-		}
-		listConstIterator operator--(int) {
-			listConstIterator tmp = *this;
-			--(*this);
-			return tmp;
-		}
-
-		t_list* _node;
-	};
-
 	template< class T, class Allocator = std::allocator<T> >
 	class list {
 	public:
@@ -651,7 +531,7 @@ namespace ft {
 			tail->next = NULL;
 
 			//the merge sort algorithm
-			head = this->_merge_sort(head, comp);
+			head = ft::_merge_sort(head, comp);
 
 			//restore circular characteristics
 			head->prev = _end;
@@ -686,14 +566,6 @@ namespace ft {
 		void _link_el( t_list* first, t_list *second ) {
 			first->next = second;
 			second->prev = first;
-		}
-
-		void _swap_el( t_list* first, t_list *second ) {
-			T tmp;
-
-			tmp = first->content;
-			first->content = second->content;
-			second->content = tmp;
 		}
 
 		t_list* _lstnew( const_reference val ) {
@@ -735,61 +607,6 @@ namespace ft {
 			_a_node = other._a_node;
 			for (const_iterator it = other.begin(); it != other.end(); it++)
 				this->push_back(*it);
-		}
-
-		template< class Compare >
-		t_list* _merge_sort(t_list* head, Compare comp)
-		{
-			if (!head || !head->next)
-				return head;
-			//principle : split the list in 2 smaller lists till the list is 2 elements
-			t_list* second = this->_split(head);
-
-			// recursive call to merge the 2 smaller lists
-			head = this->_merge_sort(head, comp);
-			second = this->_merge_sort(second, comp);
-
-			// then merge the 2 newly sorted lists
-			return this->_merge(head, second, comp);
-		}
-
-		template< class Compare >
-		t_list* _merge(t_list* first, t_list* second, Compare comp)
-		{
-			//if the split has made empty lists : return the not empty one
-			if (!first)
-				return second;
-			if (!second)
-				return first;
-
-			//swap elements recursively on the smaller lists
-			if (comp(first->content, second->content))
-			{
-				first->next = this->_merge(first->next, second, comp);
-				first->next->prev = first;
-				first->prev = NULL;
-				return first;
-			}
-			else
-			{
-				second->next = this->_merge(first, second->next, comp);
-				second->next->prev = second;
-				second->prev = NULL;
-				return second;
-			}
-		}
-
-		t_list* _split(t_list* head)
-		{
-			t_list *fast = head, *slow = head;
-			while (fast->next && fast->next->next)
-			{
-				fast = fast->next->next;
-				slow = slow->next;
-			}
-			t_list* temp = slow->next;
-			slow->next = NULL;
-			return temp;
 		}
 
 		/* private attributes

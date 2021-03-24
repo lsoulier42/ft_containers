@@ -114,9 +114,6 @@ void test_vector_frontback(void) {
 	std::cout << std::endl << "Tests for \033[31;1;4mfront() & back()\033[0m: " << std::endl;
 	ft::vector<std::string> test_front;
 
-	std::cout << "What contains front() and back() on an empty container ?" << std::endl;
-	std::cout << "front() :" << test_front.front() << std::endl;
-	std::cout << "back() :" << test_front.back() << std::endl;
 	std::cout << "Let's create a vector with 'raichu', 'machopeur' and 'nosferapti': " << std::endl;
 	test_front.push_back("raichu");
 	std::cout << "front() :" << test_front.front() << std::endl;

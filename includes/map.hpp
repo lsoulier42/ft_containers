@@ -21,19 +21,6 @@
 # include "comparison.hpp"
 
 namespace ft {
-	/* Base structure : binary search tree
-	 *
-	 *
-	 */
-
-	template<class T>
-	struct bstree {
-		T content;
-		bstree* parent;
-		bstree* left;
-		bstree* right;
-	};
-
     template< class Key, class T,
         class Compare = ft::less<Key>,
         class Allocator = std::allocator<ft::pair<const Key, T> >
@@ -62,177 +49,9 @@ namespace ft {
          *
          *
          */
-		class iterator : public ft::iterator<bidirectional_iterator_tag, T, difference_type, pointer, reference> {
-		public:
-			iterator() {}
-			iterator(bstree* node) : _node(node) {}
-			iterator(const iterator& src) { *this = src; }
-			iterator& operator=(const iterator& rhs) {
-				if (this != &rhs)
-					this->_node = rhs._node;
-				return *this;
-			}
-			virtual ~iterator() {}
 
-			reference operator*() const {
-				return this->_node->content;
-			}
-			pointer operator->() const {
-				return &(this->_node->content);
-			}
-			friend bool operator==(const iterator& lhs, const iterator& rhs) {
-				return (lhs._node == rhs._node);
-			}
-			friend bool operator!=(const iterator& lhs, const iterator& rhs) {
-				return (lhs._node != rhs._node);
-			}
-
-			iterator& operator++() {
-				this->_node = _find_next(this->_node);
-				return *this;
-			}
-			iterator operator++(int) {
-				iterator tmp = *this;
-				++(*this);
-				return tmp;
-			}
-			iterator& operator--() {
-				this->_node = _find_prev(this->_node);
-				return *this;
-			}
-			iterator operator--(int) {
-				iterator tmp = *this;
-				--(*this);
-				return tmp;
-			}
-
-			/* Bidirectionnal iterator : public attribute
-			 *
-			 *
-			 */
-			bstree* _node;
-
-		private:
-			bstree* _min_value(bstree* node) {
-				bstree* current = node;
-				while(current->left)
-					current = current->left;
-				return current;
-			}
-			bstree* _max_value(bstree* node) {
-				bstree* current = node;
-				while(current->right)
-					current = current->right;
-				return current;
-			}
-			bstree* _find_next(bstree* node) {
-				if (node->right)
-					return _min_value(node->right);
-				bstree* parent = node->parent;
-				while (parent && node == parent->right) {
-					node = parent;
-					parent = parent->parent;
-				}
-				return parent;
-			}
-			bstree* _find_prev(bstree* node) {
-				if (node->left)
-					return _max_value(node->left);
-				bstree* parent = node->parent;
-				while(parent && node == parent->left) {
-					node = parent;
-					parent = parent->parent;
-				}
-				return parent;
-			}
-		};
-
-
-        class const_iterator : public ft::iterator<bidirectional_iterator_tag, T, difference_type, pointer, reference> {
-        public:
-            const_iterator() {}
-            const_iterator(const const_iterator& src) { *this = src; }
-            const_iterator(bstree* node) : _node(node){}
-            const_iterator(const iterator& src) : _node(src._node) {}
-			const_iterator& operator=(const const_iterator& rhs) {
-				if (this != &rhs)
-					this->_node = rhs._node;
-				return *this;
-			}
-            virtual ~const_iterator() {}
-
-            reference operator*() const {
-                return this->_node->content;
-            }
-            pointer operator->() const {
-                return &(this->_node->content);
-            }
-			friend bool operator==(const const_iterator& lhs, const const_iterator& rhs) {
-				return (lhs._node == rhs._node);
-			}
-			friend bool operator!=(const const_iterator& lhs, const const_iterator& rhs) {
-				return (lhs._node != rhs._node);
-			}
-
-			const_iterator& operator++() {
-				this->_node = _find_next(this->_node);
-				return *this;
-			}
-			const_iterator operator++(int) {
-				const_iterator tmp = *this;
-				++(*this);
-				return tmp;
-			}
-			const_iterator& operator--() {
-				this->_node = _find_prev(this->_node);
-				return *this;
-			}
-			const_iterator operator--(int) {
-				const_iterator tmp = *this;
-				--(*this);
-				return tmp;
-			}
-
-			/* Bidirectionnal iterator : public attribute
-			 *
-			 *
-			 */
-            bstree* _node;
-        private:
-        	bstree* _min_value(bstree* node) {
-        		bstree* current = node;
-        		while(current->left)
-        			current = current->left;
-        		return current;
-        	}
-        	bstree* _max_value(bstree* node) {
-        		bstree* current = node;
-        		while(current->right)
-        			current = current->right;
-        		return current;
-        	}
-			bstree* _find_next(bstree* node) {
-				if (node->right)
-					return _min_value(node->right);
-				bstree* parent = node->parent;
-				while (parent && node == parent->right) {
-					node = parent;
-					parent = parent->parent;
-				}
-				return parent;
-        	}
-			bstree* _find_prev(bstree* node) {
-        		if (node->left)
-        			return _max_value(node->left);
-        		bstree* parent = node->parent;
-        		while(parent && node == parent->left) {
-        			node = parent;
-        			parent = parent->parent;
-        		}
-        		return parent;
-        	}
-        };
-
+		typedef mapIterator<value_type> iterator;
+		typedef mapConstIterator<value_type> const_iterator;
         typedef reverse_iterator<const_iterator> const_reverse_iterator;
         typedef reverse_iterator<iterator> reverse_iterator;
 
@@ -285,10 +104,7 @@ namespace ft {
 		 *
 		 *
 		 */
-		/** At the end, you should verify that every attribute is copied
-		 *
-		 *
-		 */
+
 		map& operator=( const map& other ) {
 			if (this != &other) {
 				this->clear();
@@ -312,11 +128,11 @@ namespace ft {
 		 *
 		 */
 		T& operator[]( const Key& key ) {
-			const_iterator it = this->find(key);
+			iterator it = this->find(key);
 			if (it == this->end())
 				return this->insert(ft::make_pair(key, T())).first->second;
 			else
-				return (*it).second;
+				return it->second;
 		}
 
 		/* Iterator functions
@@ -365,6 +181,7 @@ namespace ft {
 		size_type size() const {
 			return _size;
 		}
+
 		size_type max_size() const {
 			return _a_node.max_size();
 		}
@@ -393,15 +210,24 @@ namespace ft {
 
 		ft::pair<iterator,bool> insert( const value_type& value ) {
 			size_type old_size = _size;
-			iterator it = insert(iterator(_root), value);
-			return ft::make_pair(it, _size != old_size);
+			bstree* node;
+			this->_insert(value, _root);
+			node = _size != old_size ? _last_created : _already_present;
+			if (_root == _end) {
+				_root = node;
+				_root->right = _end;
+				_end->parent = _root;
+			}
+			return ft::make_pair(iterator(node), _size != old_size);
 		}
 
 		iterator insert( iterator hint, const value_type& value ) {
 			size_type old_size = _size;
 			bstree* node;
-
-			this->_insert(value, hint._node);
+			bstree* root = hint._node;
+			while (root->parent)
+				root = root->parent;
+			this->_insert(value, root);
 			node = _size != old_size ? _last_created : _already_present;
 			if (_root == _end) {
 				_root = node;
@@ -438,9 +264,25 @@ namespace ft {
          *
          */
         void swap( map& other ) {
-            map tmp = other;
-            other = *this;
-            *this = tmp;
+			bstree* root_tmp = _root;
+			_root = other._root;
+			other._root = root_tmp;
+
+			bstree* last_created_tmp = _last_created;
+			_last_created = other._last_created;
+			other._last_created = last_created_tmp;
+
+			bstree* already_present_tmp = _already_present;
+			_already_present = other._already_present;
+			other._already_present = already_present_tmp;
+
+			bstree* end_tmp = _end;
+			_end = other._end;
+			other._end = end_tmp;
+
+			size_type size_tmp = _size;
+			_size = other._size;
+			other._size = size_tmp;
         }
 
         /* Member functions: count()
@@ -536,24 +378,13 @@ namespace ft {
             return value_compare(_comp_key_less);
         }
 
-        /** This function is for testing purpose only
-         * should be erased before defense
-         *
-         */
-        bstree* base() const {
-        	return this->_root;
-        }
-
     private:
-		/** At the end, you should verify that every attribute is initialized
-		 *
-		 *
-		 */
+
     	void _init_constructor(const Compare& comp,
 			const Allocator& alloc) {
 			_comp_key_less = comp;
 			_a_type = alloc;
-			_root = _create_node(value_type());
+			_root = _create_node(ft::make_pair(key_type(), mapped_type()));
 			_last_created = NULL;
 			_already_present = NULL;
 			_end = _root;
@@ -660,7 +491,11 @@ namespace ft {
 					successor->right->parent = successor_parent;
 
 				successor->right = root->right;
+				if (successor->right)
+					successor->right->parent = successor;
 				successor->left = root->left;
+				if (successor->left)
+					successor->left->parent = successor;
 				successor->parent = root->parent;
 				if (root == _root)
 					_root = successor;
@@ -684,7 +519,7 @@ namespace ft {
     		_comp_key_less = other._comp_key_less;
     		_a_type = other._a_type;
     		_a_node = other._a_node;
-			for(iterator it = other.begin(); it != other.end(); it++)
+			for(const_iterator it = other.begin(); it != other.end(); it++)
 				this->insert(*it);
     	}
 
