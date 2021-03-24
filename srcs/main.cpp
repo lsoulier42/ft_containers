@@ -10,18 +10,29 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <iostream>
+#include <string>
 #include "test_list.hpp"
 #include "test_stack.hpp"
 #include "test_queue.hpp"
 #include "test_vector.hpp"
 #include "test_map.hpp"
 
+int main(int argc, char **argv) {
+	std::string containers[5] = {"list", "vector", "map", "stack", "queue"};
+	void (*test_functions[5])(void) = {&test_list, &test_vector, &test_map,
+		&test_stack, &test_queue};
 
-int main() {
-	test_list();
-	test_stack();
-	test_queue();
-	test_vector();
-	test_map();
-
+	if(argc != 2) {
+		std::cout << "Usage ./ft_containers <container_name>" << std::endl;
+	} else {
+		for(size_t i = 0; i < 5; i++) {
+			if (argv[1] == containers[i]) {
+				test_functions[i]();
+				return 0;
+			}
+		}
+		std::cout << "This container is unknown" << std::endl;
+	}
+	return (0);
 }

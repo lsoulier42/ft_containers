@@ -30,10 +30,6 @@ void test_map() {
 	ft::pair<ft::map<std::string, std::string>::iterator, bool> test_return;
 
 	std::cout << "This test will focus on \033[31;1;4minsert()\033[0m:" << std::endl;
-	std::cout << "Let's create a map with using this array of strings:" << std::endl;
-	for (int i = 0; i < arrSize; i += 2) {
-		std::cout << "\"" << strings[i] << "\" => \"" << strings[i + 1] << "\"" << std::endl;
-	}
 
 	for (int i = 0; i < arrSize; i += 2) {
 		test_return = test_insert.insert(ft::make_pair(strings[i], strings[i + 1]));
@@ -45,7 +41,7 @@ void test_map() {
 	test_return = test_insert.insert(ft::make_pair(strings[0], strings[1]));
 	std::cout << "the key : \"" << test_return.first->first;
 	std::cout << "\" with value: \"" << test_return.first->second << "\"";
-	std::cout << (test_return.second ? " has been created" : " cannot be created") << std::endl;
+	std::cout << (test_return.second ? " has been created" : " cannot be created (already exist)") << std::endl;
 
 	printState(test_insert);
 
@@ -114,6 +110,50 @@ void test_map() {
 	std::cout << std::endl << "This test will focus on \033[31;1;4mcount()\033[0m:" << std::endl;
 	std::cout << "let's see the return of count for existant key 'ululu': " << test_insert.count(std::string("ululu")) << std::endl;
 	std::cout << "let's see the return of count for inexistant key 'war': " << test_insert.count(std::string("war")) << std::endl;
+
+	std::cout << std::endl << "This test will focus on \033[31;1;4mswap()\033[0m:" << std::endl;
+	ft::map<std::string, std::string> test_swap;
+	std::cout << "Let's create a second map with 'alakazam' => 'psy', 'dracofeau' => 'feu' and 'coconfort' => 'poison'" << std::endl;
+	test_swap.insert(ft::make_pair("alakazam", "psy"));
+	test_swap.insert(ft::make_pair("dracofeau", "feu"));
+	test_swap.insert(ft::make_pair("coconfort", "poison"));
+	printState(test_swap);
+	std::cout << "Now let's use swap and print state of the first then the second container" << std::endl;
+	test_insert.swap(test_swap);
+	printState(test_insert);
+	printState(test_swap);
+
+	std::cout << std::endl << "This test will focus on \033[31;1;4mequal_range()\033[0m:" << std::endl;
+	std::cout << "Let's search equal range for 'coconfort': " << std::endl;
+	ft::pair<ft::map<std::string, std::string>::iterator, ft::map<std::string, std::string>::iterator> eq_test = test_insert.equal_range("coconfort");
+	std::cout << "first iterator: " << eq_test.first->first << " and second iterator: " << eq_test.second->first << std::endl;
+
+	std::cout << std::endl << "This test will focus on \033[31;1;4mcopy constructor()\033[0m:" << std::endl;
+	std::cout << "Let's make a map with copy constructor with the second map passed" << std::endl;
+	ft::map<std::string, std::string> test_copy = ft::map<std::string, std::string>(test_swap);
+	printState(test_copy);
+
+	std::cout << std::endl << "This test will focus on \033[31;1;4massignation operator()\033[0m:" << std::endl;
+	std::cout << "Let's make a map from the alakazam contaienr" << std::endl;
+	ft::map<std::string, std::string> test_assignation;
+	test_assignation = test_insert;
+	printState(test_assignation);
+	std::cout << std::endl << "This test will focus on \033[31;1;4mcomparison operators()\033[0m:" << std::endl;
+	std::cout << "Let's take two identical containers (the one copied before with alakazam):" << std::endl;
+	std::cout << "The return of map1 == map2 is: " << verbose_bool(test_assignation == test_insert) << std::endl;
+	std::cout << "The return of map1 != map2 is: " << verbose_bool(test_assignation != test_insert) << std::endl;
+	std::cout << "The return of map1 < map2 is: " << verbose_bool(test_assignation < test_insert) << std::endl;
+	std::cout << "The return of map1 <= map2 is: " << verbose_bool(test_assignation <= test_insert) << std::endl;
+	std::cout << "The return of map1 > map2 is: " << verbose_bool(test_assignation > test_insert) << std::endl;
+	std::cout << "The return of map1 >= map2 is: " << verbose_bool(test_assignation >= test_insert) << std::endl;
+	std::cout << "Now let's take two different container (the one with alakazam and the other with anna montana" << std::endl;
+	std::cout << "The return of map1 == map2 is: " << verbose_bool(test_assignation == test_swap) << std::endl;
+	std::cout << "The return of map1 != map2 is: " << verbose_bool(test_assignation != test_swap) << std::endl;
+	std::cout << "The return of map1 < map2 is: " << verbose_bool(test_assignation < test_swap) << std::endl;
+	std::cout << "The return of map1 <= map2 is: " << verbose_bool(test_assignation <= test_swap) << std::endl;
+	std::cout << "The return of map1 > map2 is: " << verbose_bool(test_assignation > test_swap) << std::endl;
+	std::cout << "The return of map1 >= map2 is: " << verbose_bool(test_assignation >= test_swap) << std::endl;
+
 
 	std::cout << std::endl << "This test will focus on \033[31;1;4mclear()\033[0m:" << std::endl;
 	test_insert.clear();
